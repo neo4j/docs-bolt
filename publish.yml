@@ -1,8 +1,8 @@
 # Use this playbook file when you need to build and publish multuple versions of your content together
 site:
-  title: Neo4j Docs Template
-  url: https://neo4j.com/docs/add-on
-  start_page: docs-bolt:ROOT:index.adoc
+  title: Bolt Protocol
+  url: https://neo4j.com/docs
+  start_page: bolt:ROOT:index.adoc
 
 content:
   sources:

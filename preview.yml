@@ -1,7 +1,7 @@
 site:
-  title: Neo4j Docs Template
-  url: https://neo4j.com/docs/add-on
-  start_page: docs-bolt:ROOT:index.adoc
+  title: Bolt Protocol
+  url: https://neo4j.com/docs
+  start_page: bolt:ROOT:index.adoc
 
 content:
   sources:
