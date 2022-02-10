@@ -1,0 +1,7 @@
+name: bolt
+title: Bolt Protocol
+version: '1.0'
+# display_version: '1.0-preview'
+start_page: ROOT:index.adoc
+nav:
+- modules/ROOT/content-nav.adoc
