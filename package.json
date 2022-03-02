@@ -4,7 +4,12 @@
   "description": "Template repo to be used by new docs projects",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon -e adoc --exec \"npm run build && npm run serve\"",
+    "serve": "node server.js",
+    "build": "antora preview.yml --stacktrace --log-format=pretty",
+    "build-verify": "antora --stacktrace --fetch preview.yml --log-format=json --log-level=info --log-file ./build/log/log.json",
+    "publish-verify": "antora --stacktrace --fetch publish.yml --log-format=json --log-file ./build/log/log.json"
   },
   "keywords": [
     "antora",
@@ -20,20 +25,11 @@
     "@neo4j-documentation/macros": "^1.0.0",
     "@neo4j-documentation/remote-include": "^1.0.0"
   },
-  "watch": {
-    "build": {
-      "patterns": [
-        "modules"
-      ],
-      "extensions": "adoc"
-    }
-  },
   "devDependencies": {
     "cheerio": "^1.0.0-rc.3",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "hyperlink": "^4.6.0",
-    "neo4j-driver": "^4.3.2",
-    "npm-watch": "^0.6.0"
+    "nodemon": "^1.19.4"
   }
 }
