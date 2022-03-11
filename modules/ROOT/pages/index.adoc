@@ -1,6 +1,6 @@
 :description: Documentation for the Bolt Protocol.
 
-= Bolt Protocol
+= Bolt Protocol documentation
 
 [NOTE]
 ====
