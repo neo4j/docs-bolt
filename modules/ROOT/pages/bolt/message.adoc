@@ -86,12 +86,14 @@ This is used to signal message boundaries to a receiving parties, allowing block
 This also allows for unknown message types to be received and handled without breaking the messaging chain.
 
 The Bolt protocol encodes each message using a chunked transfer encoding.
+
 ** Each message is transferred as one or more chunks of data.
 ** Each chunk starts with a two-byte header, an unsigned big-endian 16-bit integer, representing the size of the chunk not including the header.
 ** A message can be divided across multiple chunks, allowing client and server alike to transfer large messages without having to determine the length of the entire message in advance.
 ** Chunking applies on each message individually.
 ** One chunk cannot contain more than one message.
 ** Each message ends with two bytes with the value 00 00, these are not counted towards the chunk size (you may consider them as individual chunks of size 0).
+** With version 4.1+, the `NOOP` chunk (empty chunk) is used to send an empty chunk and the purpose is to be able to support a keep alive behaviour on the connection.
 
 ==== Examples of how Bolt chunks messages
 
@@ -131,6 +133,22 @@ Message 2 data containing 8 bytes:
 are both encoded with chunking:
 ----
 00 10 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 00 00
+00 08 0F 0E 0D 0C 0B 0A 09 08 00 00
+----
+
+.Example with two messages with a `NOOP` in between
+Message 1 data containing 16 bytes:
+----
+00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F
+----
+Message 2 data containing 8 bytes:
+----
+0F 0E 0D 0C 0B 0A 09 08
+----
+The two messages encoded with chunking and a `NOOP`(empty chunk) in between:
+----
+00 10 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 00 00
+00 00
 00 08 0F 0E 0D 0C 0B 0A 09 08 00 00
 ----
 
@@ -257,7 +275,7 @@ There are three different kinds of messages:
 | `01`
 | Request
 | `extra::Dictionary(user_agent::String, scheme::String, routing::Dictionary(address::String))`
-| initialize connection (replaces <<messages-init, `INIT`>> of v1 & v2)(`routing::Dictionary(address::String)` added in 4.1)
+| initialize connection (replaces <<messages-init, `INIT`>> of v1 & v2)(`routing::Dictionary(address::String)` added in v4.1)
 
 | <<messages-goodbye, `GOODBYE`>>
 | `02`
@@ -271,73 +289,73 @@ There are three different kinds of messages:
 |
 | acknowledge a failure response (deprecated, use `RESET` instead with v3+)
 
-| `RESET`
+| <<messages-reset, `RESET`>>
 | `0F`
 | Request
 |
-| reset the connection, triggers a `<INTERRUPT>` signal
+| reset the connection, triggers an `<INTERRUPT>` signal
 
-| `RUN`
+| <<messages-run, `RUN`>>
 | `10`
 | Request
 | `query::String, parameters::Dictionary, extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::Stringdb:String)`
-| execute a query (`db:String` added in v4.0)
+| execute a query (`extra::Dictionary` added in v3)(`db:String` added in v4.0)
 
-| `DISCARD`
+| <<messages-discard, `DISCARD`>>
 | `2F`
 | Request
 | `extra::Dictionary(n::Integer, qid::Integer)`
 | discard records (replaces `DISCARD_ALL` of v1, v2 & v3)(fields added in v4.0)
 
-|`PULL`
+| <<messages-pull, `PULL`>>
 | `3F`
 | Request
 | `extra::Dictionary(n::Integer, qid::Integer)`
 | fetch records (replaces `PULL_ALL` of v1, v2 & v3)(fields added in v4.0)
 
-| `BEGIN`
+| <<messages-begin, `BEGIN`>>
 | `11`
 | Request
 | `extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db::String, imp_user::String)`
 | begin a new transaction (added in v3)(`db::String, imp_user::String` added in v4.0)
 
-| `COMMIT`
+| <<messages-commit, `COMMIT`>>
 | `12`
 | Request
 |
 | commit a transaction (added in v3)
 
-| `ROLLBACK`
+| <<messages-rollback, `ROLLBACK`>>
 | `13`
 | Request
 |
 | rollback a transaction (added in v3)
 
-| `ROUTE`
+| <<messages-route, `ROUTE`>>
 | `66`
 | Request
 | `routing::Dictionary(address::String), bookmarks::List<String>, extra::Dictionary(db::String, imp_user::String)`
 | fetch the current routing table
 
-| `SUCCESS`
+| <<messages-success, `SUCCESS`>>
 | `70`
 | Summary
 | `metadata::Dictionary`
 | request succeeded
 
-| `IGNORED`
+| <<messages-ignored, `IGNORED`>>
 | `7E`
 | Summary
 |
 | request was ignored
 
-| `FAILURE`
+| <<messages-failure, `FAILURE`>>
 | `7F`
 | Summary
 | `metadata::Dictionary(code::String, message::String)`
 | request failed
 
-| `RECORD`
+| <<messages-record, `RECORD`>>
 | `71`
 | Detail
 | `data::List`
@@ -456,7 +474,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
 [[messages-init]]
-=== Request message `INIT`
+=== Request message `INIT` label:deprecated[]
 
 *The request message `INIT` is only valid in version 1 and 2 and is replaced by the request message `HELLO` in version 3+.*
 _The `INIT` message is a request for the connection to be authorized for use with the remote database._
@@ -575,7 +593,7 @@ GOODBYE
 ----
 
 [[messages-ack-failure]]
-=== Request message `ACK_FAILURE`
+=== Request message `ACK_FAILURE` label:deprecated[]
 
 *The request message `ACK_FAILURE` is only valid in version 1 and 2 and the request message `RESET` should be used in its place in version 3+.*
 
@@ -630,4 +648,823 @@ _The server may attach metadata to the message to provide more detail on the nat
 .Example
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+[[messages-reset]]
+=== Request message `RESET`
+
+The `RESET` message requests that the connection should be set back to its initial `RESET` state, as if an `HELLO` (`INIT` in v1 and 2) had just successfully completed.
+The `RESET` message is unique in that, on arrival at the server, it jumps ahead in the message queue, stopping any unit of work that happens to be executing.
+All the queued messages originally in front of the `RESET` message will then be `IGNORED` until the `RESET` position is reached.
+Then from this point, the server state is reset to a state that is ready for a new session.
+
+_In version 1 and 2, the `RESET` message splits into two separate signals._
+_First, an `<INTERRUPT>` signal jumps ahead in the message queue, stopping any unit of work that happens to be executing, and putting the state machine into an `INTERRUPTED` state._
+_Second, the `RESET` queues along with all other incoming messages and is used to put the state machine back to `READY` when its turn for processing arrives._
+_This essentially means that the `INTERRUPTED` state exists only transitionally between the arrival of a `RESET` in the message queue and the later processing of that `RESET` in its proper position._
+_The `INTERRUPTED` state is therefore the only state to automatically resolve without any further input from the client and whose entry does not generate a response message._
+
+*Signature:* `0F`
+
+*Fields:*
+
+No fields
+
+*Detail messages:*
+
+No detail messages should be returned.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `FAILURE`
+
+==== Synopsis
+----
+RESET
+----
+
+.Example
+----
+RESET
+----
+
+==== Server response `SUCCESS`
+
+If a `RESET` message request has been successfully received, the server should respond with a `RESET` message and enter the `READY` state.
+
+.Example
+----
+SUCCESS {}
+----
+
+==== Server response `FAILURE`
+
+If `RESET` message is received before the server enters a `READY` state, it should trigger a `FAILURE` followed by immediate closure of the connection.
+The server may attach metadata to the message to provide more detail on the nature of the failure.
+Clients receiving a `FAILURE` in response to `RESET` should treat that connection as `DEFUNCT` and dispose of it.
+
+.Example
+----
+FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+[[messages-run]]
+=== Request message `RUN`
+
+The `RUN` message requests that a Cypher query is executed with a set of parameters and additional extra data.
+
+In version 3+, this message could both be used in an Explicit Transaction or an Auto-commit Transaction.
+The transaction type is implied by the order of message sequence.
+
+*Signature:* `10`
+
+*Fields:*
+----
+query::String,
+parameters::Dictionary,
+extra::Dictionary(
+  bookmarks::List<String>,
+  tx_timeout::Integer,
+  tx_metadata::Dictionary,
+  mode::String,
+  db:String,
+  imp_user::String
+)
+----
+
+** The `query` can be a Cypher syntax or a procedure call.
+** The `parameters` is a `dictionary` of parameters to be used in the `query` string.
+
+An *Explicit Transaction* (`BEGIN`+`RUN`) does not carry any data in the extra field.
+
+For *Auto-commit Transaction* (`RUN`) the extra field carries:
+
+** The `bookmarks` is a list of strings containing some kind of bookmark identification e.g `["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"]`.
+Default: `[]`.
+** The `tx_timeout` is an integer in that specifies a transaction timeout in ms.
+Default: server-side configured timeout.
+** The `tx_metadata` is a dictionary that can contain some metadata information, mainly used for logging.
+Default: `null`.
+** The `mode` specifies what kind of server the RUN message is targeting.
+For write access use `"w"` and for read access use `"r"`.
+Default: "w".
+** The `db` specifies the database name for multi-database to select where the transaction takes place. `null` and `""` denote the server-side configured default database.
+Default: `null`. (v4+)
+** The `imp_user` key specifies the impersonated user which executes this transaction.
+`null` denotes no impersonation (execution takes place as the current user).
+Default: `null`. (v4.4+)
+
+_Note that the `extra::Dictionary` field is added with version 3 and thus does not exist in v1 and v2._
+_Additionally, the `db` field is added with version 4.0 and the `imp_user` in version 4.4 and do not exist in earlier versions._
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `IGNORED`
+** `FAILURE`
+
+_The server must be in a `READY` state to be able to successfully process a `RUN` request._
+_If the server is in a `FAILED` or `INTERRUPTED` state, the request will be `IGNORED`._
+_For any other states, receipt of a `RUN` request will be considered a protocol violation and will lead to connection closure._
+//is this ^ true for version 3+?
+
+==== Synopsis
+----
+RUN "query" {parameters} {extra}
+----
+
+.Example 1
+----
+RUN "RETURN $x AS x" {"x": 1} {bookmarks: [], "tx_timeout": 123, "tx_metadata": {"log": "example_message"}, mode: "r"}
+----
+
+.Example 2
+----
+RUN "RETURN $x AS x" {"x": 1} {}
+----
+
+.Example 3
+----
+RUN "CALL dbms.procedures()" {} {}
+----
+
+==== Server response `SUCCESS`
+
+A `SUCCESS` message response indicates that the client is permitted to exchange further messages.
+
+The following fields are defined for inclusion in the `SUCCESS` metadata.
+
+** `fields::List<String>`, the fields of the return result. e.g. [“name”, “age”, …]
+** `t_first::Integer`, the time, specified in ms, which the first record in the result stream is available after.
+
+In v4+, for *Explicit Transaction* (`BEGIN`+`RUN`):
+
+** `qid::Integer` specifies the server assigned statement ID to reference the server side result-set with commencing `BEGIN`+`RUN`+`PULL` and `BEGIN`+`RUN`+`DISCARD` messages.
+
+.Example v3+
+----
+SUCCESS {"fields": ["x"], "t_first": 123}
+----
+
+.Example v4.0+
+----
+SUCCESS {"fields": ["x"], "t_first": 123, "qid": 7000}
+----
+
+_For v1 and v2, if a `RUN` request has been successfully received and is considered valid by the server, the server should respond with a `SUCCESS` message and enter the `STREAMING` state._
+_The server may attach metadata to the message to provide header detail for the results that follow._
+_Clients should not consider a `SUCCESS` response to indicate completion of the execution of that query, merely acceptance of it._
+_The following fields are defined for inclusion in the metadata:_
+
+** _`fields` (e.g. [`"name"`, `"age"`])_
+** _`result_available_after` (e.g. `123`)_
+
+.Example v1 and v2
+----
+SUCCESS {"fields": ["x"], "result_available_after": 123}
+----
+
+==== Server response `IGNORED`
+
+.Example
+----
+IGNORED
+----
+
+==== Server response `FAILURE`
+
+.Example
+----
+FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+[[messages-discard]]
+=== Request message `DISCARD`
+
+The `DISCARD` message requests that the remainder of the result stream should be thrown away.
+
+_In v1, v2 and v3, this message is called `DISCARD_ALL`, has *no fields* and issues a request to discard the outstanding result and return to a `READY` state._
+_A receiving server should not abort the request but continue to process it without streaming any detail messages back to the client._
+
+*Signature:* `2F`
+
+*Fields:*
+----
+extra::Dictionary{
+  n::Integer,
+  qid::Integer,
+}
+----
+
+** The `n` specifies how many records to throw away.
+`n=-1` will throw away all records.
+`n` has no default and must be present.
+** The `qid` (query identification) specifies for which statement the operation should be carried out (*Explicit Transaction* only).
+`qid=-1` can be used to denote the last executed statement.
+Default: `-1`.
+
+*Detail messages:*
+
+No detail messages should be returned.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `IGNORED`
+** `FAILURE`
+
+==== Synopsis
+
+----
+DISCARD {extra}
+----
+
+.Example 1
+----
+DISCARD {"n": -1, "qid": -1}
+----
+
+.Example 2
+----
+DISCARD {"n": 1000}
+----
+
+.Example 3 v1, v2 or v3
+----
+DISCARD_ALL
+----
+
+_In version 1 and 2, the server must be in a `STREAMING` state to be able to successfully process a `DISCARD_ALL` request._
+_If the server is in a `FAILED` state or `INTERRUPTED` state, the request will be `IGNORED`._
+_For any other states, receipt of a `DISCARD_ALL` request will be considered a protocol violation and will lead to connection closure._
+
+==== Server response `SUCCESS`
+
+The following fields are defined for inclusion in the `SUCCESS` metadata (v4.0+):
+
+** `has_more::Boolean`, true if there are no more records to stream.
+If this field is not present, it should be considered to default to false.
+
+Or in the case that `has_more` is false:
+
+** `bookmark::String`, the bookmark after committing this transaction (*Auto-commit Transaction* only).
+** `db::String`, the database name where the query is executed.
+
+.Example 1
+----
+SUCCESS {"has_more": true}
+----
+
+.Example 2
+----
+SUCCESS {"bookmark": "example-bookmark:1", "db": "example_database"}
+----
+
+_In version 3, the following fields are defined for inclusion in the `SUCCESS` metadata:_
+
+** `bookmark::String`, _the bookmark after committing this transaction (Auto-commit Transaction* only)._
+
+.Example v3
+----
+SUCCESS {"bookmark": "example-bookmark:1"}
+----
+
+_In version 1 and 2, if a `DISCARD_ALL` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state._
+_The server may attach metadata to the message to provide footer detail for the discarded results._
+
+_The following fields are defined for inclusion in the metadata:_
+
+** `bookmark` _(e.g. `"bookmark:1234"`)_
+** `result_consumed_after` _(e.g. `123`)_
+
+.Example v1 and 2
+----
+SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123}
+----
+
+[[message-pull]]
+=== Request message `PULL`
+
+The `PULL` message requests data from the remainder of the result stream.
+
+_In v1, v2, and v3, this message is called `PULL_ALL` and has *no fields*._
+_In v1 and v2, this message issues a request to stream the outstanding result back to the client, before returning to a `READY` state._
+_Result detail consists of zero or more detail messages being sent before the summary message._
+_This version of the protocol defines one such detail message, namely `RECORD` (described below)._
+
+*Signature:* `3F`
+
+*Fields* (in v4.0+):
+----
+extra::Dictionary{
+  n::Integer,
+  qid::Integer,
+}
+----
+
+** The `n` specifies how many records to fetch.
+`n=-1` will fetch all records.
+`n` has no default and must be present.
+** The qid (query identification) specifies for which statement the operation should be carried out (*Explicit Transaction* only).
+`qid=-1` can be used to denote the last executed statement.
+Default: `-1`.
+
+*Detail messages:*
+
+Zero or more `RECORD`.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `IGNORED`
+** `FAILURE`
+
+==== Synopsis
+----
+PULL {extra}
+----
+
+.For v1, v2, and v3
+----
+PULL_ALL
+----
+
+.Example 1
+----
+PULL {"n": -1, "qid": -1}
+----
+
+.Example 2
+----
+PULL {"n": 1000}
+----
+
+.Example v1, v2, and v3
+----
+PULL_ALL
+----
+
+==== Server resoponse `SUCCESS`
+
+The following fields are defined for inclusion in the `SUCCESS` metadata:
+
+** `has_more::Boolean`, true if there are more records to stream.
+If this field is not present it should be considered to default to false.
+
+Or in the case that `has_more` is false:
+
+** `bookmark::String`, the bookmark after committing this transaction (*Autocommit Transaction* only).
+** `t_last::Integer`, the time, specified in ms, which the last record in the result stream is consumed after.
+** `type::String`, the type of the statement, e.g. `"r"` for read-only statement, `"w"` for write-only statement, `"rw"` for read-and-write, and `"s"` for schema only.
+** `stats::Dictionary`, counter information, such as db-hits etc.
+** `plan::Dictionary`, plan result.
+** `profile::Dictionary`, profile result.
+** `notifications::List<Dictionary>`, a list of all notifications generated during execution of this statement.
+May be omitted if no notifications exist.
+In v3, this field is `notifications::Dictionary`.
+** `db::String`, the database name where the query was executed (v4.0+).
+
+.Example
+----
+SUCCESS {"bookmark": "example-bookmark:1", "t_last": 123}
+----
+
+_In v1 and v2, only two fields are defined for inclusion in the metadata:_
+
+** `bookmark` _(e.g. `"bookmark:1234"`)_
+** `result_consumed_after` _(e.g. `123`)_
+
+.Example v1 and v2
+----
+SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123}
+----
+
+==== Server response `IGNORED`
+
+For v1 and v2, a  server that receives a `DISCARD_ALL` request while in `FAILED` state or `INTERRUPTED` state, should respond with an `IGNORED` message and discard the request without processing it.
+No state change should occur.
+
+.Example (all versions)
+----
+IGNORED
+----
+
+==== Server response `FAILURE`
+
+For v1 and v2, a `DISCARD_ALL` message request cannot be processed successfully, the server should respond with a `FAILURE` message and enter the `FAILED` state.
+The server may attach metadata to the message to provide more detail on the nature of the failure.
+
+.Example (all versions)
+----
+FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+==== Server response `RECORD` (in v1 and v2)
+
+_Zero or more `RECORD` messages may be returned in response to a `PULL_ALL` prior to the trailing summary message._
+_Each record carries with it *a list of values* which form the data content of the record._
+_The order of the values within the list should be meaningful to the client, perhaps based on a requested ordering for that result, but no guarantees should be made around the order of records within the result._
+_A record should only be considered valid if followed by a `SUCCESS` summary message._
+_Until this summary has been received, the record’s validity should be considered tentative._
+
+.Example
+----
+RECORD [1, 2, 3]
+----
+
+[[messages-begin]]
+=== Request massage `BEGIN`
+
+The `BEGIN` message request the creation of a new *Explicit Transaction*.
+This message should then be followed by a `RUN` message.
+The *Explicit Transaction* is closed with either the `COMMIT` message or `ROLLBACK` message.
+
+*Signature:* `11`
+
+*Fields:*
+----
+extra::Dictionary(
+  bookmarks::List<String>,
+  tx_timeout::Integer,
+  tx_metadata::Dictionary,
+  mode::String,
+  db::String,
+  imp_user::String
+)
+----
+
+** The `bookmarks` is a list of strings containing some kind of bookmark identification e.g [`"neo4j-bookmark-transaction:1"`, `"neo4j-bookmark-transaction:2"`].
+Default: [].
+** The `tx_timeout` is an integer in that specifies a transaction timeout in ms.
+Default: server-side configured timeout.
+** The `tx_metadata` is a dictionary that can contain some metadata information, mainly used for logging.
+Default: `null`.
+** The `mode` specifies what kind of server the `RUN` message is targeting.
+For write access use `"w"` and for read access use `"r"`.
+Defaults to write access if no mode is sent. Default: `"w"`.
+** The `db` specifies the database name for multi-database to select where the transaction takes place.
+`null` and `""` denote the server-side configured default database.
+Default: `null` (v4.0+).
+** The `imp_user` key specifies the impersonated user which executes this transaction.
+`null` denotes no impersonation (execution takes place as the current user).
+Default: `null` (v4.4).
+
+*Detail messages:*
+
+No detail messages.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `FAILURE`
+
+==== Synopsis
+----
+BEGIN {extra}
+----
+
+.Example 1
+----
+BEGIN {"tx_timeout": 123, "mode": "r", "db": "example_database", "tx_metadata": {"log": "example_log_data"}, "imp_user" : "bob"}
+----
+
+.Example 2
+----
+BEGIN {"db": "example_database", "tx_metadata": {"log": "example_log_data"}, "bookmarks": ["example-bookmark:1", "example-bookmark2"]}
+----
+
+==== Server response `SUCCESS`
+
+.Example
+----
+SUCCESS {}
+----
+
+==== Server response `IGNORED`
+
+.Example
+----
+IGNORED
+----
+
+==== Server response `FAILURE`
+
+.Example
+----
+FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+[[messages-commit]]
+=== Request message `COMMIT`
+
+The `COMMIT` message request that the *Explicit Transaction* is done.
+
+_The `COMMIT` message does not exist in v1 and v2._
+
+*Signature:* `12`
+
+*Fields:*
+
+No fields.
+
+*Detail messages:*
+
+No detail messages.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `IGNORED`
+** `FAILURE`
+
+==== Synopsis
+----
+COMMIT
+----
+
+.Example
+----
+COMMIT
+----
+
+==== Server response `SUCCESS`
+
+A `SUCCESS` message response indicates that the *Explicit Transaction* was completed:
+
+** `bookmark::String`, the bookmark after committing this transaction.
+
+.Example
+----
+SUCCESS {"bookmark": "example-bookmark:1"}
+----
+
+==== Server response `IGNORED`
+
+.Example
+----
+IGNORED
+----
+
+==== Server response `FAILURE`
+
+.Example
+----
+FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+[[messages-rollback]]
+=== Request message `ROLLBACK`
+
+The `ROLLBACK` message requests that the *Explicit Transaction* rolls back.
+
+_The `ROLLBACK` message does not exist in v1 and v2._
+
+*Signature:* `13`
+
+*Fields:*
+
+No fields.
+
+*Detail messages:*
+
+No detail messages.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `IGNORED`
+** `FAILURE`
+
+==== Synopsis
+----
+ROLLBACK
+----
+
+.Example
+----
+ROLLBACK
+----
+
+==== Server response `SUCCESS`
+
+A `SUCCESS` message response indicates that the *Explicit Transaction* was rolled back.
+
+.Example
+----
+SUCCESS
+----
+
+==== Server response `IGNORED`
+
+.Example
+----
+IGNORED
+----
+
+==== Server response `FAILURE`
+
+.Example
+----
+FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+[[messages-route]]
+=== Request message `ROUTE`
+
+The `ROUTE` instructs the server to return the current routing table and was added in v4.3.
+In previous versions there was no explicit message for this and a procedure had to be invoked using Cypher through the `RUN` and `PULL` messages.
+
+This message can only be sent after successful authentication and outside of transactions.
+
+*Signature:* `66`
+
+*Fields:*
+----
+routing::Dictionary,
+bookmarks::List<String>,
+extra::Dictionary(
+  db::String,
+  imp_user::String,
+)
+----
+
+Note that in v4.4, the `db` parameter is migrated into a dedicated dictionary named `extra` that also includes the `imp_user` and thus, in v4.3 the fields are:
+----
+routing::Dictionary,
+bookmarks::List<String>,
+db:String
+----
+
+** The routing field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
+Key-value entries in the routing context should correspond exactly to those in the original URI query string.
+** The `bookmarks` is a list of strings containing some kind of bookmark identification e.g [`"neo4j-bookmark-transaction:1"`, `"neo4j-bookmark-transaction:2"`].
+In v4.3, the format is `bookmarks::List<String>`.
+** The `db` specifies the database name for multi-database to select where the transaction takes place.
+`null` denotes the server-side configured default database.
+** The `imp_user` specifies the impersonated user for the purposes of resolving their home database.
+`null` denotes no impersonation (execution takes place as the current user).
+Default: `null` (v4.4+).
+
+*Detail messages:*
+
+No detail messages should be returned.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `IGNORED`
+** `FAILURE`
+
+==== Synopsis
+----
+ROUTE {routing} [bookmarks] {extra}
+----
+
+.Example 1
+----
+ROUTE {"address": "x.example.com:7687"} [] null
+----
+
+.Example 2
+----
+ROUTE {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"} ["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"] {"db": example_database", "imp_user": "bob"}
+----
+
+==== Server response `SUCCESS`
+
+A `SUCCESS` message response indicates that the client is permitted to exchange further messages.
+The following fields are defined for inclusion in the `SUCCESS` metadata:
+
+** `rt::Dictionary(ttl::Integer, db::String, servers::List<Dictionary(addresses::List<String>, role::String)>)`, the current routing table.
+*** `ttl::Integer` specifies for how many seconds this routing table should be considered valid.
+*** `db::String` identifies the database for which this routing table applies (v4.4+).
+*** `servers` have three elements of the type `Dictionary(addresses::List<String>, role::String)`, where `role` is one of `"ROUTE"`, `"READ"`, `"WRITE"` for exactly one entry each.
+
+.Example v4.4+
+----
+SUCCESS {
+    "rt": {"ttl": 1000,
+           "db": "foo",
+           "servers": [{"addresses": ["localhost:9001"], "role": "ROUTE"},
+                       {"addresses": ["localhost:9010", "localhost:9012"], "role": "READ"},
+                       {"addresses": ["localhost:9020", "localhost:9022"], "role": "WRITE"}]}
+}
+----
+
+.Example v4.3
+----
+SUCCESS {
+    "rt": {"ttl": 1000,
+           "servers": [{"addresses": ["localhost:9001"], "role": "ROUTE"},
+                       {"addresses": ["localhost:9010", "localhost:9012"], "role": "READ"},
+                       {"addresses": ["localhost:9020", "localhost:9022"], "role": "WRITE"}]}
+}
+----
+
+==== Server message `IGNORED`
+
+.Example
+----
+IGNORED
+----
+
+==== Server message `FAILURE`
+
+.Example
+----
+FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+[[messages-success]]
+=== Summary message `SUCCESS`
+
+The `SUCCESS` message indicates that the corresponding request has succeeded as intended.
+It may contain metadata relating to the outcome.
+Metadata keys are described in the section of this document relating to the message that began the exchange.
+
+*Signature:* `70`
+
+*Fields:*
+----
+metadata::Dictionary
+----
+
+==== Synopsis
+----
+SUCCESS {metadata}
+----
+
+.Example
+----
+SUCCESS {"example": "see specific message for server response metadata"}
+----
+
+[[messages-failure]]
+=== Summary message `IGNORED`
+
+The `IGNORED` message indicates that the corresponding request has not been carried out.
+
+*Signature:* `7E`
+
+*Fields:*
+
+No fields.
+
+==== Synopsis
+----
+IGNORED
+----
+
+.Example
+----
+IGNORED
+----
+
+[[messages-failure]]
+=== Summary message `FAILURE`
+
+*Signature:* `7F`
+
+*Fields:*
+----
+metadata::Dictionary(
+  code::String,
+  message::String,
+)
+----
+
+==== Synopsis
+----
+FAILURE {metadata}
+----
+
+.Example
+----
+FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
+----
+
+[[messages-record]]
+=== Detail message `RECORD`
+
+
+A `RECORD` message carries a sequence of values corresponding to a single entry in a result.
+
+*Signature:* `71`
+
+These messages are currently only ever received in response to a `PULL` (`PULL_ALL` in v1, v2, and v3) message and will always be followed by a summary message.
+
+==== Synopsis
+----
+RECORD [data]
+----
+
+.Example 1
+----
+RECORD ["1", "2", "3"]
+----
+
+.Example 2
+----
+RECORD [{"point": [1, 2]}, "example_data", 123]
 ----
