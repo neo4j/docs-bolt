@@ -1468,3 +1468,61 @@ RECORD ["1", "2", "3"]
 ----
 RECORD [{"point": [1, 2]}, "example_data", 123]
 ----
+
+[[messages-summary]]
+== Summary of changes per version
+
+The sections below list the changes compared to the previous version.
+
+=== Version 4.4
+
+** The `db` parameter within the `ROUTE` message is migrated into a dedicated dictionary named `extra`.
+** An `imp_user` parameter is added to the meta fields within `ROUTE`, `RUN` and `BEGIN` messages respectively.
+
+=== Version 4.3
+
+** `NOOP` chunks may now be transmitted in all connection states when a connection remains in idle for extended periods of time while the server is busy processing a request.
+** An additional hints dictionary is added to the metadata property of the `SUCCESS` structure transmitted in response to the `HELLO` command in order to provide optional configuration hints to drivers.
+** A new message `ROUTE` to query the routing table is added.
+
+=== Version 4.2
+
+No changes compared to version 4.1.
+
+=== Version 4.1
+
+** The `HELLO` message, defines the sub-field `routing::Dictionary(address::String)` to indicate if server side routing should be performed and can include routing context data.
+** Support for `NOOP` chunk (empty chunk).
+Both server and client should support this.
+
+=== Version 4.0
+
+** `DISCARD_ALL` message renamed to `DISCARD` and introduced new fields.
+** `PULL_ALL` message renamed to `PULL` and introduced new fields.
+** The `BEGIN` message now have a field `db::String` to specify a database name.
+** The `RUN` message now have a field `db::String` to specify a database name.
+** *Explicit Transaction* (`BEGIN+RUN`) can now get a server response with a `SUCCESS` and metadata key `qid` (query identification).
+** The `DISCARD` message can now discard an arbitrary number of records.
+New fields `n` and `qid`.
+** The `DISCARD` message can now get a server response with a `SUCCESS` and metadata key `has_more`.
+** The `PULL` message can now fetch an arbitrary number of records.
+New fields `n` and `qid`.
+** The `PULL` message can now get a server response with a `SUCCESS` and metadata key `has_more`.
+
+=== Version 3
+
+** The `INIT` request message is replaced with `HELLO` message.
+** The `ACK_FAILURE` request message is removed.
+Use `RESET` message instead.
+** Added `extra::Dictionary` field to `RUN` message.
+** Added `extra::Dictionary` field to `BEGIN` message.
+** New `HELLO` request message.
+** New `GOODBYE` request message.
+** New `BEGIN` request message.
+** New `COMMIT` request message.
+** New `ROLLBACK` request message.
+** New `RESET` request message.
+
+=== Version 2
+
+No changes compared to version 1.
