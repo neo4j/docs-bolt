@@ -1,3 +1,9 @@
 :description: This section introduces the application protocol Bolt.
 
-= Bolt 
+= Bolt Protocol 
+
+Bolt is an application protocol for the execution of database queries via a database query language, such as link:https://opencypher.org/[Cypher].
+It is generally carried over a regular link:https://datatracker.ietf.org/doc/html/rfc793[TCP] or link:https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API[WebSocket] connection.
+
+Bolt inherits its core type system from PackStream, over which its messages are generally carried.
+Each version of Bolt provides a number of type system extensions, via the PackStream type extension mechanism.
