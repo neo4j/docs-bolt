@@ -2,4 +2,271 @@
 
 = Neo4j Driver API
 
-//Include Driver objects, URI schemes, client-side routing, client-side logging, Session, Transaction and Causal chaining
+:description: This section provides an overview of a Driver and some common scenarios.
+
+= Neo4j Drivers
+
+Neo4j Drivers export a uniform API.
+This allows driver concepts and naming to be shared across ecosystems, making transition between languages and multi-language support easier and more consistent.
+
+This section provides an overview of the following:
+
+** <<driver-objects, Driver objects>>
+** <<uri-schemes, URI schemes>>
+** <<client-side-routing, Client-side routing>>
+** <<client-side-logging, Client-side logging>>
+** <<driver-session, Session>>
+** <<driver-transaction, Transaction>>
+** <<causal-chaining, Causal chaining>>
+
+[[driver-objects]]
+== Driver objects
+
+** *Driver*
+** *Session*
+** *Transaction*
+
+** *DriverConfig*
+*** `uri::String`
+*** `auth::Dictionary`
+*** `user_agent::String`
+*** `encrypted::Boolean`
+*** `trust::String`
+** *SessionConfig*
+*** `default_access_mode::String`
+*** `database::String`
+*** `fetch_size::Integer`
+*** `bookmarks::List<String>`
+*** `imp_user::String`
+** *TransactionConfig*
+*** `metadata::Dictionary`
+*** `timeout::Integer`
+** *AuthToken*
+** *TransactionManager*
+
+** *Connection pool*
+** *Routing*
+
+** *Bolt Protocol*
+** *PackStream*
+
+** *Neo4jExceptions*
+** *DriverExceptions*
+
+
+[[uri-schemes]]
+== URI schemes
+
+No TLS enabled:
+
+** `bolt`: connect to a single Neo4j instance.
+** `neo4j`: connect to a Neo4j instance and use the routing table information for further connections.
+
+Enable TLS and allow self-signed certificate authority:
+
+** `bolt+ssc`
+** `neo4j+ssc`
+
+Enable TLS and only allow system enabled certificate authority and verify hostname:
+
+** `bolt+s`
+** `neo4j+s`
+
+[[client-side-routing]]
+== Client-side routing
+
+Neo4j supports a clustered setup and uses link:https://raft.github.io/[The Raft Consensus Algorithm].
+See also link:https://neo4j.com/docs/operations-manual/current/clustering-advanced/lifecycle/[Operations Manual -> Causal Clustering lifecycle] for more information on Causal Clustering.
+
+Each Neo4j *Core* instance in a cluster supports `routing` and `reading`.
+Only one Neo4j Core in a cluster can be selected to support `write` operations.
+This selection can rotate over time.
+The driver should support a *routing table*.
+Read Replicas are not involved in the Raft Consensus Algorithm, but a Read Replica do return a routing table that only contain the Read Replica itself.
+
+=== Fetching routing tables
+
+The procedure call to fetch the routing table has changed considerably throughout the various versions of Neo4j.
+
+.Route message (4.3+)
+[cols="<10,<10,<40", options="header"]
+|===
+| Neo4j
+| Bolt
+| Bolt message
+
+| 4.3
+| 4.3
+| `ROUTE {$context} [$bookmarks] $db`
+
+| 4.4
+| 4.4
+| `ROUTE {$context} [$bookmarks] {"db": $db, "imp_user": $imp_user}`
+|===
+
+.How to fetch the routing table for database `foo`
+[cols="<10,<10,<40", options="header"]
+|===
+| Neo4j
+| Bolt
+| Bolt message
+
+| 4.3
+| 4.3
+| `ROUTE {"address": "example.org:7687"} ["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"] "foo"`
+
+| 4.4
+| 4.4
+| `ROUTE {"address": "example.org:7687"} ["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"] {"db": "foo"}`
+|===
+
+.Example
+----
+C: 60 60 B0 17
+C: 00 00 04 04 00 00 00 00 00 00 00 00 00 00 00 00
+S: 00 00 04 04
+C: HELLO {"scheme": "basic", "principal": "user", "credentials": "password", "user_agent": "Example/4.4.0", "routing": {"address": "localhost:9001", "policy": "example_policy", "region": "example_region"}}
+S: SUCCESS {"server": "Neo4j/4.4.0", "connection_id": "bolt-123456789"}
+C: ROUTE {"address": "localhost:9001", "policy": "example_policy", "region": "example_region"} ["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"], {}
+S: SUCCESS {"rt": {"ttl": 300, "db": "foo", "servers": [{"addresses": ["127.0.0.1:9001"], "role": "WRITE"}, {"addresses": ["127.0.0.1:9002"], "role": "READ"}, {"addresses": ["127.0.0.1:9001", "127.0.0.1:9002"], "role": "ROUTE"}]}}
+C: GOODBYE
+----
+
+=== Procedure call <4.2
+
+[cols="<10,<10,<40", options="header"]
+|===
+| Neo4j
+| Bolt
+| Neo4j Procedure call
+
+| 3.5
+| 3
+| link:https://neo4j.com/docs/operations-manual/3.5/reference/procedures/[`dbms.cluster.routing.getRoutingTable($context)`]
+
+| 4.0
+| 4.0
+| link:https://neo4j.com/docs/operations-manual/4.0/reference/procedures/#procedure_dbms_cluster_routing_getroutingtable[`dbms.routing.getRoutingTable($context, $database)`]
+
+| 4.1
+| 4.1
+| link:https://neo4j.com/docs/operations-manual/4.1/reference/procedures/#procedure_dbms_cluster_routing_getroutingtable[`dbms.routing.getRoutingTable($context, $database)`]
+
+| 4.2
+| 4.2
+| link:https://neo4j.com/docs/operations-manual/4.2/reference/procedures/#procedure_dbms_cluster_routing_getroutingtable[`dbms.routing.getRoutingTable($context, $database)`]
+|===
+
+.How to fetch the routing table for database `foo`
+[cols="<10,<10,<40", options="header"]
+|===
+| Neo4j
+| Bolt
+| Bolt message
+
+| 3.5
+| 3
+| `RUN "CALL dbms.cluster.routing.getRoutingTable($context)" {"context": {}} {"mode": "r"}`
+
+| 4.0
+| 4.0
+| `RUN "CALL dbms.routing.getRoutingTable($context, $database)" {"context": {}, "database": "foo"} {"db": "system", "mode": "r"}`
+
+| 4.1
+| 4.1
+| `RUN "CALL dbms.routing.getRoutingTable($context, $database)" {"context": {}, "database": "foo"} {"db": "system", "mode": "r"}`
+
+| 4.2
+| 4.2
+| `RUN "CALL dbms.routing.getRoutingTable($context, $database)" {"context": {}, "database": "foo"} {"db": "system", "mode": "r"}`
+|===
+
+.Example
+----
+C: 60 60 B0 17
+C: 00 00 01 04 00 00 00 00 00 00 00 00 00 00 00 00
+S: 00 00 01 04
+C: HELLO {"scheme": "basic", "principal": "user", "credentials": "password", "user_agent": "Example/4.1.0", "routing": {"address": "localhost:9001", "policy": "example_policy", "region": "example_region"}}
+S: SUCCESS {"server": "Neo4j/4.1.0", "connection_id": "bolt-123456789"}
+C: RUN "CALL dbms.routing.getRoutingTable($context)" {"context": {"address": "localhost:9001", "policy": "example_policy", "region": "example_region"}} {"mode": "r", "db": "system"}
+C: PULL {"n": -1}
+S: SUCCESS {"fields": ["ttl", "servers"]}
+S: RECORD [300, [{"addresses": ["127.0.0.1:9001"], "role": "WRITE"}, {"addresses": ["127.0.0.1:9002"], "role": "READ"}, {"addresses": ["127.0.0.1:9001", "127.0.0.1:9002"], "role": "ROUTE"}]]
+S: SUCCESS {"bookmark": "example-bookmark:1", "type": "r", "t_last": 5, "db": "system"}
+C: GOODBYE
+----
+
+=== Neo4j 4.0 Cluster and multiple databases
+
+==== System database
+
+** The name of the system database is fixed and named `system`.
+** The system database cannot be changed for a single instance or a cluster.
+** The system database exists on each instance.
+
+==== Cluster member
+
+A cluster contains *Core* members and *Read Replica* members.
+
+** Each cluster member will host the exact same databases.
+If an up-to-date cluster member A has databases `foo` and `system`, then all other up-to-date members in the cluster should also have and only have `foo and `system`.
+However, at a given time, the cluster members may or may not be up-to-date, and as a result, cluster members may thus contain different databases.
+** Only one Core at any time can be the `leader` (accept `writes`).
+** Each database in a cluster has its own *raft group* and each database has its own routing table.
+In other words, the leader/core/read-replica for each database in a cluster can be different.
+** There is a default database for a single instance and/or a cluster.
+By default, it is named as `neo4j`, but the name can be changed to something else such as `foo`.
+When changing the name, a restart of the single instance and/or cluster may or may not be required.
+The default database may or may not be allowed to be deleted (it cannot be assumed that there is always a default database on each instance.)
+** Any Core member in a cluster can provide a routing table for any database inside this cluster.
+Given a seed URL pointing to a Core member this can be used to find any databases in a cluster by fetching the routing table from a Core member.
+
+==== Driver routing table
+
+*The Driver should prevent the routing table from growing infinitely.*
+The routing table for a specific database should be removed from the routing table if there is a failed to attempt to obtain routing information.
+The routing table for a specific database should be removed from the routing table if it is invalid.
+An invalid routing table could either be a:
+
+** routing table that has timed out where the `TTL` (Time To Live) key for that routing table have ended.
+** routing table that is pointing to a database that no longer exists.
+
+This is the workflow the driver should follow when fetching a routing table for database named `foo`.
+
+. Find the routing table for database `foo`.
+
+. If the database does not exist in the routing table, then create an empty routing table with seed URL as initial router.
+
+. If the routing table is stale, then refresh the routing table with a query to a cluster member that.
+
+. If any error happens, remove the key `foo` from routing table map.
+
+The only errors possible are:
+
+** `SECURITY_ERROR`
+** `ROUTING_ERROR`
+** `SERVICE_UNAVAILABLE_ERROR`, happens when the driver failed to get routing table for all existing routers.
+
+[[client-side-logging]]
+== Client-side logging
+
+** Logging levels
+** Logging syntax
+
+[[driver-session]]
+== Session
+
+** Connections
+** Connection pool
+
+[[driver-transaction]]
+== Transaction
+
+** Atomic unit of work
+** Transaction manager
+** Transaction functions
+
+[[causal-chaining]]
+== Causal chaining
+
+** Bookmark 
