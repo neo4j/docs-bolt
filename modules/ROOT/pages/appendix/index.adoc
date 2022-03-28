@@ -1,0 +1,10 @@
+:description: This section is an appendix containing available message state transitions for the different versions of the Bolt Protocol.
+
+= Appendix
+
+This section contains references for the available message state transitions in the different versions of the Bolt Protocol.
+
+* xref:appendix/version-4.adoc[]
+* xref:appendix/version-3.adoc[]
+* xref:appendix/version-2.adoc[]
+* xref:appendix/version-1.adoc[]

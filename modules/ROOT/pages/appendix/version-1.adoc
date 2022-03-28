@@ -1,0 +1,199 @@
+:description: This section lists all Bolt message state transitions available in version 1.
+
+= Bolt message state transitions in version 1
+
+This section lists all Bolt message state transitions available in version 1.
+
+[cols="20,15,20,30,30",options="header"]
+|===
+| State
+| Request message
+| Triggers signal
+| Server response summary message
+| New state
+
+| `CONNECTED`
+| `INIT`
+|
+| `SUCCESS {}`
+| `READY`
+
+| `CONNECTED`
+| `INIT`
+|
+| `FAILURE {}`
+| `DEFUNCT`
+
+|
+|
+|
+|
+|
+
+| `READY`
+| `RUN`
+|
+| `SUCCESS {}`
+| `STREAMING`
+
+| `READY`
+| `RUN`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `READY`
+| `RESET`
+| `<INTERRUPT>`
+| _n/a_
+|
+
+|
+|
+|
+|
+|
+
+| `STREAMING`
+| `PULL_ALL`
+|
+| `SUCCESS {}`
+| `READY`
+
+| `STREAMING`
+| `PULL_ALL`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `STREAMING`
+| `DISCARD_ALL`
+|
+| `SUCCESS {}`
+| `READY`
+
+| `STREAMING`
+| `DISCARD_ALL`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `STREAMING`
+| `RESET`
+| `<INTERRUPT>`
+| _n/a_
+|
+
+|
+|
+|
+|
+|
+
+| `FAILED`
+| `RUN`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `PULL_ALL`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `DISCARD_ALL`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `FAILED`
+| `ACK_FAILURE`
+|
+| `SUCCESS {}`
+| `READY`
+
+| `FAILED`
+| `ACK_FAILURE`
+|
+| `FAILURE {}`
+| `DEFUNCT`
+
+| `FAILED`
+| `RESET`
+| `<INTERRUPT>`
+| _n/a_
+|
+
+|
+|
+|
+|
+|
+
+| `INTERRUPTED`
+| `RUN`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `PULL_ALL`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `DISCARD_ALL`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `ACK_FAILURE`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `RESET`
+| `<INTERRUPT>`
+| `SUCCESS {}`
+| `READY`
+
+| `INTERRUPTED`
+| `RESET`
+| `<INTERRUPT>`
+| `FAILURE {}`
+| `DEFUNCT`
+|===
+
+.The `<INTERRUPT>` signal
+[cols="20,15,30,20",options="header"]
+|===
+| State
+| Signal
+| Server response summary message
+| New state
+
+| `READY`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+
+| `STREAMING`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+
+| `FAILED`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+|===
