@@ -1,0 +1,385 @@
+:description: This section lists all Bolt message state transitions available in version 4.x.
+
+= Bolt message state transitions in version 4.x
+
+This section lists all Bolt message state transitions available in version 4.x.
+
+== Version 4.x
+
+[cols="20,15,20,30,30",options="header"]
+|===
+| State
+| Request message
+| Triggers signal
+| Server response summary message
+| New state
+
+| `CONNECTED`
+| `HELLO`
+|
+| `SUCCESS {}`
+| `READY`
+
+| `CONNECTED`
+| `HELLO`
+|
+| `FAILURE {}`
+| `DEFUNCT`
+
+|
+|
+|
+|
+|
+
+| `READY`
+| `RUN`
+|
+| `SUCCESS {}`
+| `STREAMING`
+
+| `READY`
+| `RUN`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `READY`
+| `BEGIN`
+|
+| `SUCCESS {}`
+| `TX_READY`
+
+| `READY`
+| `BEGIN`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `READY`
+| `ROUTE`
+|
+| `SUCCESS {}`
+| `READY`
+
+| `READY`
+| `RESET`
+| `<INTERRUPT>`
+| _n/a_
+|
+
+| `READY`
+| `GOODBYE`
+| `<DISCONNECT>`
+| _n/a_
+| `DEFUNCT`
+
+|
+|
+|
+|
+|
+
+| `STREAMING`
+| `PULL`
+|
+| `SUCCESS {"has_more": true}`
+| `STREAMING`
+
+| `STREAMING`
+| `PULL`
+|
+| `SUCCESS {"has_more": false}` or `SUCCESS {}`
+| `READY`
+
+| `STREAMING`
+| `PULL`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `STREAMING`
+| `DISCARD`
+|
+| `SUCCESS {"has_more": true}`
+| `STREAMING`
+
+| `STREAMING`
+| `DISCARD`
+|
+| `SUCCESS {"has_more": false}` or `SUCCESS {}`
+| `READY`
+
+| `STREAMING`
+| `DISCARD`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `STREAMING`
+| `RESET`
+| `<INTERRUPT>`
+| _n/a_
+|
+
+| `STREAMING`
+| `GOODBYE`
+| `<DISCONNECT>`
+| _n/a_
+| `DEFUNCT`
+
+|
+|
+|
+|
+|
+
+| `TX_READY`
+| `RUN`
+|
+| `SUCCESS {"qid": id::Integer}`
+| `TX_STREAMING`
+
+| `TX_READY`
+| `RUN`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `TX_READY`
+| `COMMIT`
+|
+| `SUCCESS {}`
+| `READY`
+
+| `TX_READY`
+| `COMMIT`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `TX_READY`
+| `ROLLBACK`
+|
+| `SUCCESS {}`
+| `READY`
+
+| `TX_READY`
+| `ROLLBACK`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `TX_READY`
+| `RESET`
+| `<INTERRUPT>`
+| _n/a_
+|
+
+| `TX_READY`
+| `GOODBYE`
+| `<DISCONNECT>`
+| _n/a_
+| `DEFUNCT`
+
+|
+|
+|
+|
+|
+
+| `TX_STREAMING`
+| `RUN`
+|
+| `SUCCESS {"qid": id::Integer}`
+| `TX_STREAMING`
+
+| `TX_STREAMING`
+| `RUN`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `TX_STREAMING`
+| `PULL`
+|
+| `SUCCESS {"has_more": true}`
+| `TX_STREAMING`
+
+| `TX_STREAMING`
+| `PULL`
+|
+| `SUCCESS {"has_more": false}` or `SUCCESS {}`
+| `TX_READY` or `TX_STREAMING` if there are other streams open
+
+| `TX_STREAMING`
+| `PULL`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `TX_STREAMING`
+| `DISCARD`
+|
+| `SUCCESS {"has_more": true}`
+| `TX_STREAMING`
+
+| `TX_STREAMING`
+| `DISCARD`
+|
+| `SUCCESS {"has_more": false}` or `SUCCESS {}`
+| `TX_READY` or `TX_STREAMING` if there are other streams open
+
+| `TX_STREAMING`
+| `DISCARD`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `TX_STREAMING`
+| `RESET`
+| `<INTERRUPT>`
+| _n/a_
+|
+
+| `TX_STREAMING`
+| `GOODBYE`
+| `<DISCONNECT>`
+| _n/a_
+| `DEFUNCT`
+
+|
+|
+|
+|
+|
+
+| `FAILED`
+| `RUN`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `PULL`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `DISCARD`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `RESET`
+| `<INTERRUPT>`
+| _n/a_
+|
+
+| `FAILED`
+| `GOODBYE`
+| `<DISCONNECT>`
+| _n/a_
+| `DEFUNCT`
+
+|
+|
+|
+|
+|
+
+| `INTERRUPTED`
+| `RUN`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `PULL`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `DISCARD`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `BEGIN`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `COMMIT`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `ROLLBACK`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `RESET`
+| `<INTERRUPT>`
+| `SUCCESS {}`
+| `READY`
+
+| `INTERRUPTED`
+| `RESET`
+| `<INTERRUPT>`
+| `FAILURE {}`
+| `DEFUNCT`
+
+| `INTERRUPTED`
+| `GOODBYE`
+| `<DISCONNECT>`
+| _n/a_
+| `DEFUNCT`
+|===
+
+.The `<INTERRUPT>` signal
+[cols="20,15,30,20",options="header"]
+|===
+| State
+| Signal
+| Server response summary message
+| New state
+
+| `READY`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+
+| `STREAMING`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+
+| `TX_READY`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+
+| `TX_STREAMING`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+
+| `FAILED`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `<INTERRUPT>`
+| _n/a_
+| `INTERRUPTED`
+|===
