@@ -380,7 +380,7 @@ No changes compared to version 4.0.
 === Version 4.0
 
 Compared to version 3 the `RUN`, `PULL` and `DISCARD` now can re-enter `STREAMING` or `TX_STREAMING`.
-The server state transitions are using the updated set of messages defined in xref:bolt/message/#_version_4_0[Bolt Protocol Message Specification Version 4.0].
+The server state transitions are using the updated set of messages defined in xref:bolt/message#messages-summary-40[Bolt Protocol Message Specification Version 4.0].
 
 === Version 3
 
@@ -389,7 +389,7 @@ Compared to version 2 there are new server states:
 ** `TX_READY`
 ** `TX_STREAMING`
 These states are introduced to handle the concept of *Explicit Transaction*.
-The server state transitions are using the updated set of messages defined in xref:bolt/message/#_version_3[Bolt Protocol Message Specification Version 3].
+The server state transitions are using the updated set of messages defined in xref:bolt/message#messages-summary-3[Bolt Protocol Message Specification Version 3].
 
 === Version 2
 

@@ -2,10 +2,6 @@
 
 = Neo4j Driver API
 
-:description: This section provides an overview of a Driver and some common scenarios.
-
-= Neo4j Drivers
-
 Neo4j Drivers export a uniform API.
 This allows driver concepts and naming to be shared across ecosystems, making transition between languages and multi-language support easier and more consistent.
 
@@ -269,4 +265,4 @@ The only errors possible are:
 [[causal-chaining]]
 == Causal chaining
 
-** Bookmark 
+** Bookmark

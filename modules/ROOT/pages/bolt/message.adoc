@@ -1400,7 +1400,7 @@ SUCCESS {metadata}
 SUCCESS {"example": "see specific message for server response metadata"}
 ----
 
-[[messages-failure]]
+[[messages-ignored]]
 === Summary message `IGNORED`
 
 The `IGNORED` message indicates that the corresponding request has not been carried out.
@@ -1474,27 +1474,32 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 
 The sections below list the changes compared to the previous version.
 
+[[messages-summary-44]]
 === Version 4.4
 
 ** The `db` parameter within the `ROUTE` message is migrated into a dedicated dictionary named `extra`.
 ** An `imp_user` parameter is added to the meta fields within `ROUTE`, `RUN` and `BEGIN` messages respectively.
 
+[[messages-summary-43]]
 === Version 4.3
 
 ** `NOOP` chunks may now be transmitted in all connection states when a connection remains in idle for extended periods of time while the server is busy processing a request.
 ** An additional hints dictionary is added to the metadata property of the `SUCCESS` structure transmitted in response to the `HELLO` command in order to provide optional configuration hints to drivers.
 ** A new message `ROUTE` to query the routing table is added.
 
+[[messages-summary-42]]
 === Version 4.2
 
 No changes compared to version 4.1.
 
+[[messages-summary-41]]
 === Version 4.1
 
 ** The `HELLO` message, defines the sub-field `routing::Dictionary(address::String)` to indicate if server side routing should be performed and can include routing context data.
 ** Support for `NOOP` chunk (empty chunk).
 Both server and client should support this.
 
+[[messages-summary-40]]
 === Version 4.0
 
 ** `DISCARD_ALL` message renamed to `DISCARD` and introduced new fields.
@@ -1509,6 +1514,7 @@ New fields `n` and `qid`.
 New fields `n` and `qid`.
 ** The `PULL` message can now get a server response with a `SUCCESS` and metadata key `has_more`.
 
+[[messages-summary-3]]
 === Version 3
 
 ** The `INIT` request message is replaced with `HELLO` message.
@@ -1523,6 +1529,7 @@ Use `RESET` message instead.
 ** New `ROLLBACK` request message.
 ** New `RESET` request message.
 
+[[messages-summary-2]]
 === Version 2
 
 No changes compared to version 1.
