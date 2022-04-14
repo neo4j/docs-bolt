@@ -90,28 +90,11 @@ C: 00 00 00 03 00 00 00 00 00 00 00 00 00 00 00 00
 S: 00 00 00 00
 ----
 
-[[bolt-version40]]
-== Bolt version 4.0
-
-With Bolt version 4.0 the version scheme now supports major and minor versioning number.
-The first 16 bits are reserved. 8 bits represents the minor version. 8 bits represents the major version.
-
-.Example with version 4.1
-----
-00 00 01 04
-----
-
-.Example where the client is aware of three Bolt versions; 3, 4.0 and 4.1, and the server responds with 4.1.
-----
-C: 60 60 B0 17
-C: 00 00 01 04 00 00 00 04 00 00 00 03 00 00 00 00
-S: 00 00 01 04
-----
 
 [[bolt-version43]]
 == Bolt version 4.3
 
-With Bolt version 4.3, the version scheme now supports ranges of minor versions.
+With Bolt version 4.3, the version scheme supports ranges of minor versions.
 The first 8 bits are reserved.
 The next 8 bits represent the number of consecutive minor versions below the specified minor (next 8 bits) and major (next 8 bits) version that are supported.
 
@@ -137,3 +120,22 @@ S: 00 00 01 04
 The client has to specify all versions prior to 4.3 explicitly since servers that only support those protocol versions might not support ranges.
 The example makes use of the fact that Bolt 4.1 and 4.2 are equivalent and only offer 4.3, 4.2, 4.0, and 3, but specify a range (4.3-4.0), in case the server supports ranges.
 ====
+
+
+[[bolt-version40]]
+== Bolt version 4.0
+
+With Bolt version 4.0 the version scheme supports major and minor versioning number.
+The first 16 bits are reserved. 8 bits represents the minor version. 8 bits represents the major version.
+
+.Example with version 4.1
+----
+00 00 01 04
+----
+
+.Example where the client is aware of three Bolt versions; 3, 4.0 and 4.1, and the server responds with 4.1.
+----
+C: 60 60 B0 17
+C: 00 00 01 04 00 00 00 04 00 00 00 03 00 00 00 00
+S: 00 00 01 04
+----
