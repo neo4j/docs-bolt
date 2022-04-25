@@ -139,7 +139,7 @@ This means that the most significant part of the value is written to the network
 [[data-type-null]]
 === `Null`
 
-*Marker:* `C2`
+*Marker:* `C0`
 
 `Null` is always encoded using the single marker byte `C0`.
 
@@ -150,7 +150,7 @@ This means that the most significant part of the value is written to the network
 
 *Marker, true:* `C3`
 
-Boolean values are encoded within a single marker byte, using `C3` to denote *true* and `C2`to denote *false*.
+Boolean values are encoded within a single marker byte, using `C3` to denote *true* and `C2` to denote *false*.
 
 [[data-type-integer]]
 === `Integer`
