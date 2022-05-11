@@ -1207,7 +1207,7 @@ LocalDateTime::Structure(
 Where the `seconds` are seconds since the Unix epoch.
 
 
-[[strucutre-duration]]
+[[structure-duration]]
 ==== `Duration`
 
 A temporal amount.
