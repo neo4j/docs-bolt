@@ -1107,12 +1107,30 @@ To convert to UTC, use:
 utc_nanoseconds = nanoseconds - (tz_offset_seconds * 1000000000)
 ----
 
+[[structure-time]]
+==== `Time`
+
+An instant capturing the time of day, and the timezone, but not the date.
+
+*tag byte:* `54`
+
+*Number of fields:* 2
+----
+Time::Structure(
+    nanoseconds::Integer,
+    tz_offset_seconds::Integer,
+)
+----
+
+Where the `nanoseconds` are nanoseconds since midnight (this time is _not_ UTC) and the `tz_offset_seconds` are an offset in seconds from UTC.
+
+
 [[structure-localtime]]
 ==== `LocalTime`
 
 An instant capturing the time of day, but neither the date nor the time zone.
 
-*tage byte:* `74`
+*tag byte:* `74`
 
 *Number of fields:* 1
 ----
@@ -1170,6 +1188,24 @@ To convert to UTC, use:
 ----
 utc_nanoseconds = (seconds * 1000000000) + nanoseconds - get_offset_in_nanoseconds(tz_id)
 ----
+
+[[structure-localdatetime]]
+==== `LocalDateTime`
+
+An instant capturing the date and the time but not the time zone.
+
+*tag byte:* `64`
+
+*Number of fields:* 2
+----
+LocalDateTime::Structure(
+    seconds::Integer,
+    nanoseconds::Integer,
+)
+----
+
+Where the `seconds` are seconds since the Unix epoch.
+
 
 [[strucutre-duration]]
 ==== `Duration`
