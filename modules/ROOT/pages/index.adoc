@@ -9,7 +9,7 @@ Likewise, no guarantees are given that this documentation is fully up to date.
 No support can be provided for users of this documentation, but issues may still be raised at https://github.com/neo4j-drivers/neo4j-drivers.github.io/issues
 ====
 
-This document aims to provide an overview of driver technology and covers the following topics:
+This document provides an overview of driver technology and covers the following topics:
 
 * xref::/packstream/index.adoc[] -- The syntax layer for the Bolt messaging protocol.
 * xref::/bolt/index.adoc[] -- The application protocol for database queries via a database query language.
