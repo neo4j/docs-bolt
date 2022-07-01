@@ -1177,12 +1177,34 @@ DateTime::Structure(
 )
 ----
 
-Where the `seconds` are seconds since the adjusted Unix epoch (not UTC) and the `tz_offset_seconds` specifies the offset in seconds from UTC.
+- The `tz_offset_seconds` specifies the offset in seconds from UTC.
+- The `seconds` elapsed since the https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch], often referred as a
+Unix timestamp, **added** to the above offset.
+- The `nanoseconds` are what remains after the last second of the `DateTime`. The amount of `nanoseconds` ranges from `0` to
+`999_999_999` (`_` separator added here and later for clarity).
 
-To convert to UTC, use:
+For instance, the serialization of the point in time denoted as `1970-01-01T02:15:00+01:00` (and `42` nanoseconds) can
+be implemented as follows:
+
+- compute the UTC time, i.e. `1970-01-01T01:15:00Z` (`Z` denotes UTC)
+- compute the difference between that UTC time and the Unix epoch, which is 1h15, i.e. `4_500` seconds.
+- add the offset of +1 hour, i.e. `3_600` seconds, to the above difference, which yields `8_100` (`4_500`+`3_600`)
+
+The resulting `DateTime` instance is therefore as follows:
+
 ----
-utc_nanoseconds = (seconds * 1000000000) + nanoseconds - (tx_offset_seconds * 1000000000)
+{
+  seconds: 8100
+  nanoseconds: 42,
+  tz_offset_seconds: 3600
+}
 ----
+
+The deserialization of such a `DateTime` structure expectedly happens in reverse:
+
+- remove the offset from the `seconds` field, which gives here `8_100`
+- instantiate the idiomatic equivalent of `DateTime` based on that Unix timestamp, giving `1970-01-01T01:15:00Z`
+- localize the resulting UTC `DateTime` to the timezone of the specified offset, giving `1970-01-01T02:15:00+0100`
 
 [[structure-datetimezoneid]]
 ==== `DateTimeZoneId`
@@ -1201,12 +1223,70 @@ DateTimeZoneId::Structure(
 )
 ----
 
-Where the `seconds` are seconds since the adjusted Unix epoch (not UTC) and the `tz_id` is an identifier for a specific time zone, e.g. "Europe/Paris".
+- The `tz_id` specifies the timezone name as understood
+by https://en.wikipedia.org/wiki/Tz_database[the timezone database].
+- The `seconds` elapsed since the https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch], often referred as a
+Unix timestamp, **added** to the offset derived from the named timezone and specified the point in time.
+- The `nanoseconds` are what remains after the last second of the `DateTime`. The amount of nanoseconds ranges from `0` to
+`999_999_999` (`_` separator added here and later for clarity).
 
-To convert to UTC, use:
+For instance, the serialization of the point in time denoted as `1970-01-01T02:15:00+0100[Europe/Paris]` (and `42`
+nanoseconds) can be implemented as follows:
+
+- retrieve the offset of the named timezone for that point in time, here +1 hour, i.e. `3_600` seconds
+- compute the UTC time, i.e. `1970-01-01T01:15:00Z` (`Z` denotes UTC)
+- compute the difference between that UTC time and the Unix epoch, which is 1h15, i.e. `4_500` seconds.
+- add the resolved offset of +1 hour, i.e. `3_600` seconds, to the above difference, which yields `8_100` (`4_500`+`3_600`)
+
+The resulting `DateTime` instance is therefore as follows:
+
 ----
-utc_nanoseconds = (seconds * 1000000000) + nanoseconds - get_offset_in_nanoseconds(tz_id)
+{
+  seconds: 8100
+  nanoseconds: 42,
+  tz_id: "Europe/Paris"
+}
 ----
+
+The deserialization of such a `DateTime` structure happens as follows:
+
+- instantiate the idiomatic equivalent of `DateTime` assuming the seconds denote a Unix timestamp, giving
+`1970-01-01T02:15:00Z`
+- set the timezone of the resulting instance, without changing the date/time components, giving
+`1970-01-01T02:15:00+0100[Europe/Paris]` (this may lead to ambiguities, read the `Known Limitations` section below to
+learn more)
+
+===== Known Limitations
+
+====== Accuracy
+
+The resolution of offsets for a given time zone name and point in time is bound to the accuracy of the underlying
+https://en.wikipedia.org/wiki/Tz_database[timezone database]. In
+particular, https://en.wikipedia.org/wiki/Tz_database#Data_before_1970[time zones before 1970] are not as well
+specified.
+
+Moreover, the offset resolution likely occurs both on the Bolt client side and Bolt server side. They each rely on a
+different timezone database. That could lead to unwanted discrepancies if these copies are not in sync.
+
+In such a situation, either server or client could:
+
+- reject a timezone name deemed valid by the other party
+- resolve different offsets for the same time zone and `DateTimeZoneId`
+
+====== Time Shifts
+
+Not all instances of `DateTimeZoneId` map to a single valid point in time.
+
+1. During time shifts like going from 2AM to 3AM in a given day and timezone, 2:30AM e.g. does not happen.
+2. Similarly, when going from 3AM to 2AM in a given day and timezone, 2:30AM happens twice.
+
+In the first case, a `DateTimeZoneId` specifying a time between 2AM and 3AM does not correspond to any actual points in
+time for that timezone and is invalid.
+
+In the second case, all points in the time between 2AM and 3AM exist twice, but with a different offset.
+Therefore, the timezone name is not sufficient to resolve the ambiguity, the timezone offset is also needed.
+Since `DateTimeZoneId` does not include the timezone offset, the resolution of these particular datetimes is an
+undefined behavior.
 
 [[structure-localdatetime]]
 ==== `LocalDateTime`
