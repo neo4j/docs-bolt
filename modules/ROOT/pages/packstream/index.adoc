@@ -1183,7 +1183,6 @@ DateTime::Structure(
 The amount of `nanoseconds` ranges from `0` to `999_999_999` (`_` separator added here and later for clarity).
 
 For instance, the serialization of the point in time denoted as `1970-01-01T02:15:00+01:00` (and `42` nanoseconds) can be implemented as follows:
-be implemented as follows:
 
 - compute the UTC time, i.e. `1970-01-01T01:15:00Z` (`Z` denotes UTC)
 - compute the difference between that UTC time and the Unix epoch, which is 1h15, i.e. `4_500` seconds.
