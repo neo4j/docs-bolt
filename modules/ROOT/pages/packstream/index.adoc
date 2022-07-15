@@ -1246,7 +1246,7 @@ The resulting `DateTime` instance is therefore as follows:
 The deserialization of such a `DateTime` structure happens as follows:
 
 - instantiate the idiomatic equivalent of `DateTime` assuming the seconds denote a Unix timestamp, giving `1970-01-01T02:15:00Z`.
-- set the timezone of the resulting instance, without changing the date/time components, giving
+- set the timezone of the resulting instance, without changing the date/time components, giving `1970-01-01T02:15:00+0100[Europe/Paris]` (this may lead to ambiguities, refer to the `Known Limitations` section below for more information).
 
 ===== Known Limitations
 
