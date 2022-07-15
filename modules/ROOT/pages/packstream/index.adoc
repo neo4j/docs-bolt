@@ -1260,7 +1260,7 @@ They each rely on a different timezone database.
 If these copies are not in sync, it could lead to unwanted discrepancies.
 In such a situation, either server or client could:
 
-- reject a timezone name deemed valid by the other party
+- reject a timezone name deemed valid by the other party.
 - resolve different offsets for the same time zone and `DateTimeZoneId`.
 
 ====== Time Shifts
