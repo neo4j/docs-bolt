@@ -1178,7 +1178,7 @@ DateTime::Structure(
 ----
 
 - The `tz_offset_seconds` specifies the offset in seconds from UTC.
-- The `seconds` elapsed since the https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch], often referred as a
+- The `seconds` elapsed since the https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch], often referred as a Unix timestamp, **added** to the above offset.
 Unix timestamp, **added** to the above offset.
 - The `nanoseconds` are what remains after the last second of the `DateTime`. The amount of `nanoseconds` ranges from `0` to
 `999_999_999` (`_` separator added here and later for clarity).
