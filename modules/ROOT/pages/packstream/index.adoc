@@ -1267,7 +1267,7 @@ different timezone database. That could lead to unwanted discrepancies if these 
 In such a situation, either server or client could:
 
 - reject a timezone name deemed valid by the other party
-- resolve different offsets for the same time zone and `DateTimeZoneId`
+- resolve different offsets for the same time zone and `DateTimeZoneId`.
 
 ====== Time Shifts
 
