@@ -1274,7 +1274,7 @@ In the first case, a `DateTimeZoneId` specifying a time between 2AM and 3AM does
 
 In the second case, all points in the time between 2AM and 3AM exist twice, but with a different offset.
 Therefore, the timezone name is not sufficient to resolve the ambiguity, the timezone offset is also needed.
-Since `DateTimeZoneId` does not include the timezone offset, the resolution of these particular datetimes is an
+Since `DateTimeZoneId` does not include the timezone offset, the resolution of these particular datetimes is undefined behavior.
 
 [[structure-localdatetime]]
 ==== `LocalDateTime`
