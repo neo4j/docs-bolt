@@ -1257,7 +1257,7 @@ In particular, link:https://en.wikipedia.org/wiki/Tz_database#Data_before_1970[t
 
 Moreover, the offset resolution likely occurs both on the Bolt client side and Bolt server side. 
 They each rely on a different timezone database. 
-
+If these copies are not in sync, it could lead to unwanted discrepancies.
 In such a situation, either server or client could:
 
 - reject a timezone name deemed valid by the other party
