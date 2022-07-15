@@ -1221,7 +1221,7 @@ DateTimeZoneId::Structure(
 )
 ----
 
-- The `tz_id` specifies the timezone name as understood
+- The `tz_id` specifies the timezone name as understood by link:https://en.wikipedia.org/wiki/Tz_database[the timezone database].
 by https://en.wikipedia.org/wiki/Tz_database[the timezone database].
 - The `seconds` elapsed since the https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch], often referred as a
 Unix timestamp, **added** to the offset derived from the named timezone and specified the point in time.
