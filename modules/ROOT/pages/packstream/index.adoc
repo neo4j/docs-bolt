@@ -1254,7 +1254,6 @@ The deserialization of such a `DateTime` structure happens as follows:
 
 The resolution of offsets for a given time zone name and point in time is bound to the accuracy of the underlying link:https://en.wikipedia.org/wiki/Tz_database[timezone database].
 In particular, link:https://en.wikipedia.org/wiki/Tz_database#Data_before_1970[time zones before 1970] are not as well specified.
-If these copies are not in sync, it could lead to unwanted discrepancies.
 Moreover, the offset resolution likely occurs both on the Bolt client side and Bolt server side. 
 They each rely on a different timezone database. 
 If these copies are not in sync, it could lead to unwanted discrepancies.
