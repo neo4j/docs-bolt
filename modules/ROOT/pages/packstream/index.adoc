@@ -1226,7 +1226,7 @@ DateTimeZoneId::Structure(
 - The `nanoseconds` are what remains after the last second of the `DateTime`. 
 The amount of nanoseconds ranges from `0` to `999_999_999` (`_` separator added here and later for clarity).
 
-For instance, the serialization of the point in time denoted as `1970-01-01T02:15:00+0100[Europe/Paris]` (and `42`
+For instance, the serialization of the point in time denoted as `1970-01-01T02:15:00+0100[Europe/Paris]` (and `42` nanoseconds) can be implemented as follows:
 
 - retrieve the offset of the named timezone for that point in time, here +1 hour, i.e. `3_600` seconds
 - compute the UTC time, i.e. `1970-01-01T01:15:00Z` (`Z` denotes UTC)
