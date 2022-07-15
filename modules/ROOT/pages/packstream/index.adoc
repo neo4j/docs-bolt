@@ -1253,7 +1253,7 @@ The deserialization of such a `DateTime` structure happens as follows:
 ====== Accuracy
 
 The resolution of offsets for a given time zone name and point in time is bound to the accuracy of the underlying
-https://en.wikipedia.org/wiki/Tz_database[timezone database]. In
+In particular, link:https://en.wikipedia.org/wiki/Tz_database#Data_before_1970[time zones before 1970] are not as well specified.
 particular, https://en.wikipedia.org/wiki/Tz_database#Data_before_1970[time zones before 1970] are not as well
 specified.
 
