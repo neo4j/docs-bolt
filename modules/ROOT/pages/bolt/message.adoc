@@ -691,7 +691,7 @@ RESET
 
 ==== Server response `SUCCESS`
 
-If a `RESET` message request has been successfully received, the server should respond with a `RESET` message and enter the `READY` state.
+If a `RESET` message request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
 
 .Example
 ----
