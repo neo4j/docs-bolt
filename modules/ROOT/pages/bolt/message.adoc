@@ -405,7 +405,7 @@ extra::Dictionary(
 )
 ----
 
-** The `user_agent` should conform to `"Name/Version"` for example `"Example/4.1.0"` (see link:http://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information).
+** The `user_agent` should conform to `"Name/Version"` for example `"Example/4.1.0"` (see link:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information).
 ** The scheme is the authentication scheme.
 Predefined schemes are `"none"`, `"basic"`, and `"kerberos"`.
 ** The routing field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
