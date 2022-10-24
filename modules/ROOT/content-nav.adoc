@@ -3,6 +3,7 @@
 * xref:bolt/index.adoc[]
 ** xref:bolt/handshake.adoc[]
 ** xref:bolt/message.adoc[]
+** xref:bolt/structure-semantics.adoc[]
 ** xref:bolt/server-state.adoc[]
 * xref:bolt-compatibility.adoc[]
 * xref:driver-api/index.adoc[]
