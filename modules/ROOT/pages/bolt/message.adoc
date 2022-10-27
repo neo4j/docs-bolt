@@ -407,7 +407,7 @@ extra::Dictionary(
 ----
 
 ** The `user_agent` should conform to `"Name/Version"` for example `"Example/4.1.0"` (see link:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information).
-** `patch_bolt` is version *4.4 only*.
+** `patch_bolt` is version *4.3-4.4 only*.
 It lets the driver request a patch to the protocol from the server. The patch must not be applied until the server acknowledges it in the `SUCCESS` response.
 Default: `[]`.
 *** `"utc"` is currently the only supported patch.
@@ -457,7 +457,7 @@ The following fields are defined for inclusion in the `SUCCESS` metadata:
 
 ** `server::String` (server agent string, example `"Neo4j/4.1.0"`)
 ** `connection_id::String` (unique identifier of the bolt connection used on the server side, example: `"bolt-61"`)
-** `patch_bolt` only in version *4.4* and only if the client requested patches in the `patch_bolt` field of the request. The server will include the subset of requested patches (with the exact same string the client requests) if it supports it. From that point onward, the server-client communication _must only_ use the patched protocol.
+** `patch_bolt` only in versions *4.3* and *4.4* and only if the client requested patches in the `patch_bolt` field of the request. The server will include the subset of requested patches (with the exact same string the client requests) if it supports it. From that point onward, the server-client communication _must only_ use the patched protocol.
 ** `hints::Dictionary` (set of optional configuration hints to be considered by the driver)
 
 The `hints` dictionary is introduced in version *4.3* and may contain a set of optional configuration hints which may be interpreted or ignored by drivers at their own discretion in order to augment operations where applicable.
