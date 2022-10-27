@@ -376,7 +376,7 @@ If authentication fails, the server must respond with a `FAILURE` message and im
 
 Clients wishing to retry initialization should establish a new connection.
 
-The `routing::Dictionary(address::String)` field is added in version *4.1* and adds an indicator if the server should carry out routing, according to the the given routing context.
+The `routing::Dictionary(address::String)` field is added in version *4.1* and adds an indicator if the server should carry out routing, according to the given routing context.
 
 [cols="<30,<40",option="header"]
 |===
@@ -399,6 +399,7 @@ The `routing::Dictionary(address::String)` field is added in version *4.1* and a
 ----
 extra::Dictionary(
   user_agent::String,
+  patch_bolt::List<String>,
   scheme::String,
   routing::Dictionary(address::String),
   …
@@ -406,6 +407,11 @@ extra::Dictionary(
 ----
 
 ** The `user_agent` should conform to `"Name/Version"` for example `"Example/4.1.0"` (see link:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information).
+** `patch_bolt` is version *4.3-4.4 only*.
+It lets the driver request a patch to the protocol from the server. The patch must not be applied until the server acknowledges it in the `SUCCESS` response.
+Default: `[]`.
+*** `"utc"` is currently the only supported patch.
+If successfully negotiated, server and driver will use xref:bolt/structure-semantics.adoc#structure-datetime[DateTime] and xref:bolt/structure-semantics.adoc#structure-datetimezoneid[DateTimeZoneId] as defined in Bolt version *5.0*.
 ** The scheme is the authentication scheme.
 Predefined schemes are `"none"`, `"basic"`, and `"kerberos"`.
 ** The routing field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
@@ -414,7 +420,7 @@ Setting `routing` to `null` indicates that the server should not carry out any r
 Default: `null`.
 ** Further entries in extra are passed to the implementation of the chosen authentication scheme.
 Their names, types, and defaults depend on that choice.
-*** The scheme `"basic"` requires a user name `principal::String` and a password `credentials::String`.
+*** The scheme `"basic"` requires a username `principal::String` and a password `credentials::String`.
 *** The scheme `"bearer"` merely requires a token `credentials::String` (added in version *4.4*).
 
 *Detail messages:*
@@ -429,7 +435,7 @@ No detail messages should be returned.
 ==== Synopsis
 
 ----
-HELLO {user_agent::String, scheme::String, routing::Dictionary(address::String))
+HELLO {user_agent::String, patch_bolt::List<String>, scheme::String, routing::Dictionary(address::String))
 ----
 
 .Example 1
@@ -439,7 +445,7 @@ HELLO {"user_agent": "Example/4.1.0", "scheme": "basic", "principal": "user", "c
 
 .Example 2
 ----
-HELLO {"user_agent": "Example/4.1.0", "scheme": "basic", "principal": "user", "credentials": "password", "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}}
+HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "scheme": "basic", "principal": "user", "credentials": "password", "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}}
 ----
 
 ==== Server response `SUCCESS`
@@ -451,6 +457,7 @@ The following fields are defined for inclusion in the `SUCCESS` metadata:
 
 ** `server::String` (server agent string, example `"Neo4j/4.1.0"`)
 ** `connection_id::String` (unique identifier of the bolt connection used on the server side, example: `"bolt-61"`)
+** `patch_bolt` only in versions *4.3* and *4.4* and only if the client requested patches in the `patch_bolt` field of the request. The server will include the subset of requested patches (with the exact same string the client requests) if it supports it. From that point onward, the server-client communication _must only_ use the patched protocol.
 ** `hints::Dictionary` (set of optional configuration hints to be considered by the driver)
 
 The `hints` dictionary is introduced in version *4.3* and may contain a set of optional configuration hints which may be interpreted or ignored by drivers at their own discretion in order to augment operations where applicable.
@@ -461,6 +468,11 @@ As such, newly established connections may observe different hints and/or hint v
 .Example
 ----
 SUCCESS {"server": "Neo4j/4.0.0", "hints": {"connection.recv_timeout_seconds": 120}}
+----
+
+.Example 2
+----
+SUCCESS {"server": "Neo4j/4.4.0", "patch_bolt": ["utc"], "hints": {"connection.recv_timeout_seconds": 120}}
 ----
 
 ==== Server response `FAILURE`
