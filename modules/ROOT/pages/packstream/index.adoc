@@ -518,7 +518,7 @@ For encoded text containing fewer than 16 bytes, including empty strings, the ma
 The encoded data then immediately follows the marker.
 For encoded text containing 16 bytes or more, the marker `D0`, `D1` or `D2` should be used, depending on scale.
 This marker is followed by the size and the UTF-8 encoded data.
-Even though the unsigned 32-bit integer following `D3` could hold a bigger number, the maximum byte size of strings limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
+Even though the unsigned 32-bit integer following `D3` could hold a bigger number, the maximum byte size of strings is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Examples with different strings
 [cols="<,<", options="header"]
