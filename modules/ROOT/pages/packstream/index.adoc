@@ -412,7 +412,7 @@ Unlike other values, there is no separate encoding for byte arrays containing fe
 One of the markers `CC`, `CD`, or `CE` should be used, depending on scale.
 This marker is followed by the size and bytes themselves.
 
-N.B.: While the unsigned 32-bit integer following `CE` could hold a bigger number, the maximum size of byte arrays is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
+N.B. While the unsigned 32-bit integer following `CE` could hold a bigger number, the maximum size of byte arrays is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Example with empty byte array
 Empty byte array `b[]`
@@ -520,7 +520,7 @@ The encoded data then immediately follows the marker.
 For encoded text containing 16 bytes or more, the marker `D0`, `D1` or `D2` should be used, depending on scale.
 This marker is followed by the size and the UTF-8 encoded data.
 
-N.B.: While the unsigned 32-bit integer following `D3` could hold a bigger number, the maximum byte size of strings is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
+N.B. While the unsigned 32-bit integer following `D3` could hold a bigger number, the maximum byte size of strings is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Examples with different strings
 [cols="<,<", options="header"]
@@ -638,7 +638,7 @@ The items within the list are then serialised in order immediately after the mar
 For lists containing 16 items or more, the marker `D4`, `D5` or `D6` should be used, depending on scale.
 This marker is followed by the size and list items, serialized in order.
 
-N.B.: While the unsigned 32-bit integer following `D6` could hold a bigger number, the maximum size of lists is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
+N.B. While the unsigned 32-bit integer following `D6` could hold a bigger number, the maximum size of lists is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Example with 0 items
 ----
@@ -796,7 +796,7 @@ Keys are always `String` values.
 For a dictionary containing 16 key-value entries or more, the marker `D8`, `D9` or `DA` should be used, depending on scale.
 This marker is followed by the size and the key-value entries.
 
-N.B.: While the unsigned 32-bit integer following `DA` could hold a bigger number, the maximum size of dictionaries is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
+N.B. While the unsigned 32-bit integer following `DA` could hold a bigger number, the maximum size of dictionaries is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Example with an empty dictionary
 ----
