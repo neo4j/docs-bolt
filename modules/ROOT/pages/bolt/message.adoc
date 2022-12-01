@@ -298,7 +298,7 @@ There are three different kinds of messages:
 | <<messages-run, `RUN`>>
 | `10`
 | Request
-| `query::String, parameters::Dictionary, extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::Stringdb:String)`
+| `query::String, parameters::Dictionary, extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db:String)`
 | execute a query (`extra::Dictionary` added in v3)(`db:String` added in v4.0)
 
 | <<messages-discard, `DISCARD`>>
