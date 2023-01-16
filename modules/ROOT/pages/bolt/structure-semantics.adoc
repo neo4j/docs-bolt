@@ -232,17 +232,9 @@ A date without a time-zone in the ISO-8601 calendar system, e.g. â€œ2007-12-03â€
 
 *Number of fields:* 2
 ----
-Time::Structure(
-    nanoseconds::Integer,
-    tz_offset_seconds::Integer,
+Date::Structure(
+    days::Integer,
 )
-----
-
-Where the `nanoseconds` are nanoseconds since midnight (this time is _not_ UTC) and the `tz_offset_seconds` are an offset in seconds from UTC.
-
-To convert to UTC, use:
-----
-utc_nanoseconds = nanoseconds - (tz_offset_seconds * 1000000000)
 ----
 
 [[structure-time]]
