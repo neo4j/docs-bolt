@@ -54,54 +54,6 @@ Neither unsigned integers nor 32-bit floating point numbers are included.
 This is a deliberate design decision to allow broader compatibility across client languages.
 ====
 
-The PackStream specified structures are listed in the table below.
-
-.PackStream specified structures
-[cols="20,60",options="header"]
-|===
-| Structure name
-| Description
-
-| `Node`
-| snapshot of a node within a graph database
-
-| `Relationship`
-| snapshot of a relationship within a graph database
-
-| `UnboundRelationship`
-| relationship detail without start or end node information
-
-| `Path`
-| alternating sequence of nodes and relationships
-
-| `Date`
-| a date without a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03”
-
-| `Time`
-| a time with an offset from UTC/Greenwich in the ISO-8601 calendar system, e.g. “10:15:30+01:00”
-
-| `LocalTime`
-| a time without a time-zone in the ISO-8601 calendar system, e.g. “10:15:30”
-
-| `DateTime`
-| a date-time with a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03T10:15:30+01:00 Europe/Paris”, the time-zone is specified in minutes offset from UTC
-
-| `DateTimeZoneId`
-| a date-time with a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03T10:15:30+01:00 Europe/Paris”, the time-zone is specified with a zone ID
-
-| `LocalDateTime`
-| a date-time without a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03T10:15:30”
-
-| `Duration`
-| a temporal amount
-
-| `Point2D`
-| represents a single location in two-dimensional space
-
-| `Point3D`
-| represents a single location in three-dimensional space
-|===
-
 == General representation
 
 Every serialised PackStream value begins with a *marker byte*.
