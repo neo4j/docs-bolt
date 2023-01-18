@@ -230,12 +230,14 @@ A date without a time-zone in the ISO-8601 calendar system, e.g. â€œ2007-12-03â€
 
 *tag byte:* `44`
 
-*Number of fields:* 2
+*Number of fields:* 1
 ----
 Date::Structure(
     days::Integer,
 )
 ----
+
+Where the `days` are days since https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch]. `0` for example represents 1970-01-01 while `1` represents 1970-01-02.
 
 [[structure-time]]
 === `Time`
