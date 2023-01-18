@@ -366,9 +366,9 @@ The deserialization of such a `DateTime` structure happens in reverse:
 - localize the resulting UTC `DateTime` to the timezone specified by `tz_id`, giving `1970-01-01T02:15:00.000000042+0100[Europe/Paris]`
 
 
-=== Known Limitations
+==== Known Limitations
 
-==== Accuracy
+===== Accuracy
 
 The resolution of offsets for a given time zone name and point in time is bound to the accuracy of the underlying link:https://en.wikipedia.org/wiki/Tz_database[timezone database].
 In particular, link:https://en.wikipedia.org/wiki/Tz_database#Data_before_1970[time zones before 1970] are not as well specified.
@@ -554,9 +554,9 @@ The deserialization of such a `DateTime` structure happens as follows:
 - instantiate the idiomatic equivalent of `DateTime` assuming the seconds denote a Unix timestamp, giving `1970-01-01T02:15:00Z`.
 - set the timezone of the resulting instance, without changing the date/time components, giving `1970-01-01T02:15:00+0100[Europe/Paris]` (this may lead to ambiguities, refer to the `Known Limitations` section below for more information).
 
-=== Known Limitations
+==== Known Limitations
 
-==== Accuracy
+===== Accuracy
 
 The resolution of offsets for a given time zone name and point in time is bound to the accuracy of the underlying link:https://en.wikipedia.org/wiki/Tz_database[timezone database].
 In particular, link:https://en.wikipedia.org/wiki/Tz_database#Data_before_1970[time zones before 1970] are not as well specified.
@@ -568,7 +568,7 @@ In such a situation, either server or client could:
 - reject a timezone name deemed valid by the other party.
 - resolve different offsets for the same time zone and `DateTimeZoneId`.
 
-==== Time Shifts
+===== Time Shifts
 
 _Note: these issues have been resolved with the introduction of <<structure-datetimezoneid>> in version *5.0*._
 
