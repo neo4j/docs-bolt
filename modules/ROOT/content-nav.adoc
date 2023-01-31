@@ -13,3 +13,5 @@
 ** xref:appendix/version-3.adoc[]
 ** xref:appendix/version-2.adoc[]
 ** xref:appendix/version-1.adoc[]
+** xref:appendix/connection-hints.adoc[]
+** xref:appendix/message-exchange-examples.adoc[]

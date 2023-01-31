@@ -1,0 +1,20 @@
+:page-toclevels: 0
+
+# Connection hints
+
+As of version 4.3, the server may optionally include a set of configuration hints within the `SUCCESS` metadata provided in response to the `HELLO` message.
+Drivers may choose to interpret or ignore these hints at their own discretion.
+The following set of hints are currently defined.
+
+## connection.recv_timeout_seconds - 4.3
+
+Maximum amount of time (in seconds) for which a connection may remain idle following a request before drivers should consider it stale.
+
+The server will ensure that a chunk (or `NOOP` chunk) will be transmitted at least once per timeout period. Drivers which choose to interpret this hint may terminate connections which are considered stale by the definition of this hint.
+
+.Example
+[source, Bolt]
+----
+C: HELLO {"user_agent": "Example/4.0.0", "scheme": "basic", "principal": "test", "credentials": "test"}
+S: SUCCESS {"server": "Neo4j/4.0.0", "connection_id": "example-connection-id:1", "hints": {"connection.recv_timeout_seconds": 120}}
+----

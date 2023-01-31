@@ -254,6 +254,11 @@ In version 3, `PULL` is called `PULL_ALL`.
 Additionally, there are no fields, e.g `qid=123` and `has_more=true/false` available in version 3 of the Bolt Protocol.
 ====
 
+[TIP]
+====
+More examples of message exchanges can be found in xref:appendix/message-exchange-examples.adoc[Appendix -- Message exchange examples].
+====
+
 [[messages]]
 == Messages
 
@@ -461,7 +466,7 @@ The following fields are defined for inclusion in the `SUCCESS` metadata:
 ** `hints::Dictionary` (set of optional configuration hints to be considered by the driver)
 
 The `hints` dictionary is introduced in version *4.3* and may contain a set of optional configuration hints which may be interpreted or ignored by drivers at their own discretion in order to augment operations where applicable.
-A full listing of the available hints may be found in Appendix B.
+A full listing of the available hints may be found in xref:appendix/connection-hints.adoc[Appendix -- Connection hints].
 Hints remain valid throughout the lifetime of a given connection and cannot be changed.
 As such, newly established connections may observe different hints and/or hint values as the server configuration is adjusted.
 
