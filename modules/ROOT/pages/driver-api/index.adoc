@@ -72,7 +72,7 @@ Enable TLS and only allow system enabled certificate authority and verify hostna
 == Client-side routing
 
 Neo4j supports a clustered setup and uses link:https://raft.github.io/[The Raft Consensus Algorithm].
-See also link:https://neo4j.com/docs/operations-manual/current/clustering-advanced/lifecycle/[Operations Manual -> Causal Clustering lifecycle] for more information on Causal Clustering.
+See also link:https://neo4j.com/docs/operations-manual/4.4/clustering-advanced/lifecycle/[Operations Manual -> Causal Clustering lifecycle] for more information on Causal Clustering.
 
 Each Neo4j *Core* instance in a cluster supports `routing` and `reading`.
 Only one Neo4j Core in a cluster can be selected to support `write` operations.
