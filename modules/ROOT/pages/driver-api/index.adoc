@@ -71,14 +71,15 @@ Enable TLS and only allow system enabled certificate authority and verify hostna
 [[client-side-routing]]
 == Client-side routing
 
-Neo4j supports a clustered setup and uses link:https://raft.github.io/[The Raft Consensus Algorithm].
-See also link:https://neo4j.com/docs/operations-manual/current/clustering-advanced/lifecycle/[Operations Manual -> Causal Clustering lifecycle] for more information on Causal Clustering.
+Neo4j supports clustered setups and uses link:https://raft.github.io/[The Raft Consensus Algorithm].
 
-Each Neo4j *Core* instance in a cluster supports `routing` and `reading`.
-Only one Neo4j Core in a cluster can be selected to support `write` operations.
+Each Neo4j _primary_ server in a cluster supports `routing` and `reading`.
+Only *one* cluster primary can be selected as _leader_, who is in charge of `write` operations.
 This selection can rotate over time.
 The driver should support a *routing table*.
-Read Replicas are not involved in the Raft Consensus Algorithm, but a Read Replica do return a routing table that only contain the Read Replica itself.
+_Secondary_ servers are not involved in the Raft Consensus Algorithm, but secondaries do return a routing table that only contain the secondary itself.
+
+See link:https://neo4j.com/docs/operations-manual/current/clustering/[Operations Manual -> Clustering] for more information.
 
 === Fetching routing tables
 
@@ -202,20 +203,20 @@ C: GOODBYE
 
 ==== Cluster member
 
-A cluster contains *Core* members and *Read Replica* members.
+A cluster contains _primary_ members _secondary_ members.
 
-** Each cluster member will host the exact same databases.
+** Each cluster member hosts the exact same databases.
 If an up-to-date cluster member A has databases `foo` and `system`, then all other up-to-date members in the cluster should also have and only have `foo and `system`.
 However, at a given time, the cluster members may or may not be up-to-date, and as a result, cluster members may thus contain different databases.
-** Only one Core at any time can be the `leader` (accept `writes`).
+** Only one primary at any time can be the _leader_ (accept `writes`).
 ** Each database in a cluster has its own *raft group* and each database has its own routing table.
-In other words, the leader/core/read-replica for each database in a cluster can be different.
+In other words, the leader/primary/secondary for each database in a cluster can be different.
 ** There is a default database for a single instance and/or a cluster.
-By default, it is named as `neo4j`, but the name can be changed to something else such as `foo`.
+By default, it is named as `neo4j`, but the name can be changed to something else.
 When changing the name, a restart of the single instance and/or cluster may or may not be required.
 The default database may or may not be allowed to be deleted (it cannot be assumed that there is always a default database on each instance.)
-** Any Core member in a cluster can provide a routing table for any database inside this cluster.
-Given a seed URL pointing to a Core member this can be used to find any databases in a cluster by fetching the routing table from a Core member.
+** Any primary member in a cluster can provide a routing table for any database inside this cluster.
+Given a seed URL pointing to a primary member, this can be used to find any databases in a cluster by fetching the routing table from a primary member.
 
 ==== Driver routing table
 
