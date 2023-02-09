@@ -8,7 +8,7 @@
 * xref:bolt-compatibility.adoc[]
 * xref:driver-api/index.adoc[]
 * xref:neo4j-drivers.adoc[]
-* xref:appendix/index.adoc[]
+* Appendix
 ** xref:appendix/version-4.adoc[]
 ** xref:appendix/version-3.adoc[]
 ** xref:appendix/version-2.adoc[]

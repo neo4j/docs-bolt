@@ -5,15 +5,6 @@
 Neo4j Drivers export a uniform API.
 This allows driver concepts and naming to be shared across ecosystems, making transition between languages and multi-language support easier and more consistent.
 
-This section provides an overview of the following:
-
-** <<driver-objects, Driver objects>>
-** <<uri-schemes, URI schemes>>
-** <<client-side-routing, Client-side routing>>
-** <<client-side-logging, Client-side logging>>
-** <<driver-session, Session>>
-** <<driver-transaction, Transaction>>
-** <<causal-chaining, Causal chaining>>
 
 [[driver-objects]]
 == Driver objects
@@ -193,7 +184,7 @@ S: SUCCESS {"bookmark": "example-bookmark:1", "type": "r", "t_last": 5, "db": "s
 C: GOODBYE
 ----
 
-=== Neo4j 4.0 Cluster and multiple databases
+=== Clusters and multiple databases
 
 ==== System database
 
@@ -203,20 +194,25 @@ C: GOODBYE
 
 ==== Cluster member
 
-A cluster contains _primary_ members _secondary_ members.
+A cluster contains _primary_ members and _secondary_ members.
 
-** Each cluster member hosts the exact same databases.
-If an up-to-date cluster member A has databases `foo` and `system`, then all other up-to-date members in the cluster should also have and only have `foo and `system`.
-However, at a given time, the cluster members may or may not be up-to-date, and as a result, cluster members may thus contain different databases.
 ** Only one primary at any time can be the _leader_ (accept `writes`).
 ** Each database in a cluster has its own *raft group* and each database has its own routing table.
 In other words, the leader/primary/secondary for each database in a cluster can be different.
-** There is a default database for a single instance and/or a cluster.
-By default, it is named as `neo4j`, but the name can be changed to something else.
-When changing the name, a restart of the single instance and/or cluster may or may not be required.
-The default database may or may not be allowed to be deleted (it cannot be assumed that there is always a default database on each instance.)
 ** Any primary member in a cluster can provide a routing table for any database inside this cluster.
 Given a seed URL pointing to a primary member, this can be used to find any databases in a cluster by fetching the routing table from a primary member.
+
+[NOTE]
+====
+Moreover, in Neo4j 4.x:
+
+- Each cluster member hosts the exact same databases.
+If cluster member `A` has databases `foo` and `system`, then all other cluster members should also have and only have `foo` and `system`.
+- There is a default database for a single instance and/or a cluster.
+
+These do not apply in Neo4j 5.x.
+====
+
 
 ==== Driver routing table
 

@@ -4,8 +4,6 @@
 
 This section lists all Bolt message state transitions available in version 4.x.
 
-== Version 4.x
-
 [cols="20,15,20,30,30",options="header"]
 |===
 | State
