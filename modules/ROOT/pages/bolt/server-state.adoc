@@ -29,6 +29,10 @@ This state is used to determine what actions may be undertaken by the client.
 | X
 | protocol handshake is completed successfully
 
+| <<server-connected, `UN_AUTHENTICATED`>>
+| X
+| `HELLO` or `LOGOFF` message accepted ready to accept a `LOGON` message
+
 | <<server-defunct, `DEFUNCT`>>
 | X
 | the socket connection is permanently closed
@@ -79,7 +83,19 @@ The connection has not yet been authenticated and permits only one transition, t
 ==== Transitions from `CONNECTED`
 
 ** `<DISCONNECT>` to `DEFUNCT`
-** `HELLO` to `READY` or `DEFUNCT`
+** `HELLO` to `UN_AUTHENTICATED` or `DEFUNCT`
+
+[[server-un-authenticated]]
+=== Server state `UN_AUTHENTICATED`
+
+Connection has been established and metadata has been sent back from the `HELLO` message Ready to accept `LOGON` message with authentication
+information.
+
+==== Transitions from `CONNECTED`
+** `LOGON` to `READY` or `DEFUNCT`
+
+==== Transitions from `READY`
+** `LOGOFF` to `UN_AUTHENTICED`
 
 [[server-defunct]]
 === Server state `DEFUNCT`

@@ -365,6 +365,18 @@ There are three different kinds of messages:
 | Detail
 | `data::List`
 | data values
+
+| <<messages-logon, `LOGON`>>
+| `6A`
+| Request
+| `scheme::String ...`
+| Authenticates the user you send with the message.
+
+| <<messages-logoff, `LOGOFF`>>
+| `6B`
+| Request
+|
+| Logs off current user ready for another LOGON message to be sent.
 |===
 
 [[messages-hello]]
@@ -377,7 +389,6 @@ The server must be in the `CONNECTED` state to be able to process a `HELLO` mess
 For any other states, receipt of an `HELLO` request must be considered a protocol violation and lead to connection closure.
 
 Clients should send `HELLO` message to the server immediately after connection and process the corresponding response before using that connection in any other way.
-If authentication fails, the server must respond with a `FAILURE` message and immediately close the connection.
 
 Clients wishing to retry initialization should establish a new connection.
 
@@ -405,9 +416,7 @@ The `routing::Dictionary(address::String)` field is added in version *4.1* and a
 extra::Dictionary(
   user_agent::String,
   patch_bolt::List<String>,
-  scheme::String,
-  routing::Dictionary(address::String),
-  …
+  routing::Dictionary(address::String)
 )
 ----
 
@@ -417,16 +426,10 @@ It lets the driver request a patch to the protocol from the server. The patch mu
 Default: `[]`.
 *** `"utc"` is currently the only supported patch.
 If successfully negotiated, server and driver will use xref:bolt/structure-semantics.adoc#structure-datetime[DateTime] and xref:bolt/structure-semantics.adoc#structure-datetimezoneid[DateTimeZoneId] as defined in Bolt version *5.0*.
-** The scheme is the authentication scheme.
-Predefined schemes are `"none"`, `"basic"`, and `"kerberos"`.
 ** The routing field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
 Key-value entries in the routing context should correspond exactly to those in the original URI query string.
 Setting `routing` to `null` indicates that the server should not carry out any routing.
 Default: `null`.
-** Further entries in extra are passed to the implementation of the chosen authentication scheme.
-Their names, types, and defaults depend on that choice.
-*** The scheme `"basic"` requires a username `principal::String` and a password `credentials::String`.
-*** The scheme `"bearer"` merely requires a token `credentials::String` (added in version *4.4*).
 
 *Detail messages:*
 
@@ -608,6 +611,29 @@ GOODBYE
 ----
 GOODBYE
 ----
+
+[[messages-logon]]
+=== Request message `LOGON`
+
+A `LOGON` message carries an authentication request
+
+*Signature:* `6A`
+
+** The scheme is the authentication scheme.
+Predefined schemes are `"none"`, `"basic"`, and `"kerberos"`.
+** Further entries in the message are passed to the implementation of the chosen authentication scheme.
+Their names, types, and defaults depend on that choice.
+*** The scheme `"basic"` requires a username `principal::String` and a password `credentials::String`.
+*** The scheme `"bearer"` merely requires a token `credentials::String` (added in version *4.4*).
+
+If authentication fails, the server must respond with a `FAILURE` message and immediately closes the connection.
+
+[[messages-logoff]]
+=== Request message `LOGOFF`
+
+A `LOGOFF` message logs off the currently authenticated user and readies the connection for another `LOGON` message.
+
+*Signature:* `6B`
 
 [[messages-ack-failure]]
 === Request message `ACK_FAILURE` label:deprecated[]
