@@ -282,6 +282,18 @@ There are three different kinds of messages:
 | `extra::Dictionary(user_agent::String, scheme::String, routing::Dictionary(address::String))`
 | initialize connection (replaces <<messages-init, `INIT`>> of v1 & v2)(`routing::Dictionary(address::String)` added in v4.1)
 
+| <<messages-logon, `LOGON`>>
+| `6A`
+| Request
+| `scheme::String ...`
+| Authenticates the user you send with the message.
+
+| <<messages-logoff, `LOGOFF`>>
+| `6B`
+| Request
+|
+| Logs off current user ready for another LOGON message to be sent.
+
 | <<messages-goodbye, `GOODBYE`>>
 | `02`
 | Request
@@ -366,17 +378,6 @@ There are three different kinds of messages:
 | `data::List`
 | data values
 
-| <<messages-logon, `LOGON`>>
-| `6A`
-| Request
-| `scheme::String ...`
-| Authenticates the user you send with the message.
-
-| <<messages-logoff, `LOGOFF`>>
-| `6B`
-| Request
-|
-| Logs off current user ready for another LOGON message to be sent.
 |===
 
 [[messages-hello]]
@@ -578,6 +579,29 @@ _Servers may choose to include metadata describing the nature of the failure but
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
+[[messages-logon]]
+=== Request message `LOGON`
+
+A `LOGON` message carries an authentication request
+
+*Signature:* `6A`
+
+** The scheme is the authentication scheme.
+Predefined schemes are `"none"`, `"basic"`, and `"kerberos"`.
+** Further entries in the message are passed to the implementation of the chosen authentication scheme.
+Their names, types, and defaults depend on that choice.
+*** The scheme `"basic"` requires a username `principal::String` and a password `credentials::String`.
+*** The scheme `"bearer"` merely requires a token `credentials::String` (added in version *4.4*).
+
+If authentication fails, the server must respond with a `FAILURE` message and immediately closes the connection.
+
+[[messages-logoff]]
+=== Request message `LOGOFF`
+
+A `LOGOFF` message logs off the currently authenticated user and readies the connection for another `LOGON` message.
+
+*Signature:* `6B`
+
 [[messages-goodbye]]
 === Request message `GOODBYE`
 
@@ -611,29 +635,6 @@ GOODBYE
 ----
 GOODBYE
 ----
-
-[[messages-logon]]
-=== Request message `LOGON`
-
-A `LOGON` message carries an authentication request
-
-*Signature:* `6A`
-
-** The scheme is the authentication scheme.
-Predefined schemes are `"none"`, `"basic"`, and `"kerberos"`.
-** Further entries in the message are passed to the implementation of the chosen authentication scheme.
-Their names, types, and defaults depend on that choice.
-*** The scheme `"basic"` requires a username `principal::String` and a password `credentials::String`.
-*** The scheme `"bearer"` merely requires a token `credentials::String` (added in version *4.4*).
-
-If authentication fails, the server must respond with a `FAILURE` message and immediately closes the connection.
-
-[[messages-logoff]]
-=== Request message `LOGOFF`
-
-A `LOGOFF` message logs off the currently authenticated user and readies the connection for another `LOGON` message.
-
-*Signature:* `6B`
 
 [[messages-ack-failure]]
 === Request message `ACK_FAILURE` label:deprecated[]

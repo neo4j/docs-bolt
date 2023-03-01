@@ -7,7 +7,7 @@ For the server, each connection using the Bolt Protocol will occupy one of sever
 This state is used to determine what actions may be undertaken by the client.
 Each server state specification corresponds to a message specification with the same version.
 
-For a summary of all available server state transitions in each version of the Bolt Protocol, see the xref:appendix/index.adoc[].
+For a summary of all available server state transitions in each version of the Bolt Protocol, see the xref:appendix/version-4.adoc[].
 
 [[server-states]]
 == Server states
@@ -85,8 +85,8 @@ The connection has not yet been authenticated and permits only one transition, t
 ** `<DISCONNECT>` to `DEFUNCT`
 ** `HELLO` to `UN_AUTHENTICATED` or `DEFUNCT`
 
-[[server-un-authenticated]]
-=== Server state `UN_AUTHENTICATED`
+[[server-unauthenticated]]
+=== Server state `UNAUTHENTICATED`
 
 Connection has been established and metadata has been sent back from the `HELLO` message Ready to accept `LOGON` message with authentication
 information.
@@ -95,7 +95,7 @@ information.
 ** `LOGON` to `READY` or `DEFUNCT`
 
 ==== Transitions from `READY`
-** `LOGOFF` to `UN_AUTHENTICED`
+** `LOGOFF` to `UNAUTHENTICED`
 
 [[server-defunct]]
 === Server state `DEFUNCT`

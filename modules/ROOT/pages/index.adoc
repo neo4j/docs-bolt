@@ -16,4 +16,4 @@ This document provides an overview of driver technology and covers the following
 * xref::/bolt-compatibility.adoc[] -- A compatibility matrix for Bolt protocol and Neo4j.
 * xref::/driver-api/index.adoc[] -- Neo4j Driver API.
 * xref::/neo4j-drivers.adoc[] -- A list of available Neo4j drivers.
-* xref::/appendix/index.adoc[] -- References for available message state transitions in the Bolt Protocol.
+* xref::/appendix/version-4.adoc[] -- References for available message state transitions in the Bolt Protocol.
