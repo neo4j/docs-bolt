@@ -31,7 +31,7 @@ This state is used to determine what actions may be undertaken by the client.
 
 | <<server-connected, `UN_AUTHENTICATED`>>
 | X
-| `HELLO` or `LOGOFF` message accepted ready to accept a `LOGON` message
+| `HELLO` or `LOGOFF` message accepted; ready to accept a `LOGON` message
 
 | <<server-defunct, `DEFUNCT`>>
 | X
@@ -88,14 +88,14 @@ The connection has not yet been authenticated and permits only one transition, t
 [[server-unauthenticated]]
 === Server state `UNAUTHENTICATED`
 
-Connection has been established and metadata has been sent back from the `HELLO` message Ready to accept `LOGON` message with authentication
-information.
+Connection has been established and metadata has been sent back from the `HELLO` message.
+Ready to accept a `LOGON` message with authentication information.
 
 ==== Transitions from `CONNECTED`
-** `LOGON` to `READY` or `DEFUNCT`
+** `<LOGON>` to `READY` or `DEFUNCT`
 
 ==== Transitions from `READY`
-** `LOGOFF` to `UNAUTHENTICED`
+** `<LOGOFF>` to `UNAUTHENTICED`
 
 [[server-defunct]]
 === Server state `DEFUNCT`

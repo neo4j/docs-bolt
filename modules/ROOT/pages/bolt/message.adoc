@@ -286,13 +286,13 @@ There are three different kinds of messages:
 | `6A`
 | Request
 | `scheme::String ...`
-| Authenticates the user you send with the message.
+| authenticates the user you send with the message
 
 | <<messages-logoff, `LOGOFF`>>
 | `6B`
 | Request
 |
-| Logs off current user ready for another LOGON message to be sent.
+| logs off current user, becomes ready for another `LOGON` message
 
 | <<messages-goodbye, `GOODBYE`>>
 | `02`
@@ -582,7 +582,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 [[messages-logon]]
 === Request message `LOGON`
 
-A `LOGON` message carries an authentication request
+A `LOGON` message carries an authentication request.
 
 *Signature:* `6A`
 
@@ -593,12 +593,12 @@ Their names, types, and defaults depend on that choice.
 *** The scheme `"basic"` requires a username `principal::String` and a password `credentials::String`.
 *** The scheme `"bearer"` merely requires a token `credentials::String` (added in version *4.4*).
 
-If authentication fails, the server must respond with a `FAILURE` message and immediately closes the connection.
+If authentication fails, the server responds with a `FAILURE` message and immediately closes the connection.
 
 [[messages-logoff]]
 === Request message `LOGOFF`
 
-A `LOGOFF` message logs off the currently authenticated user and readies the connection for another `LOGON` message.
+A `LOGOFF` message logs off the currently authenticated user. The connection is then ready for another `LOGON` message.
 
 *Signature:* `6B`
 
