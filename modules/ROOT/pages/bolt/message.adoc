@@ -279,13 +279,13 @@ There are three different kinds of messages:
 | <<messages-hello, `HELLO`>>
 | `01`
 | Request
-| `extra::Dictionary(user_agent::String, scheme::String, routing::Dictionary(address::String))`
+| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String))`
 | initialize connection (replaces <<messages-init, `INIT`>> of v1 & v2)(`routing::Dictionary(address::String)` added in v4.1)
 
 | <<messages-logon, `LOGON`>>
 | `6A`
 | Request
-| `scheme::String ...`
+| `scheme::String, ...`
 | authenticates the user you send with the message
 
 | <<messages-logoff, `LOGOFF`>>
@@ -395,6 +395,8 @@ Clients wishing to retry initialization should establish a new connection.
 
 The `routing::Dictionary(address::String)` field is added in version *4.1* and adds an indicator if the server should carry out routing, according to the given routing context.
 
+If pre version *5.1* then the authentication token described on the `LOGON` message should be sent here on the `HELLO` message instead.
+
 [cols="<30,<40",option="header"]
 |===
 | `routing` values
@@ -444,17 +446,17 @@ No detail messages should be returned.
 ==== Synopsis
 
 ----
-HELLO {user_agent::String, patch_bolt::List<String>, scheme::String, routing::Dictionary(address::String))
+HELLO {user_agent::String, patch_bolt::List<String>, routing::Dictionary(address::String))
 ----
 
 .Example 1
 ----
-HELLO {"user_agent": "Example/4.1.0", "scheme": "basic", "principal": "user", "credentials": "password", "routing": {"address": "x.example.com:9001"}}
+HELLO {"user_agent": "Example/4.1.0", "routing": {"address": "x.example.com:9001"}}
 ----
 
 .Example 2
 ----
-HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "scheme": "basic", "principal": "user", "credentials": "password", "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}}
+HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}}
 ----
 
 ==== Server response `SUCCESS`
@@ -587,13 +589,29 @@ A `LOGON` message carries an authentication request.
 *Signature:* `6A`
 
 ** The scheme is the authentication scheme.
-Predefined schemes are `"none"`, `"basic"`, and `"kerberos"`.
+Predefined schemes are `none`, `basic`, and `kerberos`.
 ** Further entries in the message are passed to the implementation of the chosen authentication scheme.
 Their names, types, and defaults depend on that choice.
-*** The scheme `"basic"` requires a username `principal::String` and a password `credentials::String`.
-*** The scheme `"bearer"` merely requires a token `credentials::String` (added in version *4.4*).
+*** The scheme `basic` requires a username `principal::String` and a password `credentials::String`.
+*** The scheme `bearer` merely requires a token `credentials::String` (added in version *4.4*).
 
 If authentication fails, the server responds with a `FAILURE` message and immediately closes the connection.
+
+==== Synopsis
+
+----
+LOGON {scheme::String, ...)
+----
+
+.Example 1
+----
+LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
+----
+
+.Example 2
+----
+LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
+----
 
 [[messages-logoff]]
 === Request message `LOGOFF`
