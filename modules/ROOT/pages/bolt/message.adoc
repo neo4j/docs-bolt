@@ -589,7 +589,7 @@ A `LOGON` message carries an authentication request.
 *Signature:* `6A`
 
 ** The scheme is the authentication scheme.
-Predefined schemes are `none`, `basic`, and `kerberos`.
+Predefined schemes are `none`, `basic`, `bearer` and `kerberos`.
 ** Further entries in the message are passed to the implementation of the chosen authentication scheme.
 Their names, types, and defaults depend on that choice.
 *** The scheme `basic` requires a username `principal::String` and a password `credentials::String`.
