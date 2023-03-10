@@ -17,3 +17,4 @@ This document provides an overview of driver technology and covers the following
 * xref::/driver-api/index.adoc[] -- Neo4j Driver API.
 * xref::/neo4j-drivers.adoc[] -- A list of available Neo4j drivers.
 * xref::/appendix/version-4.adoc[] -- References for available message state transitions in the Bolt Protocol.
+[.line-through]##

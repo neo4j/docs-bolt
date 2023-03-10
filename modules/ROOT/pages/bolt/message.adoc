@@ -500,23 +500,23 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 === Request message `INIT` label:deprecated[]
 
 *The request message `INIT` is only valid in version 1 and 2 and is replaced by the request message `HELLO` in version 3+.*
-_The `INIT` message is a request for the connection to be authorized for use with the remote database._
+The `INIT` message is a request for the connection to be authorized for use with the remote database.
 
-_The `INIT` message uses the structure signature `01` and passes two fields: `user agent` (String) and `auth_token` (Dictionary)._
+The `INIT` message uses the structure signature `01` and passes two fields: `user agent` (String) and `auth_token` (Dictionary).
 
-_The server must be in the `CONNECTED` state to be able to process an `INIT` request._
-_For any other states, receipt of an `INIT` request must be considered a protocol violation and lead to connection closure._
+The server must be in the `CONNECTED` state to be able to process an `INIT` request.
+For any other states, receipt of an `INIT` request must be considered a protocol violation and lead to connection closure.
 
-_Clients should send `INIT` requests to the network immediately after connection and process the corresponding response before using that connection in any other way._
+Clients should send `INIT` requests to the network immediately after connection and process the corresponding response before using that connection in any other way.
 
-_A receiving server may choose to register or otherwise log the user agent but may also ignore it if preferred._
+A receiving server may choose to register or otherwise log the user agent but may also ignore it if preferred.
 
-_The auth token should be used by the server to determine whether the client is permitted to exchange further messages._
-_If this authentication fails, the server must respond with a `FAILURE` message and immediately close the connection._
-_Clients wishing to retry initialization should establish a new connection._
+The auth token should be used by the server to determine whether the client is permitted to exchange further messages.
+If this authentication fails, the server must respond with a `FAILURE` message and immediately close the connection.
+Clients wishing to retry initialization should establish a new connection.
 
-_*Signature:*_ `01`
-_*Fields:*_
+*Signature:* `01`
+*Fields:*
 ----
 user_agent::String,
 auth_token::Dictionary(
@@ -526,16 +526,16 @@ auth_token::Dictionary(
 )
 ----
 
-** _The `user_agent` should conform to `"Name/Version"` for example `"Example/1.1.0"` (see link:developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information)._
-** _The `scheme` is the authentication scheme._
-_Predefined schemes are `"none"` and `"basic"`._
-_If no `scheme` is provided, it defaults to `"none"`._
-** _The `auth_token` must contain either just the entry `{"scheme" : "none"}` or the keys `scheme`, `principal` and `credentials`._
+** The `user_agent` should conform to `"Name/Version"` for example `"Example/1.1.0"` (see link:developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information).
+** The `scheme` is the authentication scheme.
+Predefined schemes are `"none"` and `"basic"`.
+If no `scheme` is provided, it defaults to `"none"`.
+** The `auth_token` must contain either just the entry `{"scheme" : "none"}` or the keys `scheme`, `principal` and `credentials`.
 
-_*Detail messages:*_
-_No detail messages should be returned._
+*Detail messages:*
+No detail messages should be returned.
 
-_*Valid Summary Messages:_*
+*Valid Summary Messages:*
 
 ** `SUCCESS`
 ** `FAILURE`
@@ -558,12 +558,12 @@ INIT "Example/1.0.0" {"scheme": "basic", "principal": "neo4j", "credentials": "p
 
 ==== _Server response `SUCCESS`_
 
-_A `SUCCESS` message response indicates that the client is permitted to exchange further messages._
-_Servers can include metadata that describes details of the server environment and/or the connection._
+A `SUCCESS` message response indicates that the client is permitted to exchange further messages.
+Servers can include metadata that describes details of the server environment and/or the connection.
 
-_The following fields are defined for inclusion in the `SUCCESS` metadata._
+The following fields are defined for inclusion in the `SUCCESS` metadata.
 
-** _`server (e.g. `"Neo4j/3.4.0"`)_
+** `server (e.g. `"Neo4j/3.4.0"`)
 
 .Example
 ----
@@ -572,9 +572,9 @@ SUCCESS {"server": "Neo4j/3.4.0"}
 
 ==== _Server response `FAILURE`_
 
-_A `FAILURE` message response indicates that the client is not permitted to exchange further messages._
+A `FAILURE` message response indicates that the client is not permitted to exchange further messages.
 
-_Servers may choose to include metadata describing the nature of the failure but must immediately close the connection after the failure has been sent._
+Servers may choose to include metadata describing the nature of the failure but must immediately close the connection after the failure has been sent.
 
 .Example
 ----
@@ -604,11 +604,6 @@ LOGON {scheme::String, ...)
 ----
 
 .Example 1
-----
-LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
-----
-
-.Example 2
 ----
 LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
 ----
@@ -659,25 +654,25 @@ GOODBYE
 
 *The request message `ACK_FAILURE` is only valid in version 1 and 2 and the request message `RESET` should be used in its place in version 3+.*
 
-_The request message `ACK_FAILURE` signals to the server that the client has acknowledged a previous failure and should return to a `READY` state._
+The request message `ACK_FAILURE` signals to the server that the client has acknowledged a previous failure and should return to a `READY` state.
 
-_*Signature:*_ `0E`
+*Signature:* `0E`
 
-_*Fields:*_
+*Fields:*
 
-_No fields._
+No fields.
 
-_Detail messages:_
+Detail messages:
 
-_No detail messages should be returned._
+No detail messages should be returned.
 
-_*Valid summary messages:*_
+*Valid summary messages:*
 
 ** `SUCCESS`
 ** `FAILURE`
 
-_The server must be in a `FAILED` state to be able to successfully process an `ACK_FAILURE` request._
-_For any other states, receipt of an `ACK_FAILURE` request will be considered a protocol violation and will lead to connection closure._
+The server must be in a `FAILED` state to be able to successfully process an `ACK_FAILURE` request.
+For any other states, receipt of an `ACK_FAILURE` request will be considered a protocol violation and will lead to connection closure.
 
 ==== _Synopsis_
 
@@ -692,9 +687,9 @@ ACK_FAILURE
 
 ==== _Server response `SUCCESS`_
 
-_If an `ACK_FAILURE` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state._
+If an `ACK_FAILURE` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
 
-_The server may attach metadata to the `SUCCESS` message._
+The server may attach metadata to the `SUCCESS` message.
 
 .Example
 ----
@@ -703,9 +698,9 @@ SUCCESS {}
 
 ==== _Server response message `FAILURE`_
 
-_If an `ACK_FAILURE` request is received while not in the `FAILED` state, the server should respond with a `FAILURE` message and immediately close the connection._
+If an `ACK_FAILURE` request is received while not in the `FAILED` state, the server should respond with a `FAILURE` message and immediately close the connection.
 
-_The server may attach metadata to the message to provide more detail on the nature of the failure._
+The server may attach metadata to the message to provide more detail on the nature of the failure.
 
 .Example
 ----
@@ -720,11 +715,11 @@ The `RESET` message is unique in that, on arrival at the server, it jumps ahead 
 All the queued messages originally in front of the `RESET` message will then be `IGNORED` until the `RESET` position is reached.
 Then from this point, the server state is reset to a state that is ready for a new session.
 
-_In version 1 and 2, the `RESET` message splits into two separate signals._
-_First, an `<INTERRUPT>` signal jumps ahead in the message queue, stopping any unit of work that happens to be executing, and putting the state machine into an `INTERRUPTED` state._
-_Second, the `RESET` queues along with all other incoming messages and is used to put the state machine back to `READY` when its turn for processing arrives._
-_This essentially means that the `INTERRUPTED` state exists only transitionally between the arrival of a `RESET` in the message queue and the later processing of that `RESET` in its proper position._
-_The `INTERRUPTED` state is therefore the only state to automatically resolve without any further input from the client and whose entry does not generate a response message._
+In version 1 and 2, the `RESET` message splits into two separate signals.
+First, an `<INTERRUPT>` signal jumps ahead in the message queue, stopping any unit of work that happens to be executing, and putting the state machine into an `INTERRUPTED` state.
+Second, the `RESET` queues along with all other incoming messages and is used to put the state machine back to `READY` when its turn for processing arrives.
+This essentially means that the `INTERRUPTED` state exists only transitionally between the arrival of a `RESET` in the message queue and the later processing of that `RESET` in its proper position.
+The `INTERRUPTED` state is therefore the only state to automatically resolve without any further input from the client and whose entry does not generate a response message.
 
 *Signature:* `0F`
 
@@ -817,8 +812,8 @@ Default: `null`. (v4+)
 `null` denotes no impersonation (execution takes place as the current user).
 Default: `null`. (v4.4+)
 
-_Note that the `extra::Dictionary` field is added with version 3 and thus does not exist in v1 and v2._
-_Additionally, the `db` field is added with version 4.0 and the `imp_user` in version 4.4 and do not exist in earlier versions._
+Note that the `extra::Dictionary` field is added with version 3 and thus does not exist in v1 and v2.
+Additionally, the `db` field is added with version 4.0 and the `imp_user` in version 4.4 and do not exist in earlier versions.
 
 *Valid summary messages:*
 
@@ -957,9 +952,9 @@ DISCARD {"n": 1000}
 DISCARD_ALL
 ----
 
-_In version 1 and 2, the server must be in a `STREAMING` state to be able to successfully process a `DISCARD_ALL` request._
-_If the server is in a `FAILED` state or `INTERRUPTED` state, the request will be `IGNORED`._
-_For any other states, receipt of a `DISCARD_ALL` request will be considered a protocol violation and will lead to connection closure._
+In version 1 and 2, the server must be in a `STREAMING` state to be able to successfully process a `DISCARD_ALL` request.
+If the server is in a `FAILED` state or `INTERRUPTED` state, the request will be `IGNORED`.
+For any other states, receipt of a `DISCARD_ALL` request will be considered a protocol violation and will lead to connection closure.
 
 ==== Server response `SUCCESS`
 
@@ -983,22 +978,22 @@ SUCCESS {"has_more": true}
 SUCCESS {"bookmark": "example-bookmark:1", "db": "example_database"}
 ----
 
-_In version 3, the following fields are defined for inclusion in the `SUCCESS` metadata:_
+In version 3, the following fields are defined for inclusion in the `SUCCESS` metadata:
 
-** `bookmark::String`, _the bookmark after committing this transaction (Auto-commit Transaction* only)._
+** `bookmark::String`, the bookmark after committing this transaction (Auto-commit Transaction* only).
 
 .Example v3
 ----
 SUCCESS {"bookmark": "example-bookmark:1"}
 ----
 
-_In version 1 and 2, if a `DISCARD_ALL` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state._
-_The server may attach metadata to the message to provide footer detail for the discarded results._
+In version 1 and 2, if a `DISCARD_ALL` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
+The server may attach metadata to the message to provide footer detail for the discarded results.
 
-_The following fields are defined for inclusion in the metadata:_
+The following fields are defined for inclusion in the metadata:
 
-** `bookmark` _(e.g. `"bookmark:1234"`)_
-** `result_consumed_after` _(e.g. `123`)_
+** `bookmark` (e.g. `"bookmark:1234"`)
+** `result_consumed_after` (e.g. `123`)
 
 .Example v1 and 2
 ----
@@ -1010,10 +1005,10 @@ SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123
 
 The `PULL` message requests data from the remainder of the result stream.
 
-_In v1, v2, and v3, this message is called `PULL_ALL` and has *no fields*._
-_In v1 and v2, this message issues a request to stream the outstanding result back to the client, before returning to a `READY` state._
-_Result detail consists of zero or more detail messages being sent before the summary message._
-_This version of the protocol defines one such detail message, namely `RECORD` (described below)._
+In v1, v2, and v3, this message is called `PULL_ALL` and has *no fields*.
+In v1 and v2, this message issues a request to stream the outstanding result back to the client, before returning to a `READY` state.
+Result detail consists of zero or more detail messages being sent before the summary message.
+This version of the protocol defines one such detail message, namely `RECORD` (described below).
 
 *Signature:* `3F`
 
@@ -1124,11 +1119,11 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 ==== Server response `RECORD` (in v1 and v2)
 
-_Zero or more `RECORD` messages may be returned in response to a `PULL_ALL` prior to the trailing summary message._
-_Each record carries with it *a list of values* which form the data content of the record._
-_The order of the values within the list should be meaningful to the client, perhaps based on a requested ordering for that result, but no guarantees should be made around the order of records within the result._
-_A record should only be considered valid if followed by a `SUCCESS` summary message._
-_Until this summary has been received, the record’s validity should be considered tentative._
+Zero or more `RECORD` messages may be returned in response to a `PULL_ALL` prior to the trailing summary message.
+Each record carries with it *a list of values* which form the data content of the record.
+The order of the values within the list should be meaningful to the client, perhaps based on a requested ordering for that result, but no guarantees should be made around the order of records within the result.
+A record should only be considered valid if followed by a `SUCCESS` summary message.
+Until this summary has been received, the record’s validity should be considered tentative.
 
 .Example
 ----
@@ -1222,7 +1217,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 The `COMMIT` message request that the *Explicit Transaction* is done.
 
-_The `COMMIT` message does not exist in v1 and v2._
+The `COMMIT` message does not exist in v1 and v2.
 
 *Signature:* `12`
 
@@ -1280,7 +1275,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 The `ROLLBACK` message requests that the *Explicit Transaction* rolls back.
 
-_The `ROLLBACK` message does not exist in v1 and v2._
+The `ROLLBACK` message does not exist in v1 and v2.
 
 *Signature:* `13`
 
