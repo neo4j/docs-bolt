@@ -395,7 +395,10 @@ Clients wishing to retry initialization should establish a new connection.
 
 The `routing::Dictionary(address::String)` field is added in version *4.1* and adds an indicator if the server should carry out routing, according to the given routing context.
 
+[NOTE]
+====
 On versions earlier than *5.1*, the authentication token described on the `LOGON` message should be sent as part of the `HELLO` message instead.
+====
 
 [cols="<30,<40",option="header"]
 |===
