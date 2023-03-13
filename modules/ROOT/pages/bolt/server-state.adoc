@@ -119,6 +119,14 @@ The `READY` state can handle the request messages `RUN` and `BEGIN` and receive 
 ** `RUN` to `STREAMING` or `FAILED`
 ** `BEGIN` to `TX_READY` or `FAILED` (v3+)
 
+In v5.1, the following transitions are possible:
+
+** `<INTERRUPT>` to `INTERRUPTED`
+** `<DISCONNECT>` to `DEFUNCT`
+** `RUN` to `STREAMING` or `FAILED`
+** `BEGIN` to `TX_READY` or `FAILED`
+** `LOGOFF` to `UNAUTHENTICATED`
+
 [[server-streaming]]
 === Server state `STREAMING`
 
@@ -375,6 +383,14 @@ In v1 and v2, the following transitions are possible:
 == Summary of changes per version
 
 The sections below list the changes compared to the previous version.
+
+=== Version 5.1
+
+** `HELLO` message no longer accepts authentication and transitions to the `UNAUTHENTICATED` state.
+** `LOGON` message has been added.
+It can only be received in the `UNAUTHENTICATED` state and transitions to the `READY` state.
+** `LOGOFF` message has be added.
+It can only be received in the `READY` state and transitions to the `UNAUTHENTICATED` state.
 
 === Version 4.4
 
