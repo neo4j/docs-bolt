@@ -396,7 +396,7 @@ Clients wishing to retry initialization should establish a new connection.
 
 The `routing::Dictionary(address::String)` field is added in version *4.1* and adds an indicator if the server should carry out routing, according to the given routing context.
 
-The `notifications_minimum_severity::String notifications_disabled_categories::List<String>` field is added in version *5.2* and adds the ability to configure notifications for the given connection
+The `notifications_minimum_severity::String notifications_disabled_categories::List<String>` field is added in version *5.2* and adds the ability to configure notifications for the given connection.
 
 The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the Cypher documentation for acceptable entries.
 The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the Cypher documentation for available categories.
