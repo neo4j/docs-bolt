@@ -279,8 +279,9 @@ There are three different kinds of messages:
 | <<messages-hello, `HELLO`>>
 | `01`
 | Request
-| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String))`
+| `extra::Dictionary(user_agent::String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>, routing::Dictionary(address::String))`
 | initialize connection (replaces <<messages-init, `INIT`>> of v1 & v2)(`routing::Dictionary(address::String)` added in v4.1)
+(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in v5.2)
 
 | <<messages-logon, `LOGON`>>
 | `6A`
@@ -395,6 +396,11 @@ Clients wishing to retry initialization should establish a new connection.
 
 The `routing::Dictionary(address::String)` field is added in version *4.1* and adds an indicator if the server should carry out routing, according to the given routing context.
 
+The `notifications_minimum_severity::String notifications_disabled_categories::List<String>` field is added in version *5.2* and adds the ability to configure notifications for the given connection
+
+The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the Cypher documentation for acceptable entries.
+The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the Cypher documentation for available categories.
+
 [NOTE]
 ====
 On versions earlier than *5.1*, the authentication token described on the `LOGON` message should be sent as part of the `HELLO` message instead.
@@ -422,7 +428,9 @@ On versions earlier than *5.1*, the authentication token described on the `LOGON
 extra::Dictionary(
   user_agent::String,
   patch_bolt::List<String>,
-  routing::Dictionary(address::String)
+  routing::Dictionary(address::String),
+  notifications_minimum_severity::String,
+  notifications_disabled_categories::List<String>
 )
 ----
 
@@ -777,6 +785,11 @@ The `RUN` message requests that a Cypher query is executed with a set of paramet
 In version 3+, this message could both be used in an Explicit Transaction or an Auto-commit Transaction.
 The transaction type is implied by the order of message sequence.
 
+In version 5.2,notifications_minimum_severity::String, notifications_disabled_categories::List<String> where added to be able to control the notification config.
+
+The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the Cypher documentation for acceptable entries.
+The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the Cypher documentation for available categories.
+
 *Signature:* `10`
 
 *Fields:*
@@ -789,8 +802,11 @@ extra::Dictionary(
   tx_metadata::Dictionary,
   mode::String,
   db:String,
-  imp_user::String
+  imp_user::String,
+  notifications_minimum_severity::String,
+  notifications_disabled_categories::List<String>
 )
+
 ----
 
 ** The `query` can be a Cypher syntax or a procedure call.
@@ -1140,6 +1156,11 @@ The `BEGIN` message request the creation of a new *Explicit Transaction*.
 This message should then be followed by a `RUN` message.
 The *Explicit Transaction* is closed with either the `COMMIT` message or `ROLLBACK` message.
 
+In version 5.2, notifications_minimum_severity::String, notifications_disabled_categories::List<String> where added to be able to control the notification config.
+
+The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the Cypher documentation for acceptable entries.
+The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the Cypher documentation for available categories.
+
 *Signature:* `11`
 
 *Fields:*
@@ -1150,7 +1171,9 @@ extra::Dictionary(
   tx_metadata::Dictionary,
   mode::String,
   db::String,
-  imp_user::String
+  imp_user::String,
+  notifications_minimum_severity::String
+  notifications_disabled_categories::List<String>
 )
 ----
 
@@ -1169,6 +1192,8 @@ Default: `null` (v4.0+).
 ** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
 Default: `null` (v4.4).
+** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the Cypher documentation for acceptable entries.
+** The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the Cypher documentation for available categories.
 
 *Detail messages:*
 
@@ -1537,7 +1562,7 @@ The sections below list the changes compared to the previous version.
 [[messages-summary-52]]
 === Version 5.2
 
-** `HELLO` message now accepts Notifications config.
+** `HELLO`, `BEGIN` and `RUN` messages now accept Notifications config.
 
 [[messages-summary-51]]
 === Version 5.1
