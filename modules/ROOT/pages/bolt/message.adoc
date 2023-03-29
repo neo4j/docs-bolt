@@ -279,7 +279,7 @@ There are three different kinds of messages:
 | <<messages-hello, `HELLO`>>
 | `01`
 | Request
-| `extra::Dictionary(user_agent::String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>, routing::Dictionary(address::String))`
+| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String)), notifications_minimum_severity::String, notifications_disabled_categories::List<String>`
 | initialize connection (replaces <<messages-init, `INIT`>> of v1 & v2)(`routing::Dictionary(address::String)` added in v4.1)
 (`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in v5.2)
 
