@@ -1571,6 +1571,11 @@ The sections below list the changes compared to the previous version.
 ** `LOGON` message has been added and accepts authentication.
 ** `LOGOFF` message has been added.
 
+[[messages-summary-5]]
+=== Version 5
+
+** No changes from version 4.4
+
 [[messages-summary-44]]
 === Version 4.4
 
