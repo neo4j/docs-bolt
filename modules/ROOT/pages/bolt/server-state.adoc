@@ -29,11 +29,11 @@ This state is used to determine what actions may be undertaken by the client.
 | X
 | the socket connection is permanently closed
 
-| <<server-connected, `NEGOTIATION`>>
+| <<server-negotiation, `NEGOTIATION`>>
 |
 | protocol handshake is completed successfully; ready to accept a `HELLO` message
 
-| <<server-connected, `AUTHENTICATION`>>
+| <<server-negotiation, `AUTHENTICATION`>>
 |
 | `HELLO` or `LOGOFF` message accepted; ready to accept a `LOGON` message
 
@@ -71,13 +71,13 @@ This is the initial state and exists only in a logical sense prior to the socket
 
 ==== Transitions from `DISCONNECTED`
 
-** Bolt handshake completed successfully to `CONNECTED`
+** Bolt handshake completed successfully to `NEGOTIATION`
 ** Bolt handshake did not complete successfully to `DEFUNCT`
 
-[[server-connected]]
+[[server-negotiation]]
 === Server state `NEGOTIATION`
 
-After a new *protocol connection* has been established and handshake has been completed successfully, the server enters the `CONNECTED` state.
+After a new *protocol connection* has been established and handshake has been completed successfully, the server enters the `NEGOTIATION` state.
 The connection has not yet been authenticated and permits only one transition, through successful initialization, into the `READY` state.
 
 ==== Transitions from `NEGOTIATION`
@@ -95,7 +95,7 @@ Ready to accept a `LOGON` message with authentication information.
 ** `<LOGON>` to `READY` or `DEFUNCT`
 
 ==== Transitions from `READY`
-** `<LOGOFF>` to `UNAUTHENTICED`
+** `<LOGOFF>` to `AUTHENTICATION`
 
 [[server-defunct]]
 === Server state `DEFUNCT`
@@ -125,7 +125,7 @@ In v5.1, the following transitions are possible:
 ** `<DISCONNECT>` to `DEFUNCT`
 ** `RUN` to `STREAMING` or `FAILED`
 ** `BEGIN` to `TX_READY` or `FAILED`
-** `LOGOFF` to `UNAUTHENTICATED`
+** `LOGOFF` to `AUTHENTICATION`
 
 [[server-streaming]]
 === Server state `STREAMING`
