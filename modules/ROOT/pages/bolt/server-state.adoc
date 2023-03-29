@@ -78,7 +78,7 @@ This is the initial state and exists only in a logical sense prior to the socket
 === Server state `NEGOTIATION`
 
 After a new *protocol connection* has been established and handshake has been completed successfully, the server enters the `NEGOTIATION` state.
-The connection has not yet been authenticated and permits only one transition, through successful initialization, into the `READY` state.
+The connection has not yet been authenticated and permits only one transition, through successful initialization using the `HELLO` message, into the `AUTHENTICATION` state.
 
 ==== Transitions from `NEGOTIATION`
 
