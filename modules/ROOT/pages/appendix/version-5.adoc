@@ -1,8 +1,8 @@
 :description: This section lists all Bolt message state transitions available in version 4.x.
 
-= Bolt message state transitions in version 4.x - 5.0
+= Bolt message state transitions in version 5.1 +
 
-This section lists all Bolt message state transitions available in version 4.x.
+This section lists all Bolt message state transitions available in version 5.1 +.
 
 [cols="20,15,20,30,30",options="header"]
 |===
@@ -16,7 +16,7 @@ This section lists all Bolt message state transitions available in version 4.x.
 | `HELLO`
 |
 | `SUCCESS {}`
-| `READY`
+| `UNAUTHENTICATED`
 
 | `CONNECTED`
 | `HELLO`
@@ -24,11 +24,35 @@ This section lists all Bolt message state transitions available in version 4.x.
 | `FAILURE {}`
 | `DEFUNCT`
 
+| `UNAUTHENTICATED`
+| `LOGON`
+|
+| `FAILURE {}`
+| `DEFUNCT`
+
+| `UNAUTHENTICATED`
+| `LOGON`
+|
+| `SUCCESS {}`
+| `READY`
+
 |
 |
 |
 |
 |
+
+| `READY`
+| `LOGOFF`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `READY`
+| `LOGOFF`
+|
+| `SUCESS {}`
+| `UNAUTHENTICATED`
 
 | `READY`
 | `RUN`

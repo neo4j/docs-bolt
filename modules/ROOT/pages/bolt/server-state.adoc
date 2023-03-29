@@ -25,17 +25,17 @@ This state is used to determine what actions may be undertaken by the client.
 | X
 | no socket connection
 
-| <<server-connected, `CONNECTED`>>
-| X
-| protocol handshake is completed successfully
-
-| <<server-connected, `UNAUTHENTICATED`>>
-| X
-| `HELLO` or `LOGOFF` message accepted; ready to accept a `LOGON` message
-
 | <<server-defunct, `DEFUNCT`>>
 | X
 | the socket connection is permanently closed
+
+| <<server-connected, `NEGOTIATION`>>
+|
+| protocol handshake is completed successfully; ready to accept a `HELLO` message
+
+| <<server-connected, `AUTHENTICATION`>>
+|
+| `HELLO` or `LOGOFF` message accepted; ready to accept a `LOGON` message
 
 | <<server-ready, `READY`>>
 |
@@ -75,23 +75,23 @@ This is the initial state and exists only in a logical sense prior to the socket
 ** Bolt handshake did not complete successfully to `DEFUNCT`
 
 [[server-connected]]
-=== Server state `CONNECTED`
+=== Server state `NEGOTIATION`
 
 After a new *protocol connection* has been established and handshake has been completed successfully, the server enters the `CONNECTED` state.
 The connection has not yet been authenticated and permits only one transition, through successful initialization, into the `READY` state.
 
-==== Transitions from `CONNECTED`
+==== Transitions from `NEGOTIATION`
 
 ** `<DISCONNECT>` to `DEFUNCT`
-** `HELLO` to `UNAUTHENTICATED` or `DEFUNCT`
+** `HELLO` to `AUTHENTICATION` or `DEFUNCT`
 
-[[server-unauthenticated]]
-=== Server state `UNAUTHENTICATED`
+[[server-authentication]]
+=== Server state `AUTHENTICATION`
 
 Connection has been established and metadata has been sent back from the `HELLO` message or a `LOGOFF` message was received whilst in ready state.
 Ready to accept a `LOGON` message with authentication information.
 
-==== Transitions from `CONNECTED`
+==== Transitions from `NEGOTIATION`
 ** `<LOGON>` to `READY` or `DEFUNCT`
 
 ==== Transitions from `READY`
@@ -384,13 +384,22 @@ In v1 and v2, the following transitions are possible:
 
 The sections below list the changes compared to the previous version.
 
+=== Version 5.2
+
+No changed compared to version 5.1
+
 === Version 5.1
 
-** `HELLO` message no longer accepts authentication and transitions to the `UNAUTHENTICATED` state.
+** `CONNECTED` state has been renamed to `NEGOTIATION` but still accepts the `HELLO` message but.
+** `HELLO` message no longer accepts authentication and transitions to the `AUTHENTICATION` state from `NEGOTIATION`.
 ** `LOGON` message has been added.
-It can only be received in the `UNAUTHENTICATED` state and transitions to the `READY` state.
+It can only be received in the `AUTHENTICATION` state and transitions to the `READY` state.
 ** `LOGOFF` message has be added.
-It can only be received in the `READY` state and transitions to the `UNAUTHENTICATED` state.
+It can only be received in the `READY` state and transitions to the `AUTHENTICATION` state.
+
+=== Version 5.0
+
+No changes compared to version 5.0
 
 === Version 4.4
 
