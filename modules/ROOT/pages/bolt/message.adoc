@@ -789,12 +789,7 @@ The `RUN` message requests that a Cypher query is executed with a set of paramet
 In version 3+, this message could both be used in an Explicit Transaction or an Auto-commit Transaction.
 The transaction type is implied by the order of message sequence.
 
-In version 5.2,notifications_minimum_severity::String, notifications_disabled_categories::List<String> where added to be able to control the notification config.
-
-The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries.
-Default: `null`.
-The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
-Default: `null`.
+In version 5.2, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` where added to be able to control the notification config.
 
 *Signature:* `10`
 
@@ -1164,7 +1159,7 @@ The `BEGIN` message request the creation of a new *Explicit Transaction*.
 This message should then be followed by a `RUN` message.
 The *Explicit Transaction* is closed with either the `COMMIT` message or `ROLLBACK` message.
 
-In version 5.2, notifications_minimum_severity::String, notifications_disabled_categories::List<String> where added to be able to control the notification config.
+In version 5.2, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` where added to be able to control the notification config.
 
 The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries.
 Default: `null`.
