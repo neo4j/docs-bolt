@@ -386,11 +386,11 @@ The sections below list the changes compared to the previous version.
 
 === Version 5.2
 
-No changed compared to version 5.1
+No changes compared to version 5.1.
 
 === Version 5.1
 
-** `CONNECTED` state has been renamed to `NEGOTIATION` but still accepts the `HELLO` message but.
+** `CONNECTED` state has been renamed to `NEGOTIATION` but still accepts the `HELLO` message.
 ** `HELLO` message no longer accepts authentication and transitions to the `AUTHENTICATION` state from `NEGOTIATION`.
 ** `LOGON` message has been added.
 It can only be received in the `AUTHENTICATION` state and transitions to the `READY` state.
