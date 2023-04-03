@@ -92,10 +92,10 @@ Connection has been established and metadata has been sent back from the `HELLO`
 Ready to accept a `LOGON` message with authentication information.
 
 ==== Transitions from `NEGOTIATION`
-** `<LOGON>` to `READY` or `DEFUNCT`
+** `LOGON` to `READY` or `DEFUNCT`
 
 ==== Transitions from `READY`
-** `<LOGOFF>` to `AUTHENTICATION`
+** `LOGOFF` to `AUTHENTICATION`
 
 [[server-defunct]]
 === Server state `DEFUNCT`
