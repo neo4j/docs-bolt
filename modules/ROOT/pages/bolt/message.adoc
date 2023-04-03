@@ -279,8 +279,9 @@ There are three different kinds of messages:
 | <<messages-hello, `HELLO`>>
 | `01`
 | Request
-| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String))`
+| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String), notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
 | initialize connection (replaces <<messages-init, `INIT`>> of v1 & v2)(`routing::Dictionary(address::String)` added in v4.1)
+(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in v5.2)
 
 | <<messages-logon, `LOGON`>>
 | `6A`
@@ -315,8 +316,9 @@ There are three different kinds of messages:
 | <<messages-run, `RUN`>>
 | `10`
 | Request
-| `query::String, parameters::Dictionary, extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db:String)`
+| `query::String, parameters::Dictionary, extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db:String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
 | execute a query (`extra::Dictionary` added in v3)(`db:String` added in v4.0)
+(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in v5.2)
 
 | <<messages-discard, `DISCARD`>>
 | `2F`
@@ -333,8 +335,8 @@ There are three different kinds of messages:
 | <<messages-begin, `BEGIN`>>
 | `11`
 | Request
-| `extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db::String, imp_user::String)`
-| begin a new transaction (added in v3)(`db::String, imp_user::String` added in v4.0)
+| `extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db::String, imp_user::String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
+| begin a new transaction (added in v3)(`db::String, imp_user::String` added in v4.0) (`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in v5.2)
 
 | <<messages-commit, `COMMIT`>>
 | `12`
@@ -395,6 +397,14 @@ Clients wishing to retry initialization should establish a new connection.
 
 The `routing::Dictionary(address::String)` field is added in version *4.1* and adds an indicator if the server should carry out routing, according to the given routing context.
 
+The `notifications_minimum_severity::String notifications_disabled_categories::List<String>` field is added in version *5.2* and adds the ability to configure notifications for the given connection.
+
+The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries.
+Default: `null`.
+
+The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
+Default: `null`.
+
 [NOTE]
 ====
 On versions earlier than *5.1*, the authentication token described on the `LOGON` message should be sent as part of the `HELLO` message instead.
@@ -422,7 +432,9 @@ On versions earlier than *5.1*, the authentication token described on the `LOGON
 extra::Dictionary(
   user_agent::String,
   patch_bolt::List<String>,
-  routing::Dictionary(address::String)
+  routing::Dictionary(address::String),
+  notifications_minimum_severity::String,
+  notifications_disabled_categories::List<String>
 )
 ----
 
@@ -777,6 +789,8 @@ The `RUN` message requests that a Cypher query is executed with a set of paramet
 In version 3+, this message could both be used in an Explicit Transaction or an Auto-commit Transaction.
 The transaction type is implied by the order of message sequence.
 
+In version 5.2, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` where added to be able to control the notification config.
+
 *Signature:* `10`
 
 *Fields:*
@@ -789,8 +803,11 @@ extra::Dictionary(
   tx_metadata::Dictionary,
   mode::String,
   db:String,
-  imp_user::String
+  imp_user::String,
+  notifications_minimum_severity::String,
+  notifications_disabled_categories::List<String>
 )
+
 ----
 
 ** The `query` can be a Cypher syntax or a procedure call.
@@ -814,6 +831,8 @@ Default: `null`. (v4+)
 ** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
 Default: `null`. (v4.4+)
+** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries. Default: `null`. (v5.2+)
+** The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.  Default: `null`. (v5.2+)
 
 Note that the `extra::Dictionary` field is added with version 3 and thus does not exist in v1 and v2.
 Additionally, the `db` field is added with version 4.0 and the `imp_user` in version 4.4 and do not exist in earlier versions.
@@ -1140,6 +1159,14 @@ The `BEGIN` message request the creation of a new *Explicit Transaction*.
 This message should then be followed by a `RUN` message.
 The *Explicit Transaction* is closed with either the `COMMIT` message or `ROLLBACK` message.
 
+In version 5.2, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` where added to be able to control the notification config.
+
+The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries.
+Default: `null`.
+
+The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
+Default: `null`.
+
 *Signature:* `11`
 
 *Fields:*
@@ -1150,7 +1177,9 @@ extra::Dictionary(
   tx_metadata::Dictionary,
   mode::String,
   db::String,
-  imp_user::String
+  imp_user::String,
+  notifications_minimum_severity::String
+  notifications_disabled_categories::List<String>
 )
 ----
 
@@ -1169,6 +1198,11 @@ Default: `null` (v4.0+).
 ** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
 Default: `null` (v4.4).
+
+** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries.
+Default: `null`. (v5.2+)
+
+** The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories. Default: `null`. (v5.2+)
 
 *Detail messages:*
 
@@ -1533,6 +1567,23 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 == Summary of changes per version
 
 The sections below list the changes compared to the previous version.
+
+[[messages-summary-52]]
+=== Version 5.2
+
+** `HELLO`, `BEGIN` and `RUN` messages now accept notifications options `notifications_minimum_severity` and `notifications_disabled_categories`.
+
+[[messages-summary-51]]
+=== Version 5.1
+
+** `HELLO` message no longer accepts authentication.
+** `LOGON` message has been added and accepts authentication.
+** `LOGOFF` message has been added.
+
+[[messages-summary-5]]
+=== Version 5
+
+** No changes from version 4.4
 
 [[messages-summary-44]]
 === Version 4.4

@@ -9,6 +9,7 @@
 * xref:driver-api/index.adoc[]
 * xref:neo4j-drivers.adoc[]
 * Appendix
+** xref:appendix/version-5.adoc[]
 ** xref:appendix/version-4.adoc[]
 ** xref:appendix/version-3.adoc[]
 ** xref:appendix/version-2.adoc[]
