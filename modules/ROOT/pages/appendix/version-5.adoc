@@ -1,8 +1,8 @@
-:description: This section lists all Bolt message state transitions available in version 5.1+
+:description: This section lists all Bolt message state transitions available in version 5.1 and above
 
 = Bolt message state transitions in version 5.1+
 
-This section lists all Bolt message state transitions available in version 5.1 +.
+This section lists all Bolt message state transitions available in version 5.1 and above.
 
 [cols="20,15,20,30,30",options="header"]
 |===
