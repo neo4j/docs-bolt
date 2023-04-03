@@ -7,7 +7,7 @@ For the server, each connection using the Bolt Protocol will occupy one of sever
 This state is used to determine what actions may be undertaken by the client.
 Each server state specification corresponds to a message specification with the same version.
 
-For a summary of all available server state transitions in each version of the Bolt Protocol, see the xref:appendix/index.adoc[].
+For a summary of all available server state transitions in each version of the Bolt Protocol, see the Appendix pages.
 
 [[server-states]]
 == Server states
