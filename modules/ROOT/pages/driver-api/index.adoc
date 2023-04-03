@@ -109,6 +109,7 @@ The procedure call to fetch the routing table has changed considerably throughou
 |===
 
 .Example
+[source, Bolt]
 ----
 C: 60 60 B0 17
 C: 00 00 04 04 00 00 00 00 00 00 00 00 00 00 00 00
@@ -170,6 +171,7 @@ C: GOODBYE
 |===
 
 .Example
+[source, Bolt]
 ----
 C: 60 60 B0 17
 C: 00 00 01 04 00 00 00 00 00 00 00 00 00 00 00 00

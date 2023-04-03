@@ -6,7 +6,7 @@ As of version 4.3, the server may optionally include a set of configuration hint
 Drivers may choose to interpret or ignore these hints at their own discretion.
 The following set of hints are currently defined.
 
-## connection.recv_timeout_seconds - 4.3
+## connection.recv_timeout_seconds - v4.3
 
 Maximum amount of time (in seconds) for which a connection may remain idle following a request before drivers should consider it stale.
 

@@ -7,7 +7,7 @@ For the server, each connection using the Bolt Protocol will occupy one of sever
 This state is used to determine what actions may be undertaken by the client.
 Each server state specification corresponds to a message specification with the same version.
 
-For a summary of all available server state transitions in each version of the Bolt Protocol, see the xref:appendix/version-4.adoc[].
+For a summary of all available server state transitions in each version of the Bolt Protocol, see the Appendix pages.
 
 [[server-states]]
 == Server states
@@ -118,14 +118,8 @@ The `READY` state can handle the request messages `RUN` and `BEGIN` and receive 
 ** `<DISCONNECT>` to `DEFUNCT`
 ** `RUN` to `STREAMING` or `FAILED`
 ** `BEGIN` to `TX_READY` or `FAILED` (v3+)
+** `LOGOFF` to `AUTHENTICATION` (v5.1+)
 
-In v5.1, the following transitions are possible:
-
-** `<INTERRUPT>` to `INTERRUPTED`
-** `<DISCONNECT>` to `DEFUNCT`
-** `RUN` to `STREAMING` or `FAILED`
-** `BEGIN` to `TX_READY` or `FAILED`
-** `LOGOFF` to `AUTHENTICATION`
 
 [[server-streaming]]
 === Server state `STREAMING`
@@ -339,7 +333,7 @@ This mode ensures that only one failure can exist at a time, preventing cascadin
 ** `<INTERRUPT>` to `INTERRUPTED`
 ** `<DISCONNECT>` to `DEFUNCT`
 ** `RUN` to `FAILED`
-** `PULL` to `FAILED
+** `PULL` to `FAILED`
 ** `DISCARD` to `FAILED`
 
 _In v1 and v2, in a `FAILED` state, no more work will be processed until the failure has been acknowledged by `ACK_FAILURE` or until the connection has been `RESET`._

@@ -225,7 +225,7 @@ The available representations are:
 | marker byte `CB` followed by signed 64-bit integer
 |===
 
-The available encodings are illustrated below and each shows a valid representation for the *decimal value 42*:
+The available encodings are illustrated below and each shows a valid representation for the decimal value `42`:
 
 [cols="20,20,60",options="header"]
 |===
@@ -325,12 +325,12 @@ CB 7F FF FF FF FF FF FF FF
 Floats are double-precision floating-point values, generally used for representing fractions and decimals.
 They are encoded as a single C1 marker byte followed by 8 bytes which are formatted according to the IEEE 754 floating-point “double format” bit layout in big-endian order.
 
-** Bit 63 (the bit that is selected by the mask 0x8000000000000000) represents the sign of the number.
-** Bits 62-52 (the bits that are selected by the mask 0x7ff0000000000000) represent the exponent.
-** Bits 51-0 (the bits that are selected by the mask 0x000fffffffffffff) represent the significand (sometimes called the _mantissa_) of the number.
+** Bit 63 (the bit that is selected by the mask `0x8000000000000000`) represents the sign of the number.
+** Bits 62-52 (the bits that are selected by the mask `0x7ff0000000000000`) represent the exponent.
+** Bits 51-0 (the bits that are selected by the mask `0x000fffffffffffff`) represent the significand (sometimes called the _mantissa_) of the number.
 
 .Example with a decimal value
-The value *1.23 in decimal* can be represented as:
+The value `1.23` in decimal can be represented as:
 ----
 C1 3F F3 AE 14 7A E1 47 AE
 ----
@@ -467,7 +467,7 @@ Text data is represented as *UTF-8* encoded bytes.
 The sizes used in string representations are the byte counts of the UTF-8 encoded data, not the character count of the original text.
 ====
 
-For encoded text containing fewer than 16 bytes, including empty strings, the marker byte should contain the high-order nibble ´8´ (binary 1000) followed by a low-order nibble containing the size.
+For encoded text containing fewer than 16 bytes, including empty strings, the marker byte should contain the high-order nibble `8` (binary 1000) followed by a low-order nibble containing the size.
 The encoded data then immediately follows the marker.
 For encoded text containing 16 bytes or more, the marker `D0`, `D1` or `D2` should be used, depending on scale.
 This marker is followed by the size and the UTF-8 encoded data.
@@ -584,7 +584,7 @@ The size of a list denotes the number of items within that list, rather than the
 | 2 147 483 647 items
 |===
 
-For lists containing fewer than 16 items, including empty lists, the marker byte should contain the high-order nibble ´9´ (binary 1001) followed by a low-order nibble containing the size.
+For lists containing fewer than 16 items, including empty lists, the marker byte should contain the high-order nibble `9` (binary 1001) followed by a low-order nibble containing the size.
 The items within the list are then serialised in order immediately after the marker.
 
 For lists containing 16 items or more, the marker `D4`, `D5` or `D6` should be used, depending on scale.
@@ -649,7 +649,7 @@ A `Dictionary` is a list containing key-value entries:
 ** can contain multiple instances of the same key
 ** permit a mixture of types
 
-The size of a `Dictionary` denotes the number of key-value entries within that Dictionary, not the total packed byte size.
+The size of a `Dictionary` denotes the number of key-value entries within that dictionary, not the total packed byte size.
 
 *Markers:*
 
@@ -736,7 +736,7 @@ The size of a `Dictionary` denotes the number of key-value entries within that D
 | 2 147 483 647 entries
 |===
 
-For a dictionary containing fewer than 16 key-value entries, including an empty dictionary, the marker byte should contain the high-order nibble ´A´ (binary 1010) followed by a low-order nibble containing the size.
+For a dictionary containing fewer than 16 key-value entries, including an empty dictionary, the marker byte should contain the high-order nibble `A` (binary `1010`) followed by a low-order nibble containing the size.
 
 The entries within the dictionary are then serialized in `[key, value, key, value]` order immediately after the marker.
 
@@ -870,7 +870,7 @@ This count does not include the tag.
 | 15 fields
 |===
 
-For structures containing fewer than 16 fields, the marker byte should contain the high-order nibble ´B´ (binary 1011) followed by a low-order nibble containing the size.
+For structures containing fewer than 16 fields, the marker byte should contain the high-order nibble `B` (binary `1011`) followed by a low-order nibble containing the size.
 The marker is immediately followed by the *tag byte* and the field values in that order.
 The *tag byte* is used to identify the type or class of the structure and may hold any value between 0 and +127.
 
