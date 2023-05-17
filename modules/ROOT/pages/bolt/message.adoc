@@ -1588,7 +1588,8 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 [[messages-summary]]
 == Summary of changes per version
 
-The sections below list the changes compared to the previous version.
+The sections below list the changes of messages compared to the previous version.
+Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
 
 [[messages-summary-52]]
 === Version 5.2
@@ -1605,9 +1606,7 @@ The sections below list the changes compared to the previous version.
 [[messages-summary-5]]
 === Version 5
 
-** Representation of some temporal types has been changed
-*** xref:./structure-semantics.adoc#structure-datetime[`DateTime` structure]
-*** xref:./structure-semantics.adoc#structure-datetimezoneid[`DateTimeZoneId` structure]
+** No changes from version 4.4
 
 [[messages-summary-44]]
 === Version 4.4
