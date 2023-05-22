@@ -395,15 +395,10 @@ Clients should send `HELLO` message to the server immediately after connection a
 
 Clients wishing to retry initialization should establish a new connection.
 
-The `routing::Dictionary(address::String)` field is added in version *4.1* and adds an indicator if the server should carry out routing, according to the given routing context.
+In version *4.1*, `routing::Dictionary(address::String)` was added to indicate an indicator if the server should carry out routing, according to the given routing context.
 
-The `notifications_minimum_severity::String notifications_disabled_categories::List<String>` field is added in version *5.2* and adds the ability to configure notifications for the given connection.
-
-The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries.
-Default: `null`.
-
-The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
-Default: `null`.
+In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
+Disabling categories or severities allows the server to skip analysis for those, which can speed up query execution.
 
 [NOTE]
 ====
@@ -444,10 +439,20 @@ It lets the driver request a patch to the protocol from the server. The patch mu
 Default: `[]`.
 *** `"utc"` is currently the only supported patch.
 If successfully negotiated, server and driver will use xref:bolt/structure-semantics.adoc#structure-datetime[DateTime] and xref:bolt/structure-semantics.adoc#structure-datetimezoneid[DateTimeZoneId] as defined in Bolt version *5.0*.
-** The routing field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
+** The `routing` field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
 Key-value entries in the routing context should correspond exactly to those in the original URI query string.
 Setting `routing` to `null` indicates that the server should not carry out any routing.
 Default: `null`.
+** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
+Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
+Sending `null` will make the server use its configured default.
+Default: `null`.
+(v5.2+)
+** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
+Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
+Sending `null` will make the server use its configured default.
+Default: `null`.
+(v5.2+)
 
 *Detail messages:*
 
@@ -461,7 +466,7 @@ No detail messages should be returned.
 ==== Synopsis
 
 ----
-HELLO {user_agent::String, patch_bolt::List<String>, routing::Dictionary(address::String))
+HELLO {extra}
 ----
 
 .Example 1
@@ -471,7 +476,7 @@ HELLO {"user_agent": "Example/4.1.0", "routing": {"address": "x.example.com:9001
 
 .Example 2
 ----
-HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}}
+HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}, "notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
 
 ==== Server response `SUCCESS`
@@ -786,10 +791,11 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 The `RUN` message requests that a Cypher query is executed with a set of parameters and additional extra data.
 
-In version 3+, this message could both be used in an Explicit Transaction or an Auto-commit Transaction.
+In version *3+*, this message could both be used in an Explicit Transaction or an Auto-commit Transaction.
 The transaction type is implied by the order of message sequence.
 
-In version 5.2, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` where added to be able to control the notification config.
+In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
+Disabling categories or severities allows the server to skip analysis for those, which can speed up query execution.
 
 *Signature:* `10`
 
@@ -831,8 +837,16 @@ Default: `null`. (v4+)
 ** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
 Default: `null`. (v4.4+)
-** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries. Default: `null`. (v5.2+)
-** The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.  Default: `null`. (v5.2+)
+** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
+Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
+Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
+Default: `null`.
+(v5.2+)
+** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
+Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
+Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
+Default: `null`.
+(v5.2+)
 
 Note that the `extra::Dictionary` field is added with version 3 and thus does not exist in v1 and v2.
 Additionally, the `db` field is added with version 4.0 and the `imp_user` in version 4.4 and do not exist in earlier versions.
@@ -866,6 +880,11 @@ RUN "RETURN $x AS x" {"x": 1} {}
 .Example 3
 ----
 RUN "CALL dbms.procedures()" {} {}
+----
+
+.Example 3
+----
+RUN "RETURN 42" {} {"notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
 
 ==== Server response `SUCCESS`
@@ -1159,13 +1178,8 @@ The `BEGIN` message request the creation of a new *Explicit Transaction*.
 This message should then be followed by a `RUN` message.
 The *Explicit Transaction* is closed with either the `COMMIT` message or `ROLLBACK` message.
 
-In version 5.2, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` where added to be able to control the notification config.
-
-The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries.
-Default: `null`.
-
-The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
-Default: `null`.
+In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
+Disabling categories or severities allows the server to skip analysis for those, which can speed up query execution.
 
 *Signature:* `11`
 
@@ -1178,7 +1192,7 @@ extra::Dictionary(
   mode::String,
   db::String,
   imp_user::String,
-  notifications_minimum_severity::String
+  notifications_minimum_severity::String,
   notifications_disabled_categories::List<String>
 )
 ----
@@ -1198,11 +1212,17 @@ Default: `null` (v4.0+).
 ** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
 Default: `null` (v4.4).
+** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
+Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
+Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
+Default: `null`.
+(v5.2+)
+** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
+Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
+Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
+Default: `null`.
+(v5.2+)
 
-** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries.
-Default: `null`. (v5.2+)
-
-** The `notifications_disabled_categories` is a list of notification categories that will not be returned. Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories. Default: `null`. (v5.2+)
 
 *Detail messages:*
 
@@ -1226,6 +1246,11 @@ BEGIN {"tx_timeout": 123, "mode": "r", "db": "example_database", "tx_metadata": 
 .Example 2
 ----
 BEGIN {"db": "example_database", "tx_metadata": {"log": "example_log_data"}, "bookmarks": ["example-bookmark:1", "example-bookmark2"]}
+----
+
+.Example 3
+----
+BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
 
 ==== Server response `SUCCESS`
@@ -1566,7 +1591,8 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 [[messages-summary]]
 == Summary of changes per version
 
-The sections below list the changes compared to the previous version.
+The sections below list the changes of messages compared to the previous version.
+Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
 
 [[messages-summary-52]]
 === Version 5.2

@@ -583,8 +583,13 @@ In the second case, all points in the time between 2AM and 3AM exist twice, but 
 Therefore, the timezone name is not sufficient to resolve the ambiguity, the timezone offset is also needed.
 Since `DateTimeZoneId` does not include the timezone offset, the resolution of these particular datetimes is undefined behavior.
 
+[[structure-summary]]
 == Summary of changes per version
 
+The sections below list the changes of structure semantics in versions where they changed.
+Please also check for changes in xref:./message.adoc#messages-summary[Bolt Messages].
+
+[[structure-summary-5]]
 === Version 5.0
 
 ** The `element_id` field was added to <<structure-node>>.
