@@ -398,6 +398,7 @@ Clients wishing to retry initialization should establish a new connection.
 In version *4.1*, `routing::Dictionary(address::String)` was added to indicate an indicator if the server should carry out routing, according to the given routing context.
 
 In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
+Disabling categories or severities allows the server to skip analysis for those which can speed up query execution.
 
 [NOTE]
 ====
@@ -794,6 +795,7 @@ In version *3+*, this message could both be used in an Explicit Transaction or a
 The transaction type is implied by the order of message sequence.
 
 In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
+Disabling categories or severities allows the server to skip analysis for those which can speed up query execution.
 
 *Signature:* `10`
 
@@ -1177,6 +1179,7 @@ This message should then be followed by a `RUN` message.
 The *Explicit Transaction* is closed with either the `COMMIT` message or `ROLLBACK` message.
 
 In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
+Disabling categories or severities allows the server to skip analysis for those which can speed up query execution.
 
 *Signature:* `11`
 
