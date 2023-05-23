@@ -553,6 +553,7 @@ If no `scheme` is provided, it defaults to `"none"`.
 ** The `auth_token` must contain either just the entry `{"scheme" : "none"}` or the keys `scheme`, `principal` and `credentials`.
 
 *Detail messages:*
+
 No detail messages should be returned.
 
 *Valid Summary Messages:*
@@ -682,7 +683,7 @@ The request message `ACK_FAILURE` signals to the server that the client has ackn
 
 No fields.
 
-Detail messages:
+*Detail messages*:
 
 No detail messages should be returned.
 
@@ -816,14 +817,14 @@ extra::Dictionary(
 
 ----
 
-** The `query` can be a Cypher syntax or a procedure call.
+** The `query` can be any Cypher query (including a procedure call).
 ** The `parameters` is a `dictionary` of parameters to be used in the `query` string.
 
 An *Explicit Transaction* (`BEGIN`+`RUN`) does not carry any data in the extra field.
 
 For *Auto-commit Transaction* (`RUN`) the extra field carries:
 
-** The `bookmarks` is a list of strings containing some kind of bookmark identification e.g `["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"]`.
+** The `bookmarks` is a list of strings containing some kind of bookmark identification, e.g., `["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"]`.
 Default: `[]`.
 ** The `tx_timeout` is an integer in that specifies a transaction timeout in ms.
 Default: server-side configured timeout.
@@ -1103,7 +1104,7 @@ PULL {"n": 1000}
 PULL_ALL
 ----
 
-==== Server resoponse `SUCCESS`
+==== Server response `SUCCESS`
 
 The following fields are defined for inclusion in the `SUCCESS` metadata:
 
