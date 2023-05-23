@@ -93,7 +93,7 @@ The Bolt protocol encodes each message using a chunked transfer encoding.
 ** Chunking applies on each message individually.
 ** One chunk cannot contain more than one message.
 ** Each message ends with two bytes with the value 00 00, these are not counted towards the chunk size (you may consider them as individual chunks of size 0).
-** With version 4.1+, the `NOOP` chunk (empty chunk) is used to send an empty chunk and the purpose is to be able to support a keep alive behaviour on the connection.
+** With version *4.1+*, the `NOOP` chunk (empty chunk) is used to send an empty chunk and the purpose is to be able to support a keep alive behaviour on the connection.
 
 ==== Examples of how Bolt chunks messages
 
@@ -166,16 +166,16 @@ A transaction is the concept of atomic units of work.
 The concept of *Transaction* is when the server is in the `READY` state and the transaction is opened with the request message `RUN` and the response of a summary message `SUCCESS`.
 The *Transaction* is successfully closed with the summary message `SUCCESS` for the request message `PULL_ALL` or the request message `DISCARD_ALL`.
 
-*Version 3* of the Bolt Protocol introduces the concept of *Auto-commit Transaction* and *Explicit Transaction*.
+Version *3* of the Bolt Protocol introduces the concept of *Auto-commit Transaction* and *Explicit Transaction*.
 *Auto-commit Transaction* is the server in the `READY` state and the transition to the `STREAMING` state.
 The transaction is opened with the request message `RUN` and the response of a summary message `SUCCESS`.
 
 The *Auto-commit Transaction* is successfully closed with the summary message `SUCCESS` for the request message `PULL_ALL` or the request message `DISCARD_ALL`.
-Thus the *Auto-commit Transaction* can only contain one `RUN` request message.
+Thus, the *Auto-commit Transaction* can only contain one `RUN` request message.
 
-In *version 4* of the Bolt Protocol, the `DISCARD_ALL` and `PULL_ALL` messages are renamed to `DISCARD` and `PULL` and new fields are introduced.
+In version *4* of the Bolt Protocol, the `DISCARD_ALL` and `PULL_ALL` messages are renamed to `DISCARD` and `PULL` and new fields are introduced.
 
-.Example with Bolt v4
+.Example with Bolt *v4*
 ----
 ...
 C: HELLO ...
@@ -199,19 +199,19 @@ S: SUCCESS ... has_more=false  // Server is in READY state and this implies that
 
 [NOTE]
 ====
-In version 1, `HELLO` is called `INIT` and Auto-commit Transaction is just Transaction.
-The field `has_more=true/false` is introduced in version 4.
+In version *1*, `HELLO` is called `INIT` and Auto-commit Transaction is just Transaction.
+The field `has_more=true/false` is introduced in version *4*.
 See also the corresponding version of the xref:bolt/server-state.adoc[].
 ====
 
-The *Explicit Transaction* is introduced in *version 3* of Bolt and is a more generic transaction that can contain several `RUN` request messages.
+The *Explicit Transaction* is introduced in version *3* of Bolt and is a more generic transaction that can contain several `RUN` request messages.
 The concept of *Explicit Transaction* is when the server is in the `READY` state and the transaction is opened with the request message `BEGIN` and the response of a summary message `SUCCESS` (thus transition into the `TX_READY` server state).
 
 The *Explicit Transaction* is successfully closed with the request message `COMMIT` and the response of a summary message `SUCCESS`.
 The result stream (detail messages) must be fully consumed or discarded by a client before the server can transition to the `TX_READY` state and thus be able to close the transaction with a `COMMIT` request message.
 It can be gracefully discarded and set to the initial server state of `READY` with the request message `ROLLBACK`.
 
-.Example with Bolt v4
+.Example with Bolt *v4*
 ----
 ...
 C: HELLO ...
@@ -250,7 +250,7 @@ S: SUCCESS  // Server is in READY state
 
 [NOTE]
 ====
-In version 3, `PULL` is called `PULL_ALL`.
+In version *3*, `PULL` is called `PULL_ALL`.
 Additionally, there are no fields, e.g `qid=123` and `has_more=true/false` available in version 3 of the Bolt Protocol.
 ====
 
@@ -280,8 +280,8 @@ There are three different kinds of messages:
 | `01`
 | Request
 | `extra::Dictionary(user_agent::String, routing::Dictionary(address::String), notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
-| initialize connection (replaces <<messages-init, `INIT`>> of v1 & v2)(`routing::Dictionary(address::String)` added in v4.1)
-(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in v5.2)
+| initialize connection (replaces <<messages-init, `INIT`>> of *v1* & *v2*)(`routing::Dictionary(address::String)` added in *v4.1*)
+(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in *v5.2*)
 
 | <<messages-logon, `LOGON`>>
 | `6A`
@@ -301,11 +301,11 @@ There are three different kinds of messages:
 |
 | close the connection, triggers a `<DISCONNECT>` signal
 
-| <<messages-ack-failure, `ACK_FAILURE`>> (only v1 and v2)
+| <<messages-ack-failure, `ACK_FAILURE`>> (only *v1* and *v2*)
 | `0E`
 | Request
 |
-| acknowledge a failure response (deprecated, use `RESET` instead with v3+)
+| acknowledge a failure response (deprecated, use `RESET` instead with *v3+*)
 
 | <<messages-reset, `RESET`>>
 | `0F`
@@ -317,38 +317,38 @@ There are three different kinds of messages:
 | `10`
 | Request
 | `query::String, parameters::Dictionary, extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db:String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
-| execute a query (`extra::Dictionary` added in v3)(`db:String` added in v4.0)
-(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in v5.2)
+| execute a query (`extra::Dictionary` added in *v3*)(`db:String` added in *v4.0*)
+(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in *v5.2*)
 
 | <<messages-discard, `DISCARD`>>
 | `2F`
 | Request
 | `extra::Dictionary(n::Integer, qid::Integer)`
-| discard records (replaces `DISCARD_ALL` of v1, v2 & v3)(fields added in v4.0)
+| discard records (replaces `DISCARD_ALL` of *v1*, *v2* & *v3*)(fields added in *v4.0*)
 
 | <<messages-pull, `PULL`>>
 | `3F`
 | Request
 | `extra::Dictionary(n::Integer, qid::Integer)`
-| fetch records (replaces `PULL_ALL` of v1, v2 & v3)(fields added in v4.0)
+| fetch records (replaces `PULL_ALL` of *v1*, *v2* & *v3*)(fields added in *v4.0*)
 
 | <<messages-begin, `BEGIN`>>
 | `11`
 | Request
 | `extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db::String, imp_user::String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
-| begin a new transaction (added in v3)(`db::String, imp_user::String` added in v4.0) (`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in v5.2)
+| begin a new transaction (added in *v3*)(`db::String, imp_user::String` added in *v4.0*) (`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in *v5.2*)
 
 | <<messages-commit, `COMMIT`>>
 | `12`
 | Request
 |
-| commit a transaction (added in v3)
+| commit a transaction (added in *v3*)
 
 | <<messages-rollback, `ROLLBACK`>>
 | `13`
 | Request
 |
-| rollback a transaction (added in v3)
+| rollback a transaction (added in *v3*)
 
 | <<messages-route, `ROUTE`>>
 | `66`
@@ -385,7 +385,7 @@ There are three different kinds of messages:
 [[messages-hello]]
 === Request message - `HELLO`
 
-The `HELLO` message request the connection to be authorized for use with the remote database and replaces the `INIT` request message of version 1 and 2.
+The `HELLO` message request the connection to be authorized for use with the remote database and replaces the `INIT` request message of version *1* and *2*.
 See below for more information on `INIT`.
 
 The server must be in the `CONNECTED` state to be able to process a `HELLO` message.
@@ -447,12 +447,12 @@ Default: `null`.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use its configured default.
 Default: `null`.
-(v5.2+)
+(*v5.2+*)
 ** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
 Sending `null` will make the server use its configured default.
 Default: `null`.
-(v5.2+)
+(*v5.2+*)
 
 *Detail messages:*
 
@@ -553,6 +553,7 @@ If no `scheme` is provided, it defaults to `"none"`.
 ** The `auth_token` must contain either just the entry `{"scheme" : "none"}` or the keys `scheme`, `principal` and `credentials`.
 
 *Detail messages:*
+
 No detail messages should be returned.
 
 *Valid Summary Messages:*
@@ -606,9 +607,19 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 A `LOGON` message carries an authentication request.
 
+This message is new in version *5.1*. In previous versions, authentication was part of the `HELLO` message.
+
 *Signature:* `6A`
 
-** The scheme is the authentication scheme.
+*Fields:*
+----
+auth::Dictionary(
+  scheme::String,
+  ...
+)
+----
+
+** The `scheme` is the authentication scheme.
 Predefined schemes are `none`, `basic`, `bearer` and `kerberos`.
 ** Further entries in the message are passed to the implementation of the chosen authentication scheme.
 Their names, types, and defaults depend on that choice.
@@ -633,7 +644,52 @@ LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
 
 A `LOGOFF` message logs off the currently authenticated user. The connection is then ready for another `LOGON` message.
 
+This message is new in version *5.1*. No equivalent exists in previous versions.
+
 *Signature:* `6B`
+
+*Fields:*
+
+No fields
+
+*Detail messages:*
+
+No detail messages should be returned.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `FAILURE`
+
+==== Synopsis
+----
+LOGOFF
+----
+
+.Example
+----
+LOGOFF
+----
+
+==== Server response `SUCCESS`
+
+If a `LOGOFF` message request has been successfully received, the server should respond with a `SUCCESS` message and enter the `AUTHENTICATION` state.
+
+.Example
+----
+SUCCESS {}
+----
+
+==== Server response `FAILURE`
+
+If `LOGOFF` message is received while the server is not in the `READY` state, it should trigger a `FAILURE` followed by immediate closure of the connection.
+The server may attach metadata to the message to provide more detail on the nature of the failure.
+Clients receiving a `FAILURE` in response to `LOGOFF` should treat that connection as `DEFUNCT` and dispose of it.
+
+.Example
+----
+FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': "Message 'LogoffMessage{}' cannot be handled by a session in the FAILED state."}
+----
 
 [[messages-goodbye]]
 === Request message `GOODBYE`
@@ -682,7 +738,7 @@ The request message `ACK_FAILURE` signals to the server that the client has ackn
 
 No fields.
 
-Detail messages:
+*Detail messages*:
 
 No detail messages should be returned.
 
@@ -730,12 +786,12 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 [[messages-reset]]
 === Request message `RESET`
 
-The `RESET` message requests that the connection should be set back to its initial `RESET` state, as if an `HELLO` (`INIT` in v1 and 2) had just successfully completed.
+The `RESET` message requests that the connection should be set back to its initial `RESET` state, as if a `HELLO` (`INIT` in *v1* and *v2*) (and a `LOGON` in *v5.1+*) had just successfully completed.
 The `RESET` message is unique in that, on arrival at the server, it jumps ahead in the message queue, stopping any unit of work that happens to be executing.
 All the queued messages originally in front of the `RESET` message will then be `IGNORED` until the `RESET` position is reached.
 Then from this point, the server state is reset to a state that is ready for a new session.
 
-In version 1 and 2, the `RESET` message splits into two separate signals.
+In version *1* and *2*, the `RESET` message splits into two separate signals.
 First, an `<INTERRUPT>` signal jumps ahead in the message queue, stopping any unit of work that happens to be executing, and putting the state machine into an `INTERRUPTED` state.
 Second, the `RESET` queues along with all other incoming messages and is used to put the state machine back to `READY` when its turn for processing arrives.
 This essentially means that the `INTERRUPTED` state exists only transitionally between the arrival of a `RESET` in the message queue and the later processing of that `RESET` in its proper position.
@@ -791,8 +847,11 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 The `RUN` message requests that a Cypher query is executed with a set of parameters and additional extra data.
 
-In version *3+*, this message could both be used in an Explicit Transaction or an Auto-commit Transaction.
-The transaction type is implied by the order of message sequence.
+In version *3+*, this message can both be used in an Explicit Transaction or an Auto-commit Transaction.
+The transaction type is implied by the message sequence:
+
+** *Explicit Transaction*: `RUN` while inside a transaction context started with `BEGIN` first.
+** *Auto-commit Transaction*: `RUN` without having started an explicit transaction with `BEGIN` first.
 
 In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
 Disabling categories or severities allows the server to skip analysis for those, which can speed up query execution.
@@ -816,14 +875,14 @@ extra::Dictionary(
 
 ----
 
-** The `query` can be a Cypher syntax or a procedure call.
+** The `query` can be any Cypher query (including a procedure call).
 ** The `parameters` is a `dictionary` of parameters to be used in the `query` string.
 
 An *Explicit Transaction* (`BEGIN`+`RUN`) does not carry any data in the extra field.
 
 For *Auto-commit Transaction* (`RUN`) the extra field carries:
 
-** The `bookmarks` is a list of strings containing some kind of bookmark identification e.g `["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"]`.
+** The `bookmarks` is a list of strings containing some kind of bookmark identification, e.g., `["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"]`.
 Default: `[]`.
 ** The `tx_timeout` is an integer in that specifies a transaction timeout in ms.
 Default: server-side configured timeout.
@@ -831,25 +890,28 @@ Default: server-side configured timeout.
 Default: `null`.
 ** The `mode` specifies what kind of server the RUN message is targeting.
 For write access use `"w"` and for read access use `"r"`.
-Default: "w".
+Default: `"w"`.
 ** The `db` specifies the database name for multi-database to select where the transaction takes place. `null` and `""` denote the server-side configured default database.
-Default: `null`. (v4+)
+Default: `null`. (*v4+*)
 ** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
-Default: `null`. (v4.4+)
+Default: `null`. (*v4.4+*)
 ** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
-(v5.2+)
+(*v5.2+*)
 ** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
-(v5.2+)
+(*v5.2+*)
 
-Note that the `extra::Dictionary` field is added with version 3 and thus does not exist in v1 and v2.
-Additionally, the `db` field is added with version 4.0 and the `imp_user` in version 4.4 and do not exist in earlier versions.
+Note that the `extra::Dictionary` field was added in version *3* and thus does not exist in *v1* and *v2*.
+
+*Detail messages:*
+
+No detail messages should be returned.
 
 *Valid summary messages:*
 
@@ -857,10 +919,9 @@ Additionally, the `db` field is added with version 4.0 and the `imp_user` in ver
 ** `IGNORED`
 ** `FAILURE`
 
-_The server must be in a `READY` state to be able to successfully process a `RUN` request._
+_The server must be in a `READY` or `READY_TX` (*v3+*) state to be able to successfully process a `RUN` request._
 _If the server is in a `FAILED` or `INTERRUPTED` state, the request will be `IGNORED`._
 _For any other states, receipt of a `RUN` request will be considered a protocol violation and will lead to connection closure._
-//is this ^ true for version 3+?
 
 ==== Synopsis
 ----
@@ -896,21 +957,21 @@ The following fields are defined for inclusion in the `SUCCESS` metadata.
 ** `fields::List<String>`, the fields of the return result. e.g. [“name”, “age”, …]
 ** `t_first::Integer`, the time, specified in ms, which the first record in the result stream is available after.
 
-In v4+, for *Explicit Transaction* (`BEGIN`+`RUN`):
+In *v4+*, for *Explicit Transaction* (`BEGIN`+`RUN`):
 
 ** `qid::Integer` specifies the server assigned statement ID to reference the server side result-set with commencing `BEGIN`+`RUN`+`PULL` and `BEGIN`+`RUN`+`DISCARD` messages.
 
-.Example v3+
+.Example *v3+*
 ----
 SUCCESS {"fields": ["x"], "t_first": 123}
 ----
 
-.Example v4.0+
+.Example *v4.0+*
 ----
 SUCCESS {"fields": ["x"], "t_first": 123, "qid": 7000}
 ----
 
-_For v1 and v2, if a `RUN` request has been successfully received and is considered valid by the server, the server should respond with a `SUCCESS` message and enter the `STREAMING` state._
+_For *v1* and *v2*, if a `RUN` request has been successfully received and is considered valid by the server, the server should respond with a `SUCCESS` message and enter the `STREAMING` state._
 _The server may attach metadata to the message to provide header detail for the results that follow._
 _Clients should not consider a `SUCCESS` response to indicate completion of the execution of that query, merely acceptance of it._
 _The following fields are defined for inclusion in the metadata:_
@@ -918,7 +979,7 @@ _The following fields are defined for inclusion in the metadata:_
 ** _`fields` (e.g. [`"name"`, `"age"`])_
 ** _`result_available_after` (e.g. `123`)_
 
-.Example v1 and v2
+.Example *v1* and *v2*
 ----
 SUCCESS {"fields": ["x"], "result_available_after": 123}
 ----
@@ -942,7 +1003,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 The `DISCARD` message requests that the remainder of the result stream should be thrown away.
 
-_In v1, v2 and v3, this message is called `DISCARD_ALL`, has *no fields* and issues a request to discard the outstanding result and return to a `READY` state._
+_In *v1*, *v2* and *v3*, this message is called `DISCARD_ALL`, has *no fields* and issues a request to discard the outstanding result and return to a `READY` state._
 _A receiving server should not abort the request but continue to process it without streaming any detail messages back to the client._
 
 *Signature:* `2F`
@@ -988,18 +1049,18 @@ DISCARD {"n": -1, "qid": -1}
 DISCARD {"n": 1000}
 ----
 
-.Example 3 v1, v2 or v3
+.Example 3 *v1*, *v2* or *v3*
 ----
 DISCARD_ALL
 ----
 
-In version 1 and 2, the server must be in a `STREAMING` state to be able to successfully process a `DISCARD_ALL` request.
+In version *1* and *2*, the server must be in a `STREAMING` or `STREAMING_TX` (*v3+*) state to be able to successfully process a `DISCARD` request.
 If the server is in a `FAILED` state or `INTERRUPTED` state, the request will be `IGNORED`.
-For any other states, receipt of a `DISCARD_ALL` request will be considered a protocol violation and will lead to connection closure.
+For any other states, receipt of a `DISCARD` request will be considered a protocol violation and will lead to connection closure.
 
 ==== Server response `SUCCESS`
 
-The following fields are defined for inclusion in the `SUCCESS` metadata (v4.0+):
+The following fields are defined for inclusion in the `SUCCESS` metadata (*v4.0+*):
 
 ** `has_more::Boolean`, true if there are no more records to stream.
 If this field is not present, it should be considered to default to false.
@@ -1019,16 +1080,16 @@ SUCCESS {"has_more": true}
 SUCCESS {"bookmark": "example-bookmark:1", "db": "example_database"}
 ----
 
-In version 3, the following fields are defined for inclusion in the `SUCCESS` metadata:
+In version *3*, the following fields are defined for inclusion in the `SUCCESS` metadata:
 
 ** `bookmark::String`, the bookmark after committing this transaction (Auto-commit Transaction* only).
 
-.Example v3
+.Example *v3*
 ----
 SUCCESS {"bookmark": "example-bookmark:1"}
 ----
 
-In version 1 and 2, if a `DISCARD_ALL` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
+In version *1* and *2*, if a `DISCARD_ALL` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
 The server may attach metadata to the message to provide footer detail for the discarded results.
 
 The following fields are defined for inclusion in the metadata:
@@ -1036,24 +1097,24 @@ The following fields are defined for inclusion in the metadata:
 ** `bookmark` (e.g. `"bookmark:1234"`)
 ** `result_consumed_after` (e.g. `123`)
 
-.Example v1 and 2
+.Example *v1* and *v2*
 ----
 SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123}
 ----
 
-[[message-pull]]
+[[messages-pull]]
 === Request message `PULL`
 
 The `PULL` message requests data from the remainder of the result stream.
 
-In v1, v2, and v3, this message is called `PULL_ALL` and has *no fields*.
-In v1 and v2, this message issues a request to stream the outstanding result back to the client, before returning to a `READY` state.
+In *v1*, *v2*, and *v3*, this message is called `PULL_ALL` and has *no fields*.
+In *v1* and *v2*, this message issues a request to stream the outstanding result back to the client, before returning to a `READY` state.
 Result detail consists of zero or more detail messages being sent before the summary message.
 This version of the protocol defines one such detail message, namely `RECORD` (described below).
 
 *Signature:* `3F`
 
-*Fields* (in v4.0+):
+*Fields* (in *v4.0+*):
 ----
 extra::Dictionary{
   n::Integer,
@@ -1083,7 +1144,7 @@ Zero or more `RECORD`.
 PULL {extra}
 ----
 
-.For v1, v2, and v3
+.For *v1*, *v2*, and *v3*
 ----
 PULL_ALL
 ----
@@ -1098,12 +1159,12 @@ PULL {"n": -1, "qid": -1}
 PULL {"n": 1000}
 ----
 
-.Example v1, v2, and v3
+.Example *v1*, *v2*, and *v3*
 ----
 PULL_ALL
 ----
 
-==== Server resoponse `SUCCESS`
+==== Server response `SUCCESS`
 
 The following fields are defined for inclusion in the `SUCCESS` metadata:
 
@@ -1120,27 +1181,27 @@ Or in the case that `has_more` is false:
 ** `profile::Dictionary`, profile result.
 ** `notifications::List<Dictionary>`, a list of all notifications generated during execution of this statement.
 May be omitted if no notifications exist.
-In v3, this field is `notifications::Dictionary`.
-** `db::String`, the database name where the query was executed (v4.0+).
+In *v3*, this field is `notifications::Dictionary`.
+** `db::String`, the database name where the query was executed (*v4.0+*).
 
 .Example
 ----
 SUCCESS {"bookmark": "example-bookmark:1", "t_last": 123}
 ----
 
-_In v1 and v2, only two fields are defined for inclusion in the metadata:_
+_In *v1* and *v2*, only two fields are defined for inclusion in the metadata:_
 
 ** `bookmark` _(e.g. `"bookmark:1234"`)_
 ** `result_consumed_after` _(e.g. `123`)_
 
-.Example v1 and v2
+.Example *v1* and *v2*
 ----
 SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123}
 ----
 
 ==== Server response `IGNORED`
 
-For v1 and v2, a  server that receives a `DISCARD_ALL` request while in `FAILED` state or `INTERRUPTED` state, should respond with an `IGNORED` message and discard the request without processing it.
+For *v1* and *v2*, a  server that receives a `DISCARD_ALL` request while in `FAILED` state or `INTERRUPTED` state, should respond with an `IGNORED` message and discard the request without processing it.
 No state change should occur.
 
 .Example (all versions)
@@ -1150,7 +1211,7 @@ IGNORED
 
 ==== Server response `FAILURE`
 
-For v1 and v2, a `DISCARD_ALL` message request cannot be processed successfully, the server should respond with a `FAILURE` message and enter the `FAILED` state.
+For *v1* and *v2*, a `DISCARD_ALL` message request cannot be processed successfully, the server should respond with a `FAILURE` message and enter the `FAILED` state.
 The server may attach metadata to the message to provide more detail on the nature of the failure.
 
 .Example (all versions)
@@ -1158,7 +1219,7 @@ The server may attach metadata to the message to provide more detail on the natu
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
-==== Server response `RECORD` (in v1 and v2)
+==== Server response `RECORD` (in *v1* and *v2*)
 
 Zero or more `RECORD` messages may be returned in response to a `PULL_ALL` prior to the trailing summary message.
 Each record carries with it *a list of values* which form the data content of the record.
@@ -1208,21 +1269,20 @@ For write access use `"w"` and for read access use `"r"`.
 Defaults to write access if no mode is sent. Default: `"w"`.
 ** The `db` specifies the database name for multi-database to select where the transaction takes place.
 `null` and `""` denote the server-side configured default database.
-Default: `null` (v4.0+).
+Default: `null` (*v4.0+*).
 ** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
-Default: `null` (v4.4).
+Default: `null` (*v4.4*).
 ** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
-(v5.2+)
+(*v5.2+*)
 ** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
-(v5.2+)
-
+(*v5.2+*)
 
 *Detail messages:*
 
@@ -1279,7 +1339,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 The `COMMIT` message request that the *Explicit Transaction* is done.
 
-The `COMMIT` message does not exist in v1 and v2.
+The `COMMIT` message does not exist in *v1* and *v2*.
 
 *Signature:* `12`
 
@@ -1337,7 +1397,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 The `ROLLBACK` message requests that the *Explicit Transaction* rolls back.
 
-The `ROLLBACK` message does not exist in v1 and v2.
+The `ROLLBACK` message does not exist in *v1* and *v2*.
 
 *Signature:* `13`
 
@@ -1391,7 +1451,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 [[messages-route]]
 === Request message `ROUTE`
 
-The `ROUTE` instructs the server to return the current routing table and was added in v4.3.
+The `ROUTE` instructs the server to return the current routing table and was added in *v4.3*.
 In previous versions there was no explicit message for this and a procedure had to be invoked using Cypher through the `RUN` and `PULL` messages.
 
 This message can only be sent after successful authentication and outside of transactions.
@@ -1408,7 +1468,7 @@ extra::Dictionary(
 )
 ----
 
-Note that in v4.4, the `db` parameter is migrated into a dedicated dictionary named `extra` that also includes the `imp_user` and thus, in v4.3 the fields are:
+Note that in *v4.4*, the `db` parameter is migrated into a dedicated dictionary named `extra` that also includes the `imp_user` and thus, in *v4.3* the fields are:
 ----
 routing::Dictionary,
 bookmarks::List<String>,
@@ -1418,12 +1478,12 @@ db:String
 ** The routing field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
 Key-value entries in the routing context should correspond exactly to those in the original URI query string.
 ** The `bookmarks` is a list of strings containing some kind of bookmark identification e.g [`"neo4j-bookmark-transaction:1"`, `"neo4j-bookmark-transaction:2"`].
-In v4.3, the format is `bookmarks::List<String>`.
+In *v4.3*, the format is `bookmarks::List<String>`.
 ** The `db` specifies the database name for multi-database to select where the transaction takes place.
 `null` denotes the server-side configured default database.
 ** The `imp_user` specifies the impersonated user for the purposes of resolving their home database.
 `null` denotes no impersonation (execution takes place as the current user).
-Default: `null` (v4.4+).
+Default: `null` (*v4.4+*).
 
 *Detail messages:*
 
@@ -1457,10 +1517,10 @@ The following fields are defined for inclusion in the `SUCCESS` metadata:
 
 ** `rt::Dictionary(ttl::Integer, db::String, servers::List<Dictionary(addresses::List<String>, role::String)>)`, the current routing table.
 *** `ttl::Integer` specifies for how many seconds this routing table should be considered valid.
-*** `db::String` identifies the database for which this routing table applies (v4.4+).
+*** `db::String` identifies the database for which this routing table applies (*v4.4+*).
 *** `servers` have three elements of the type `Dictionary(addresses::List<String>, role::String)`, where `role` is one of `"ROUTE"`, `"READ"`, `"WRITE"` for exactly one entry each.
 
-.Example v4.4+
+.Example *v4.4+*
 ----
 SUCCESS {
     "rt": {"ttl": 1000,
@@ -1471,7 +1531,7 @@ SUCCESS {
 }
 ----
 
-.Example v4.3
+.Example *v4.3*
 ----
 SUCCESS {
     "rt": {"ttl": 1000,
@@ -1571,7 +1631,7 @@ A `RECORD` message carries a sequence of values corresponding to a single entry 
 
 *Signature:* `71`
 
-These messages are currently only ever received in response to a `PULL` (`PULL_ALL` in v1, v2, and v3) message and will always be followed by a summary message.
+These messages are currently only ever received in response to a `PULL` (`PULL_ALL` in *v1*, *v2*, and *v3*) message and will always be followed by a summary message.
 
 ==== Synopsis
 ----
