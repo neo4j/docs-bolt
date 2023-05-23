@@ -850,6 +850,9 @@ The `RUN` message requests that a Cypher query is executed with a set of paramet
 In version *3+*, this message can both be used in an Explicit Transaction or an Auto-commit Transaction.
 The transaction type is implied by the message sequence:
 
+** *Explicit Transaction*: `RUN` while inside a transaction context started with `BEGIN` first.
+** *Auto-commit Transaction*: `RUN` without having started an explicit transaction with `BEGIN` first.
+
 In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
 Disabling categories or severities allows the server to skip analysis for those, which can speed up query execution.
 
@@ -906,6 +909,9 @@ Default: `null`.
 
 Note that the `extra::Dictionary` field was added in version *3* and thus does not exist in *v1* and *v2*.
 
+*Detail messages:*
+
+No detail messages should be returned.
 
 *Valid summary messages:*
 
@@ -913,10 +919,9 @@ Note that the `extra::Dictionary` field was added in version *3* and thus does n
 ** `IGNORED`
 ** `FAILURE`
 
-_The server must be in a `READY` state to be able to successfully process a `RUN` request._
+_The server must be in a `READY` or `READY_TX` (*v3+*) state to be able to successfully process a `RUN` request._
 _If the server is in a `FAILED` or `INTERRUPTED` state, the request will be `IGNORED`._
 _For any other states, receipt of a `RUN` request will be considered a protocol violation and will lead to connection closure._
-//is this ^ true for version 3+?
 
 ==== Synopsis
 ----
