@@ -607,9 +607,19 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 A `LOGON` message carries an authentication request.
 
+This message is new in version *5.1*. In previous versions, authentication was part of the `HELLO` message.
+
 *Signature:* `6A`
 
-** The scheme is the authentication scheme.
+*Fields:*
+----
+auth::Dictionary(
+  scheme::String,
+  ...
+)
+----
+
+** The `scheme` is the authentication scheme.
 Predefined schemes are `none`, `basic`, `bearer` and `kerberos`.
 ** Further entries in the message are passed to the implementation of the chosen authentication scheme.
 Their names, types, and defaults depend on that choice.
@@ -634,7 +644,52 @@ LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
 
 A `LOGOFF` message logs off the currently authenticated user. The connection is then ready for another `LOGON` message.
 
+This message is new in version *5.1*. No equivalent exists in previous versions.
+
 *Signature:* `6B`
+
+*Fields:*
+
+No fields
+
+*Detail messages:*
+
+No detail messages should be returned.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `FAILURE`
+
+==== Synopsis
+----
+LOGOFF
+----
+
+.Example
+----
+LOGOFF
+----
+
+==== Server response `SUCCESS`
+
+If a `LOGOFF` message request has been successfully received, the server should respond with a `SUCCESS` message and enter the `AUTHENTICATION` state.
+
+.Example
+----
+SUCCESS {}
+----
+
+==== Server response `FAILURE`
+
+If `LOGOFF` message is received while the server is not in the `READY` state, it should trigger a `FAILURE` followed by immediate closure of the connection.
+The server may attach metadata to the message to provide more detail on the nature of the failure.
+Clients receiving a `FAILURE` in response to `LOGOFF` should treat that connection as `DEFUNCT` and dispose of it.
+
+.Example
+----
+FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': "Message 'LogoffMessage{}' cannot be handled by a session in the FAILED state."}
+----
 
 [[messages-goodbye]]
 === Request message `GOODBYE`
