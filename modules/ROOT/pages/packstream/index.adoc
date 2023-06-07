@@ -8,7 +8,7 @@ PackStream is a binary presentation format for the exchange of richly-typed data
 
 PackStream is a general purpose data serialisation format, originally inspired by (but incompatible with) link:https://msgpack.org/[MessagePack].
 
-The format provides a type system fully compatible with the types supported by Cypher, see the link:https://neo4j.com/docs/cypher-manual/current/syntax/values/[Cypher Manual -> Values and types] for more information.
+The format provides a type system fully compatible with the types supported by Cypher, see the link:https://neo4j.com/docs/cypher-manual/current/values-and-types/[Cypher Manual -> Values and types] for more information.
 
 PackStream offers a number of core data types, many supported by multiple binary representations, as well as a flexible extension mechanism.
 
