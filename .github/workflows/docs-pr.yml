@@ -7,9 +7,6 @@ name: "Verify PR"
 on:
   pull_request:
     branches:
-    - "4.4"
-    - "5.0"
-    - "5.x"
     - "dev"
     - "main"
 
