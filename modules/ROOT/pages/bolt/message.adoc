@@ -1291,6 +1291,7 @@ No detail messages.
 *Valid summary messages:*
 
 ** `SUCCESS`
+** `IGNORED`
 ** `FAILURE`
 
 ==== Synopsis
