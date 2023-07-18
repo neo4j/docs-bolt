@@ -7,7 +7,7 @@ For the server, each connection using the Bolt Protocol will occupy one of sever
 This state is used to determine what actions may be undertaken by the client.
 Each server state specification corresponds to a message specification with the same version.
 
-For a summary of all available server state transitions in each version of the Bolt Protocol, see the xref:appendix/index.adoc[].
+For a summary of all available server state transitions in each version of the Bolt Protocol, see the Appendix pages.
 
 [[server-states]]
 == Server states
@@ -25,13 +25,17 @@ This state is used to determine what actions may be undertaken by the client.
 | X
 | no socket connection
 
-| <<server-connected, `CONNECTED`>>
-| X
-| protocol handshake is completed successfully
-
 | <<server-defunct, `DEFUNCT`>>
 | X
 | the socket connection is permanently closed
+
+| <<server-negotiation, `NEGOTIATION`>>
+|
+| protocol handshake is completed successfully; ready to accept a `HELLO` message
+
+| <<server-negotiation, `AUTHENTICATION`>>
+|
+| `HELLO` or `LOGOFF` message accepted; ready to accept a `LOGON` message
 
 | <<server-ready, `READY`>>
 |
@@ -67,19 +71,31 @@ This is the initial state and exists only in a logical sense prior to the socket
 
 ==== Transitions from `DISCONNECTED`
 
-** Bolt handshake completed successfully to `CONNECTED`
+** Bolt handshake completed successfully to `NEGOTIATION`
 ** Bolt handshake did not complete successfully to `DEFUNCT`
 
-[[server-connected]]
-=== Server state `CONNECTED`
+[[server-negotiation]]
+=== Server state `NEGOTIATION`
 
-After a new *protocol connection* has been established and handshake has been completed successfully, the server enters the `CONNECTED` state.
-The connection has not yet been authenticated and permits only one transition, through successful initialization, into the `READY` state.
+After a new *protocol connection* has been established and handshake has been completed successfully, the server enters the `NEGOTIATION` state.
+The connection has not yet been authenticated and permits only one transition, through successful initialization using the `HELLO` message, into the `AUTHENTICATION` state.
 
-==== Transitions from `CONNECTED`
+==== Transitions from `NEGOTIATION`
 
 ** `<DISCONNECT>` to `DEFUNCT`
-** `HELLO` to `READY` or `DEFUNCT`
+** `HELLO` to `AUTHENTICATION` or `DEFUNCT`
+
+[[server-authentication]]
+=== Server state `AUTHENTICATION`
+
+Connection has been established and metadata has been sent back from the `HELLO` message or a `LOGOFF` message was received whilst in ready state.
+Ready to accept a `LOGON` message with authentication information.
+
+==== Transitions from `NEGOTIATION`
+** `LOGON` to `READY` or `DEFUNCT`
+
+==== Transitions from `READY`
+** `LOGOFF` to `AUTHENTICATION`
 
 [[server-defunct]]
 === Server state `DEFUNCT`
@@ -102,6 +118,8 @@ The `READY` state can handle the request messages `RUN` and `BEGIN` and receive 
 ** `<DISCONNECT>` to `DEFUNCT`
 ** `RUN` to `STREAMING` or `FAILED`
 ** `BEGIN` to `TX_READY` or `FAILED` (v3+)
+** `LOGOFF` to `AUTHENTICATION` (v5.1+)
+
 
 [[server-streaming]]
 === Server state `STREAMING`
@@ -315,7 +333,7 @@ This mode ensures that only one failure can exist at a time, preventing cascadin
 ** `<INTERRUPT>` to `INTERRUPTED`
 ** `<DISCONNECT>` to `DEFUNCT`
 ** `RUN` to `FAILED`
-** `PULL` to `FAILED
+** `PULL` to `FAILED`
 ** `DISCARD` to `FAILED`
 
 _In v1 and v2, in a `FAILED` state, no more work will be processed until the failure has been acknowledged by `ACK_FAILURE` or until the connection has been `RESET`._
@@ -359,6 +377,23 @@ In v1 and v2, the following transitions are possible:
 == Summary of changes per version
 
 The sections below list the changes compared to the previous version.
+
+=== Version 5.2
+
+No changes compared to version 5.1.
+
+=== Version 5.1
+
+** `CONNECTED` state has been renamed to `NEGOTIATION` but still accepts the `HELLO` message.
+** `HELLO` message no longer accepts authentication and transitions to the `AUTHENTICATION` state from `NEGOTIATION`.
+** `LOGON` message has been added.
+It can only be received in the `AUTHENTICATION` state and transitions to the `READY` state.
+** `LOGOFF` message has be added.
+It can only be received in the `READY` state and transitions to the `AUTHENTICATION` state.
+
+=== Version 5.0
+
+No changes compared to version 4.4.
 
 === Version 4.4
 

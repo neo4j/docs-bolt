@@ -8,7 +8,7 @@ PackStream is a binary presentation format for the exchange of richly-typed data
 
 PackStream is a general purpose data serialisation format, originally inspired by (but incompatible with) link:https://msgpack.org/[MessagePack].
 
-The format provides a type system fully compatible with the types supported by Cypher, see the link:https://neo4j.com/docs/cypher-manual/current/syntax/values/[Cypher Manual -> Values and types] for more information.
+The format provides a type system fully compatible with the types supported by Cypher, see the link:https://neo4j.com/docs/cypher-manual/current/values-and-types/[Cypher Manual -> Values and types] for more information.
 
 PackStream offers a number of core data types, many supported by multiple binary representations, as well as a flexible extension mechanism.
 
@@ -53,54 +53,6 @@ The core data types are described in the table below.
 Neither unsigned integers nor 32-bit floating point numbers are included.
 This is a deliberate design decision to allow broader compatibility across client languages.
 ====
-
-The PackStream specified structures are listed in the table below.
-
-.PackStream specified structures
-[cols="20,60",options="header"]
-|===
-| Structure name
-| Description
-
-| `Node`
-| snapshot of a node within a graph database
-
-| `Relationship`
-| snapshot of a relationship within a graph database
-
-| `UnboundRelationship`
-| relationship detail without start or end node information
-
-| `Path`
-| alternating sequence of nodes and relationships
-
-| `Date`
-| a date without a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03”
-
-| `Time`
-| a time with an offset from UTC/Greenwich in the ISO-8601 calendar system, e.g. “10:15:30+01:00”
-
-| `LocalTime`
-| a time without a time-zone in the ISO-8601 calendar system, e.g. “10:15:30”
-
-| `DateTime`
-| a date-time with a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03T10:15:30+01:00 Europe/Paris”, the time-zone is specified in minutes offset from UTC
-
-| `DateTimeZoneId`
-| a date-time with a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03T10:15:30+01:00 Europe/Paris”, the time-zone is specified with a zone ID
-
-| `LocalDateTime`
-| a date-time without a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03T10:15:30”
-
-| `Duration`
-| a temporal amount
-
-| `Point2D`
-| represents a single location in two-dimensional space
-
-| `Point3D`
-| represents a single location in three-dimensional space
-|===
 
 == General representation
 
@@ -273,7 +225,7 @@ The available representations are:
 | marker byte `CB` followed by signed 64-bit integer
 |===
 
-The available encodings are illustrated below and each shows a valid representation for the *decimal value 42*:
+The available encodings are illustrated below and each shows a valid representation for the decimal value `42`:
 
 [cols="20,20,60",options="header"]
 |===
@@ -373,12 +325,12 @@ CB 7F FF FF FF FF FF FF FF
 Floats are double-precision floating-point values, generally used for representing fractions and decimals.
 They are encoded as a single C1 marker byte followed by 8 bytes which are formatted according to the IEEE 754 floating-point “double format” bit layout in big-endian order.
 
-** Bit 63 (the bit that is selected by the mask 0x8000000000000000) represents the sign of the number.
-** Bits 62-52 (the bits that are selected by the mask 0x7ff0000000000000) represent the exponent.
-** Bits 51-0 (the bits that are selected by the mask 0x000fffffffffffff) represent the significand (sometimes called the _mantissa_) of the number.
+** Bit 63 (the bit that is selected by the mask `0x8000000000000000`) represents the sign of the number.
+** Bits 62-52 (the bits that are selected by the mask `0x7ff0000000000000`) represent the exponent.
+** Bits 51-0 (the bits that are selected by the mask `0x000fffffffffffff`) represent the significand (sometimes called the _mantissa_) of the number.
 
 .Example with a decimal value
-The value *1.23 in decimal* can be represented as:
+The value `1.23` in decimal can be represented as:
 ----
 C1 3F F3 AE 14 7A E1 47 AE
 ----
@@ -411,6 +363,8 @@ Unlike other values, there is no separate encoding for byte arrays containing fe
 
 One of the markers `CC`, `CD`, or `CE` should be used, depending on scale.
 This marker is followed by the size and bytes themselves.
+
+N.B. While the unsigned 32-bit integer following `CE` could hold a bigger number, the maximum size of byte arrays is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Example with empty byte array
 Empty byte array `b[]`
@@ -513,10 +467,12 @@ Text data is represented as *UTF-8* encoded bytes.
 The sizes used in string representations are the byte counts of the UTF-8 encoded data, not the character count of the original text.
 ====
 
-For encoded text containing fewer than 16 bytes, including empty strings, the marker byte should contain the high-order nibble ´8´ (binary 1000) followed by a low-order nibble containing the size.
+For encoded text containing fewer than 16 bytes, including empty strings, the marker byte should contain the high-order nibble `8` (binary 1000) followed by a low-order nibble containing the size.
 The encoded data then immediately follows the marker.
 For encoded text containing 16 bytes or more, the marker `D0`, `D1` or `D2` should be used, depending on scale.
 This marker is followed by the size and the UTF-8 encoded data.
+
+N.B. While the unsigned 32-bit integer following `D3` could hold a bigger number, the maximum byte size of strings is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Examples with different strings
 [cols="<,<", options="header"]
@@ -628,11 +584,13 @@ The size of a list denotes the number of items within that list, rather than the
 | 2 147 483 647 items
 |===
 
-For lists containing fewer than 16 items, including empty lists, the marker byte should contain the high-order nibble ´9´ (binary 1001) followed by a low-order nibble containing the size.
+For lists containing fewer than 16 items, including empty lists, the marker byte should contain the high-order nibble `9` (binary 1001) followed by a low-order nibble containing the size.
 The items within the list are then serialised in order immediately after the marker.
 
 For lists containing 16 items or more, the marker `D4`, `D5` or `D6` should be used, depending on scale.
 This marker is followed by the size and list items, serialized in order.
+
+N.B. While the unsigned 32-bit integer following `D6` could hold a bigger number, the maximum size of lists is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Example with 0 items
 ----
@@ -691,7 +649,7 @@ A `Dictionary` is a list containing key-value entries:
 ** can contain multiple instances of the same key
 ** permit a mixture of types
 
-The size of a `Dictionary` denotes the number of key-value entries within that Dictionary, not the total packed byte size.
+The size of a `Dictionary` denotes the number of key-value entries within that dictionary, not the total packed byte size.
 
 *Markers:*
 
@@ -778,7 +736,7 @@ The size of a `Dictionary` denotes the number of key-value entries within that D
 | 2 147 483 647 entries
 |===
 
-For a dictionary containing fewer than 16 key-value entries, including an empty dictionary, the marker byte should contain the high-order nibble ´A´ (binary 1010) followed by a low-order nibble containing the size.
+For a dictionary containing fewer than 16 key-value entries, including an empty dictionary, the marker byte should contain the high-order nibble `A` (binary `1010`) followed by a low-order nibble containing the size.
 
 The entries within the dictionary are then serialized in `[key, value, key, value]` order immediately after the marker.
 
@@ -789,6 +747,8 @@ Keys are always `String` values.
 
 For a dictionary containing 16 key-value entries or more, the marker `D8`, `D9` or `DA` should be used, depending on scale.
 This marker is followed by the size and the key-value entries.
+
+N.B. While the unsigned 32-bit integer following `DA` could hold a bigger number, the maximum size of dictionaries is limited to 2 147 483 647 (maximum value of a signed 32-bit integer).
 
 .Example with an empty dictionary
 ----
@@ -910,444 +870,9 @@ This count does not include the tag.
 | 15 fields
 |===
 
-For structures containing fewer than 16 fields, the marker byte should contain the high-order nibble ´B´ (binary 1011) followed by a low-order nibble containing the size.
+For structures containing fewer than 16 fields, the marker byte should contain the high-order nibble `B` (binary `1011`) followed by a low-order nibble containing the size.
 The marker is immediately followed by the *tag byte* and the field values in that order.
 The *tag byte* is used to identify the type or class of the structure and may hold any value between 0 and +127.
 
-The table below lists the PackStream specified structures and their code and tag byte.
-
-[cols="<20,<10,<10",options="header"]
-|===
-| Structure name
-| Code
-| tag byte
-
-| <<structure-node, `Node`>>
-| ´N´
-| `4E`
-
-| <<structure-relationship, `Relationship`>>
-| ´R´
-| `52`
-
-| <<structure-unbound, `UnboundRelationship`>>
-| ´r´
-| `72`
-
-| <<structure-path, `Path`>>
-| ´P´
-| `50`
-
-| <<structure-date, `Date`>>
-| ´D´
-| `44`
-
-| <<structure-time, `Time`>>
-| ´T´
-| `54`
-
-| <<structure-localtime, `LocalTime`>>
-| ´t´
-| `74`
-
-| <<structure-datetime, `DateTime`>>
-| ´F´
-| `46`
-
-| <<structure-datetimezoneid, `DateTimeZoneId`>>
-| ´f´
-| `66`
-
-| <<structure-localdatetime, `LocalDateTime`>>
-| ´d´
-| `64`
-
-| <<structure-duration, `Duration`>>
-| ´E´
-| `45`
-
-| <<structure-point2d, `Point2D`>>
-| ´X´
-| `58`
-
-| <<structure-point3d, `Point3D`>>
-| ´Y´
-| `59`
-|===
-
-[[structure-node]]
-==== `Node`
-
-A snapshot of a node within a graph database.
-
-*tag byte:* `4E`
-
-*Number of fields:* 3
-----
-Node::Structure(
-    id::Integer,
-    labels::List<String>,
-    properties::Dictionary,
-)
-----
-
-.Example of a node structure
-----
-Node(
-  id = 3,
-  labels = ["Example", "Node"],
-  properties = {"name": "example"},
-)
-----
-----
-B3 4E
-...
-----
-
-[[structure-relationship]]
-==== `Relationship`
-
-A snapshot of a relationship within a graph database.
-
-*tag byte:* `52`
-
-*Number of fields:* 5
-----
-Relationship::Structure(
-    id::Integer,
-    startNodeId::Integer,
-    endNodeId::Integer,
-    type::String,
-    properties::Dictionary,
-)
-----
-
-.Example of a relationship structure
-----
-Relationship(
-    id = 11,
-    startNodeId = 2,
-    endNodeId = 3,
-    type = "KNOWS",
-    properties = {"name": "example"},
-)
-----
-----
-B5 52
-...
-----
-
-[[structure-unbound]]
-==== `UnboundRelationship`
-
-A relationship without start or end node ID.
-It is used internally for Path serialization.
-
-*tag byte:* `72`
-
-*Number of fields:* 3
-----
-UnboundRelationship::Structure(
-    id::Integer,
-    type::String,
-    properties::Dictionary,
-)
-----
-
-.Example of unbound relationship structure
-----
-UnboundRelationship(
-    id = 17,
-    type = "KNOWS",
-    properties = {"name": "example"},
-)
-----
-----
-B3 72
-...
-----
-
-[[structure-path]]
-==== `Path`
-
-An alternating sequence of nodes and relationships.
-
-*tag byte:* `50`
-
-*Number of fields:* 3
-----
-Path::Structure(
-    nodes::List<Node>,
-    rels::List<UnboundRelationship>,
-    indices::List<Integer>,
-)
-----
-
-Where the `nodes` field contains a list of nodes and the `rels` field is a list of unbound relationships.
-The `indices` are a list of integers describing how to construct the path from `nodes` and `rels`.
-The first node in `nodes` is always the first node in the path and is not referenced in `indices`.
-`indices` always has an even number of entries.
-The 1st, 3rd, ... entry in `indices` refers to an entry in `rels` (1-indexed), for example, a `3` would refer to the 3rd element of `rels`.
-The number can also be negative which should be treated like the positive equivalent, except for denoting the relationship in the inverse direction.
-The number is never `0`.
-The 2nd, 4th, ... entry in `indices` refers to an entry in `nodes` (0-indexed), for example, a `3` would refer the 2nd element of `nodes`.
-The number is always `≥ 0`.
-
-.Example (simplified notation for `<Node>` and `<UnboundRelationship>`)
-----
-Path::Structure(
-    nodes: [Node::Structure(42, ...), Node::Structure(69, ...), Node::Structure(1, ...)],
-    rels: [UnboundRelationship::Structure(1000, ...), UnboundRelationship::Structure(1001, ...)],
-    indices: [1, 1, 1, 0, -2, 2],
-----
-
-This represents the path `(42)-[1000]->(69)-[1000]->(42)<-[1001]-(1)`, where `(n)` denotes a node with id `n` and `[n]` a relationship with id `n` (`->` or `<-` denotes the direction of each relationship).
-
-
-[[structure-date]]
-==== `Date`
-
-A date without a time-zone in the ISO-8601 calendar system, e.g. “2007-12-03”.
-
-*tag byte:* `44`
-
-*Number of fields:* 2
-----
-Time::Structure(
-    nanoseconds::Integer,
-    tz_offset_seconds::Integer,
-)
-----
-
-Where the `nanoseconds` are nanoseconds since midnight (this time is _not_ UTC) and the `tz_offset_seconds` are an offset in seconds from UTC.
-
-To convert to UTC, use:
-----
-utc_nanoseconds = nanoseconds - (tz_offset_seconds * 1000000000)
-----
-
-[[structure-time]]
-==== `Time`
-
-An instant capturing the time of day, and the timezone, but not the date.
-
-*tag byte:* `54`
-
-*Number of fields:* 2
-----
-Time::Structure(
-    nanoseconds::Integer,
-    tz_offset_seconds::Integer,
-)
-----
-
-Where the `nanoseconds` are nanoseconds since midnight (this time is _not_ UTC) and the `tz_offset_seconds` are an offset in seconds from UTC.
-
-
-[[structure-localtime]]
-==== `LocalTime`
-
-An instant capturing the time of day, but neither the date nor the time zone.
-
-*tag byte:* `74`
-
-*Number of fields:* 1
-----
-LocalTime::Structure(
-    nanoseconds::Integer,
-)
-----
-
-Where the `nanoseconds` are nanoseconds since midnight.
-
-[[structure-datetime]]
-==== `DateTime`
-
-An instant capturing the date, the time, and the time zone.
-The time zone information is specified with a zone offset.
-
-*tag byte:* `46`
-
-*Number of fields:* 3
-----
-DateTime::Structure(
-    seconds::Integer,
-    nanoseconds::Integer,
-    tz_offset_seconds::Integer,
-)
-----
-
-- The `tz_offset_seconds` specifies the offset in seconds from UTC.
-- The `seconds` elapsed since the https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch], often referred as a Unix timestamp, **added** to the above offset.
-- The `nanoseconds` are what remains after the last second of the `DateTime`. 
-The amount of `nanoseconds` ranges from `0` to `999_999_999` (`_` separator added here and later for clarity).
-
-For instance, the serialization of the point in time denoted as `1970-01-01T02:15:00+01:00` (and `42` nanoseconds) can be implemented as follows:
-
-- compute the UTC time, i.e. `1970-01-01T01:15:00Z` (`Z` denotes UTC).
-- compute the difference between that UTC time and the Unix epoch, which is 1h15, i.e. `4_500` seconds.
-- add the offset of +1 hour, i.e. `3_600` seconds, to the above difference, which yields `8_100` (`4_500`+`3_600`)
-
-The resulting `DateTime` instance is therefore as follows:
-
-----
-{
-  seconds: 8100
-  nanoseconds: 42,
-  tz_offset_seconds: 3600
-}
-----
-
-The deserialization of such a `DateTime` structure expectedly happens in reverse:
-
-- remove the offset from the `seconds` field, which gives here `8_100`
-- instantiate the idiomatic equivalent of `DateTime` based on that Unix timestamp, giving `1970-01-01T01:15:00Z`
-- localize the resulting UTC `DateTime` to the timezone of the specified offset, giving `1970-01-01T02:15:00+0100`
-
-[[structure-datetimezoneid]]
-==== `DateTimeZoneId`
-
-An instant capturing the date, the time, and the time zone.
-The time zone information is specified with a zone identifier.
-
-*tag byte:* `66`
-
-*Number of fields:* 3
-----
-DateTimeZoneId::Structure(
-    seconds::Integer,
-    nanoseconds::Integer,
-    tz_id::String,
-)
-----
-
-- The `tz_id` specifies the timezone name as understood by link:https://en.wikipedia.org/wiki/Tz_database[the timezone database].
-- The `seconds` elapsed since the https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch], often referred as a Unix timestamp, **added** to the offset derived from the named timezone and specified the point in time.
-- The `nanoseconds` are what remains after the last second of the `DateTime`. 
-The amount of nanoseconds ranges from `0` to `999_999_999` (`_` separator added here and later for clarity).
-
-For instance, the serialization of the point in time denoted as `1970-01-01T02:15:00+0100[Europe/Paris]` (and `42` nanoseconds) can be implemented as follows:
-
-- retrieve the offset of the named timezone for that point in time, here +1 hour, i.e. `3_600` seconds.
-- compute the UTC time, i.e. `1970-01-01T01:15:00Z` (`Z` denotes UTC).
-- compute the difference between that UTC time and the Unix epoch, which is 1h15, i.e. `4_500` seconds.
-- add the resolved offset of +1 hour, i.e. `3_600` seconds, to the above difference, which yields `8_100` (`4_500`+`3_600`).
-
-The resulting `DateTime` instance is therefore as follows:
-
-----
-{
-  seconds: 8100
-  nanoseconds: 42,
-  tz_id: "Europe/Paris"
-}
-----
-
-The deserialization of such a `DateTime` structure happens as follows:
-
-- instantiate the idiomatic equivalent of `DateTime` assuming the seconds denote a Unix timestamp, giving `1970-01-01T02:15:00Z`.
-- set the timezone of the resulting instance, without changing the date/time components, giving `1970-01-01T02:15:00+0100[Europe/Paris]` (this may lead to ambiguities, refer to the `Known Limitations` section below for more information).
-
-===== Known Limitations
-
-====== Accuracy
-
-The resolution of offsets for a given time zone name and point in time is bound to the accuracy of the underlying link:https://en.wikipedia.org/wiki/Tz_database[timezone database].
-In particular, link:https://en.wikipedia.org/wiki/Tz_database#Data_before_1970[time zones before 1970] are not as well specified.
-Moreover, the offset resolution likely occurs both on the Bolt client side and Bolt server side. 
-They each rely on a different timezone database. 
-If these copies are not in sync, it could lead to unwanted discrepancies.
-In such a situation, either server or client could:
-
-- reject a timezone name deemed valid by the other party.
-- resolve different offsets for the same time zone and `DateTimeZoneId`.
-
-====== Time Shifts
-
-Not all instances of `DateTimeZoneId` map to a single valid point in time.
-
-1. During time shifts like going from 2AM to 3AM in a given day and timezone, 2:30AM e.g. does not happen.
-2. Similarly, when going from 3AM to 2AM in a given day and timezone, 2:30AM happens twice.
-
-In the first case, a `DateTimeZoneId` specifying a time between 2AM and 3AM does not correspond to any actual points in time for that timezone and is invalid.
-
-In the second case, all points in the time between 2AM and 3AM exist twice, but with a different offset.
-Therefore, the timezone name is not sufficient to resolve the ambiguity, the timezone offset is also needed.
-Since `DateTimeZoneId` does not include the timezone offset, the resolution of these particular datetimes is undefined behavior.
-
-[[structure-localdatetime]]
-==== `LocalDateTime`
-
-An instant capturing the date and the time but not the time zone.
-
-*tag byte:* `64`
-
-*Number of fields:* 2
-----
-LocalDateTime::Structure(
-    seconds::Integer,
-    nanoseconds::Integer,
-)
-----
-
-Where the `seconds` are seconds since the Unix epoch.
-
-
-[[structure-duration]]
-==== `Duration`
-
-A temporal amount.
-This captures the difference in time between two instants.
-It only captures the amount of time between two instants, it does not capture a start time and end time.
-A unit capturing the start time and end time would be a `Time Interval` and is out of scope for this proposal.
-
-A duration can be negative.
-
-*tag byte:* `45`
-
-*Number of fields:* 4
-----
-Duration::Structure(
-    months::Integer,
-    days::Integer,
-    seconds::Integer,
-    nanoseconds::Integer,
-)
-----
-
-[[structure-point2d]]
-==== `Point2D`
-
-A representation of a single location in 2-dimensional space.
-
-*tag byte:* `58`
-
-*Number of fields:* 3
-----
-Point2D::Structure(
-    srid::Integer,
-    x::Float,
-    y::Float,
-)
-----
-
-Where the `srid` is a _Spatial Reference System Identifier_.
-
-[[structure-point3d]]
-==== `Point3D`
-
-A representation of a single location in 3-dimensional space.
-
-*tag byte:* `59`
-
-*Number of fields:* 4
-----
-Point3D::Structure(
-    srid::Integer,
-    x::Float,
-    y::Float,
-    z::Float,
-)
-----
-
-Where the `srid` is a _Spatial Reference System Identifier_.
+PackStream itself does not define semantics for different structures.
+Instead, refer to the xref:bolt/structure-semantics.adoc[] for the Bolt version in question.
