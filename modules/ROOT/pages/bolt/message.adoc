@@ -503,7 +503,7 @@ auth_token::Dictionary(
 )
 ----
 
-** _The `user_agent` should conform to `"Name/Version"` for example `"Example/1.1.0"` (see link:developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information)._
+** _The `user_agent` should conform to `"Name/Version"` for example `"Example/1.1.0"` (see link:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information)._
 ** _The `scheme` is the authentication scheme._
 _Predefined schemes are `"none"` and `"basic"`._
 _If no `scheme` is provided, it defaults to `"none"`._
