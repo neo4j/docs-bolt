@@ -279,9 +279,9 @@ There are three different kinds of messages:
 | <<messages-hello, `HELLO`>>
 | `01`
 | Request
-| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String), notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
+| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String), notifications_minimum_severity::String, notifications_disabled_categories::List<String>, bolt_agent::Dictionary(product::String, platform::String, language::String, language_details::String))`
 | initialize connection (replaces <<messages-init, `INIT`>> of *v1* & *v2*)(`routing::Dictionary(address::String)` added in *v4.1*)
-(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in *v5.2*)
+(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in *v5.2*)(`bolt_agent::Dictionary` added in *v5.3*)
 
 | <<messages-logon, `LOGON`>>
 | `6A`
@@ -400,6 +400,8 @@ In version *4.1*, `routing::Dictionary(address::String)` was added to indicate a
 In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
 Disabling categories or severities allows the server to skip analysis for those, which can speed up query execution.
 
+In version *5.3*, `bolt_agent::Dictionary` was added to indicate the underlying driver and its version as opposed to the application using the driver in `user_agent.
+
 [NOTE]
 ====
 On versions earlier than *5.1*, the authentication token described on the `LOGON` message should be sent as part of the `HELLO` message instead.
@@ -429,11 +431,18 @@ extra::Dictionary(
   patch_bolt::List<String>,
   routing::Dictionary(address::String),
   notifications_minimum_severity::String,
-  notifications_disabled_categories::List<String>
+  notifications_disabled_categories::List<String>,
+  bolt_agent::Dictionary(
+    product::String,
+    platform::String,
+    language::String,
+    language_details::String
+  )
 )
 ----
 
 ** The `user_agent` should conform to `"Name/Version"` for example `"Example/4.1.0"` (see link:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information).
+Drivers should allow application code to set this value as it is meant to identify the application using the driver.
 ** `patch_bolt` is version *4.3-4.4 only*.
 It lets the driver request a patch to the protocol from the server. The patch must not be applied until the server acknowledges it in the `SUCCESS` response.
 Default: `[]`.
@@ -453,6 +462,22 @@ Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#n
 Sending `null` will make the server use its configured default.
 Default: `null`.
 (*v5.2+*)
+** `bolt_agent::Dictionary`, as opposed to `user_agent`, is meant to identify the driver rather than the application using it.
+Drivers should not allow applications to change this value.
+When populating the fields, drivers should be careful not to include anything that could be used to identify a single machine or user.
+This field is mandatory.
+(*v5.3+*)
+*** `product::String` should conform to `"Name/Version"` and identify the driver for example `"neo4j-fortran-alice-doe/42.69.0"`.
+This field is mandatory.
+*** `platform::String` should describe the platform the driver is running on for example `"Linux 5.15.0-58-generic; x86_64"`.
+Send `null` (or omit) if no platform information is available.
+Default: `null`.
+*** `language::String` should conform to `"Name/Version"` and describe the language the driver/application is written in for example `"Fortran/77"`.
+Send `null` (or omit) if no language information is available.
+Default: `null`.
+*** `language_details::String` can contain further information about the language the driver/application is written in for example compiler, runtime, or interpreter and respective versions.
+Send `null` (or omit) if no language details are available.
+Default: `null`.
 
 *Detail messages:*
 
@@ -471,7 +496,7 @@ HELLO {extra}
 
 .Example 1
 ----
-HELLO {"user_agent": "Example/4.1.0", "routing": {"address": "x.example.com:9001"}}
+HELLO {"user_agent": "Example/4.1.0", "routing": {"address": "x.example.com:9001"}, "bolt_agent": {""}}
 ----
 
 .Example 2
@@ -1654,6 +1679,11 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 
 The sections below list the changes of messages compared to the previous version.
 Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
+
+[[messages-summary-53]]
+=== Version 5.3
+
+** A new field `bolt_agent` is added to the `HELLO` message's `extra` dictionary.
 
 [[messages-summary-52]]
 === Version 5.2
