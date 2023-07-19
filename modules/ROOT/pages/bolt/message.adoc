@@ -551,6 +551,7 @@ auth_token::Dictionary(
 Predefined schemes are `"none"` and `"basic"`.
 If no `scheme` is provided, it defaults to `"none"`.
 ** The `auth_token` must contain either just the entry `{"scheme" : "none"}` or the keys `scheme`, `principal` and `credentials`.
+
 *Detail messages:*
 
 No detail messages should be returned.
