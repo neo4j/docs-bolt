@@ -455,7 +455,7 @@ For longer strings:
 | 16-bit big-endian unsigned integer
 | 65 535 bytes
 
-| `D3`
+| `D2`
 | 32-bit big-endian unsigned integer
 | 2 147 483 647 bytes
 |===
