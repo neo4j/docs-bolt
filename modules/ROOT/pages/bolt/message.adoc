@@ -716,6 +716,33 @@ Clients receiving a `FAILURE` in response to `LOGOFF` should treat that connecti
 FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': "Message 'LogoffMessage{}' cannot be handled by a session in the FAILED state."}
 ----
 
+[[messages-telemetry]]
+=== Request message `TELEMETRY`
+
+The `TELEMETRY` message contains an int which represents an api type that has been called on the driver, this is then
+put in the servers metric system. The client will receive a `Success` in response unless it sends an invalid entry to the api field in which case the client will receive a `FAILURE`.
+
+*Signature:* `54`
+
+*Fields* :
+----
+metadata::Dictionary{
+  api::Integer
+}
+----
+
+** The 'api' field has 4 valid entries 0,1,2,3; (Managed transaction, Un-managed transaction, Implicit transaction, Driver-level execute query)
+
+==== Synopsis
+----
+TELEMETRY {metadata}
+----
+
+.Example 1
+----
+TELEMETRY {"api": 0}
+----
+
 [[messages-goodbye]]
 === Request message `GOODBYE`
 
@@ -1679,6 +1706,11 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 
 The sections below list the changes of messages compared to the previous version.
 Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
+
+[[messages-summary-54]]
+=== Version 5.4
+
+** A new message `TELEMETRY` is added.
 
 [[messages-summary-53]]
 === Version 5.3
