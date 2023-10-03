@@ -119,6 +119,7 @@ The `READY` state can handle the request messages `RUN` and `BEGIN` and receive 
 ** `RUN` to `STREAMING` or `FAILED`
 ** `BEGIN` to `TX_READY` or `FAILED` (v3+)
 ** `LOGOFF` to `AUTHENTICATION` (v5.1+)
+** `TELEMETRY` to `READY` (v5.4+)
 
 
 [[server-streaming]]
