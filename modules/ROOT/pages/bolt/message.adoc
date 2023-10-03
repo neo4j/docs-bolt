@@ -719,19 +719,28 @@ FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': "Message 'LogoffM
 [[messages-telemetry]]
 === Request message `TELEMETRY`
 
-The `TELEMETRY` message contains an int which represents an api type that has been called on the driver, this is then
-put in the servers metric system. The client will receive a `Success` in response unless it sends an invalid entry to the api field in which case the client will receive a `FAILURE`. This message will only be processed into the metrics system if telemetry is enabled on both the client and the driver. If only enabled on the client the message will still be sent and a `Success` will be returned but nothing will be put into the metrics system. If disabled on the client the `TELEMETRY` will just never be sent.
+The `TELEMETRY` message contains an integer representing which driver API was used.
+The telemetry information is stored on the server's metrics system.
+The client receives a `SUCCESS` response, unless it sends an invalid value for the `api` field, which results in a `FAILURE` response.
+
+This message is stored into the metrics system only if telemetry is enabled on both the server and the driver.
+If only enabled on the driver, the message will still be sent and a `SUCCESS` will be returned, but nothing will be stored into the server's metrics system.
 
 *Signature:* `54`
 
-*Fields* :
+*Fields*:
 ----
 metadata::Dictionary{
   api::Integer
 }
 ----
 
-** The 'api' field has 4 valid entries 0,1,2,3; (Managed transaction, Un-managed transaction, Implicit transaction, Driver-level execute query)
+Valid values for `api` and the corresponding API associations are:
+
+- `0` -- Managed transaction
+- `1` -- Explicit transaction
+- `2` -- Implicit transaction
+- `3` -- Driver-level `execute_query()`
 
 ==== Synopsis
 ----
