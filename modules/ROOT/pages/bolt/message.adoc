@@ -720,7 +720,7 @@ FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': "Message 'LogoffM
 === Request message `TELEMETRY`
 
 The `TELEMETRY` message contains an int which represents an api type that has been called on the driver, this is then
-put in the servers metric system. The client will receive a `Success` in response unless it sends an invalid entry to the api field in which case the client will receive a `FAILURE`.
+put in the servers metric system. The client will receive a `Success` in response unless it sends an invalid entry to the api field in which case the client will receive a `FAILURE`. This message will only be processed into the metrics system if telemetry is enabled on both the client and the driver. If only enabled on the client the message will still be sent and a `Success` will be returned but nothing will be put into the metrics system. If disabled on the client the `TELEMETRY` will just never be sent.
 
 *Signature:* `54`
 
