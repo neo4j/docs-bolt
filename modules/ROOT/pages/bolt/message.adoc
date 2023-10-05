@@ -721,6 +721,9 @@ FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': "Message 'LogoffM
 === Request message `TELEMETRY`
 
 The `TELEMETRY` message contains an integer representing which driver API was used.
+
+This message is new in version *5.4*.
+
 The telemetry information is stored on the server's metrics system.
 The client receives a `SUCCESS` response, unless it sends an invalid value for the `api` field, which results in a `FAILURE` response.
 
