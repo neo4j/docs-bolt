@@ -769,7 +769,7 @@ TELEMETRY 0
 
 ==== Server response `SUCCESS`
 
-If a `TELEMETRY` message request has been successfully received, the server should respond with a `SUCCESS` and remain in its current state.
+If a `TELEMETRY` message request is successfully received, the server responds with a `SUCCESS` and remains in its current state.
 
 .Example
 ----
@@ -778,7 +778,7 @@ SUCCESS {}
 
 ==== Server response `FAILURE`
 
-If a `TELEMETRY` message contains a value that is not a valid `api` value or is sent in the wrong state, the server should respond with a `FAILURE` message and enter the `FAILED` state.
+If a `TELEMETRY` message contains a value that is not a valid `api` value or is sent in the wrong state, the server responds with a `FAILURE` message and enters the `FAILED` state.
 
 .Example 1
 ----
