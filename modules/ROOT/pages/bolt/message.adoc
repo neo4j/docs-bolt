@@ -727,15 +727,6 @@ This message is new in version *5.4*.
 The telemetry information is stored on the server's metrics system.
 The client receives a `SUCCESS` response, unless it sends an invalid value for the `api` field, which results in a `FAILURE` response.
 
-This message is stored into the metrics system only if telemetry is enabled on both the server and the driver.
-If only enabled on the driver, the message will still be sent and a `SUCCESS` will be returned, but nothing will be stored into the server's metrics system.
-
-=== Request message `TELEMETRY`
-
-The `TELEMETRY` message contains an integer representing which driver API was used.
-The telemetry information is stored on the server's metrics system.
-The client receives a `SUCCESS` response, unless it sends an invalid value for the `api` field, which results in a `FAILURE` response.
-
 Clients should offer the user the option to disable sending telemetry.
 Further, the server might opt out of receiving telemetry from the client by sending the corresponding configuration hint in the `SUCCESS` message of the `HELLO` message.
 See xref:appendix/connection-hints.adoc#hint-telemetry-enabled[Appendix -- Connection hints] for more information.
