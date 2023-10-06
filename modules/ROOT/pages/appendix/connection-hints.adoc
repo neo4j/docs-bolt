@@ -1,6 +1,8 @@
 :page-toclevels: 0
 
-# Connection hints
+= Connection hints
+
+label:new[Introduced in bolt 4.3]
 
 As of bolt version 4.3, the server may optionally include a set of configuration hints within the `SUCCESS` metadata provided in response to the `HELLO` message.
 Drivers may choose to interpret or ignore these hints at their own discretion.
@@ -8,7 +10,8 @@ The following set of hints are currently defined.
 
 
 [[hint-telemetry-enabled]]
-## telemetry.enabled::Boolean - v5.4
+== telemetry.enabled::Boolean
+label:new[Introduced in bolt 5.4]
 
 Whether telemetry collection via xref:bolt/message.adoc#messages-telemetry[`TELEMETRY` message] is enabled.
 
@@ -24,7 +27,8 @@ S: SUCCESS {"server": "Neo4j/5.13.0", "connection_id": "example-connection-id:1"
 
 
 [[hint-recv-timeout-seconds]]
-## connection.recv_timeout_seconds::Integer - v4.3
+== connection.recv_timeout_seconds::Integer
+label:new[Introduced in bolt 4.3]
 
 Maximum amount of time (in seconds) for which a connection may remain idle following a request before drivers should consider it stale.
 

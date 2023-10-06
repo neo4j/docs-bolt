@@ -384,6 +384,7 @@ There are three different kinds of messages:
 
 [[messages-hello]]
 === Request message - `HELLO`
+label:new[Introduced in bolt 3]
 
 The `HELLO` message request the connection to be authorized for use with the remote database and replaces the `INIT` request message of version *1* and *2*.
 See below for more information on `INIT`.
@@ -427,6 +428,10 @@ On versions earlier than *5.1*, the authentication token described on the `LOGON
 *Fields:*
 ----
 extra::Dictionary(
+  auth::Dictionary(
+    scheme::String,
+    ...
+  )
   user_agent::String,
   patch_bolt::List<String>,
   routing::Dictionary(address::String),
@@ -441,32 +446,38 @@ extra::Dictionary(
 )
 ----
 
+** `auth` contains the authentication information.
+See <<messages-logon, `LOGON` message>> for more information.
+label:deprecated[Removed after bolt 5.0]
 ** The `user_agent` should conform to `"Name/Version"` for example `"Example/4.1.0"` (see link:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information).
 Drivers should allow application code to set this value as it is meant to identify the application using the driver.
-** `patch_bolt` is version *4.3-4.4 only*.
-It lets the driver request a patch to the protocol from the server. The patch must not be applied until the server acknowledges it in the `SUCCESS` response.
+** `patch_bolt` lets the driver request a patch to the protocol from the server.
+The patch must not be applied until the server acknowledges it in the `SUCCESS` response.
 Default: `[]`.
+label:new[Introduced in bolt 4.3]
+label:deprecated[Removed after bolt 4.4]
 *** `"utc"` is currently the only supported patch.
 If successfully negotiated, server and driver will use xref:bolt/structure-semantics.adoc#structure-datetime[DateTime] and xref:bolt/structure-semantics.adoc#structure-datetimezoneid[DateTimeZoneId] as defined in Bolt version *5.0*.
 ** The `routing` field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
 Key-value entries in the routing context should correspond exactly to those in the original URI query string.
 Setting `routing` to `null` indicates that the server should not carry out any routing.
 Default: `null`.
+label:new[Introduced in bolt 4.1]
 ** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use its configured default.
 Default: `null`.
-(*v5.2+*)
+label:new[Introduced in bolt 5.2]
 ** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
 Sending `null` will make the server use its configured default.
 Default: `null`.
-(*v5.2+*)
+label:new[Introduced in bolt 5.2]
 ** `bolt_agent::Dictionary`, as opposed to `user_agent`, is meant to identify the driver rather than the application using it.
 Drivers should not allow applications to change this value.
 When populating the fields, drivers should be careful not to include anything that could be used to identify a single machine or user.
 This field is mandatory.
-(*v5.3+*)
+label:new[Introduced in bolt 5.3]
 *** `product::String` should conform to `"Name/Version"` and identify the driver for example `"neo4j-fortran-alice-doe/42.69.0"`.
 This field is mandatory.
 *** `platform::String` should describe the platform the driver is running on for example `"Linux 5.15.0-58-generic; x86_64"`.
@@ -513,10 +524,15 @@ The following fields are defined for inclusion in the `SUCCESS` metadata:
 
 ** `server::String` (server agent string, example `"Neo4j/4.1.0"`)
 ** `connection_id::String` (unique identifier of the bolt connection used on the server side, example: `"bolt-61"`)
-** `patch_bolt` only in versions *4.3* and *4.4* and only if the client requested patches in the `patch_bolt` field of the request. The server will include the subset of requested patches (with the exact same string the client requests) if it supports it. From that point onward, the server-client communication _must only_ use the patched protocol.
+** `patch_bolt::List<String>` only if the client requested patches in the `patch_bolt` field of the request.
+The server will include the subset of requested patches (with the exact same string the client requests) if it supports it.
+From that point onward, the server-client communication _must only_ use the patched protocol.
+label:new[Introduced in bolt 4.3]
+label:deprecated[Removed after bolt 4.4]
 ** `hints::Dictionary` (set of optional configuration hints to be considered by the driver)
+label:new[Introduced in bolt 4.3]
 
-The `hints` dictionary is introduced in version *4.3* and may contain a set of optional configuration hints which may be interpreted or ignored by drivers at their own discretion in order to augment operations where applicable.
+The `hints` dictionary may contain a set of optional configuration hints which may be interpreted or ignored by drivers at their own discretion in order to augment operations where applicable.
 A full listing of the available hints may be found in xref:appendix/connection-hints.adoc[Appendix -- Connection hints].
 Hints remain valid throughout the lifetime of a given connection and cannot be changed.
 As such, newly established connections may observe different hints and/or hint values as the server configuration is adjusted.
@@ -542,10 +558,13 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
 [[messages-init]]
-=== Request message `INIT` label:deprecated[]
+=== Request message `INIT`
+label:new[Introduced in bolt 1]
+label:deprecated[Removed after bolt 2]
 
-*The request message `INIT` is only valid in version 1 and 2 and is replaced by the request message `HELLO` in version 3+.*
 The `INIT` message is a request for the connection to be authorized for use with the remote database.
+
+The request message `INIT` is only valid in version *1* and *2* and is replaced by the request message `HELLO` in version *3+*.
 
 The `INIT` message uses the structure signature `01` and passes two fields: `user agent` (String) and `auth_token` (Dictionary).
 
@@ -630,6 +649,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 [[messages-logon]]
 === Request message `LOGON`
+label:new[Introduced in bolt 5.1]
 
 A `LOGON` message carries an authentication request.
 
@@ -646,11 +666,11 @@ auth::Dictionary(
 ----
 
 ** The `scheme` is the authentication scheme.
-Predefined schemes are `none`, `basic`, `bearer` and `kerberos`.
+Predefined schemes are `none`, `basic`, `bearer` and `kerberos` (depending on the server's capabilities).
 ** Further entries in the message are passed to the implementation of the chosen authentication scheme.
 Their names, types, and defaults depend on that choice.
 *** The scheme `basic` requires a username `principal::String` and a password `credentials::String`.
-*** The scheme `bearer` merely requires a token `credentials::String` (added in version *4.4*).
+*** The scheme `bearer` merely requires a token `credentials::String`.
 
 If authentication fails, the server responds with a `FAILURE` message and immediately closes the connection.
 
@@ -667,6 +687,7 @@ LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
 
 [[messages-logoff]]
 === Request message `LOGOFF`
+label:new[Introduced in bolt 5.1]
 
 A `LOGOFF` message logs off the currently authenticated user. The connection is then ready for another `LOGON` message.
 
@@ -719,10 +740,9 @@ FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': "Message 'LogoffM
 
 [[messages-telemetry]]
 === Request message `TELEMETRY`
+label:new[Introduced in bolt 5.4]
 
 The `TELEMETRY` message contains an integer representing which driver API was used.
-
-This message is new in version *5.4*.
 
 The telemetry information is stored on the server's metrics system.
 The client receives a `SUCCESS` response, unless it sends an invalid value for the `api` field, which results in a `FAILURE` response.
@@ -801,8 +821,9 @@ S: FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': 'Unknown drive
 
 [[messages-goodbye]]
 === Request message `GOODBYE`
+label:new[Introduced in bolt 3]
 
-The `GOODBYE` message is introduced in version *3* and notifies the server that the connection is terminating gracefully.
+The `GOODBYE` message notifies the server that the connection is terminating gracefully.
 On receipt of this message, the server should immediately shut down the socket on its side without sending a response.
 
 A client may shut down the socket at any time after sending the `GOODBYE` message.
@@ -834,11 +855,13 @@ GOODBYE
 ----
 
 [[messages-ack-failure]]
-=== Request message `ACK_FAILURE` label:deprecated[]
-
-*The request message `ACK_FAILURE` is only valid in version 1 and 2 and the request message `RESET` should be used in its place in version 3+.*
+=== Request message `ACK_FAILURE`
+label:new[Introduced in bolt 1]
+label:deprecated[Removed after bolt 2]
 
 The request message `ACK_FAILURE` signals to the server that the client has acknowledged a previous failure and should return to a `READY` state.
+
+The request message `ACK_FAILURE` is only valid in version *1* and *2* and the request message `RESET` should be used in its place in version *3+*.
 
 *Signature:* `0E`
 
@@ -893,6 +916,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 [[messages-reset]]
 === Request message `RESET`
+label:new[Introduced in bolt 1]
 
 The `RESET` message requests that the connection should be set back to its initial `RESET` state, as if a `HELLO` (`INIT` in *v1* and *v2*) (and a `LOGON` in *v5.1+*) had just successfully completed.
 The `RESET` message is unique in that, on arrival at the server, it jumps ahead in the message queue, stopping any unit of work that happens to be executing.
@@ -952,6 +976,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 [[messages-run]]
 === Request message `RUN`
+label:new[Introduced in bolt 1]
 
 The `RUN` message requests that a Cypher query is executed with a set of parameters and additional extra data.
 
@@ -989,32 +1014,34 @@ An *Explicit Transaction* (`BEGIN`+`RUN`) does not carry any data in the extra f
 
 For *Auto-commit Transaction* (`RUN`) the extra field carries:
 
-** The `bookmarks` is a list of strings containing some kind of bookmark identification, e.g., `["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"]`.
+** `extra` contains additional options.
+label:new[Introduced in bolt 3]
+*** The `bookmarks` is a list of strings containing some kind of bookmark identification, e.g., `["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"]`.
 Default: `[]`.
-** The `tx_timeout` is an integer in that specifies a transaction timeout in ms.
+*** The `tx_timeout` is an integer in that specifies a transaction timeout in ms.
 Default: server-side configured timeout.
-** The `tx_metadata` is a dictionary that can contain some metadata information, mainly used for logging.
+*** The `tx_metadata` is a dictionary that can contain some metadata information, mainly used for logging.
 Default: `null`.
-** The `mode` specifies what kind of server the RUN message is targeting.
+*** The `mode` specifies what kind of server the RUN message is targeting.
 For write access use `"w"` and for read access use `"r"`.
 Default: `"w"`.
-** The `db` specifies the database name for multi-database to select where the transaction takes place. `null` and `""` denote the server-side configured default database.
-Default: `null`. (*v4+*)
-** The `imp_user` key specifies the impersonated user which executes this transaction.
+*** The `db` specifies the database name for multi-database to select where the transaction takes place. `null` and `""` denote the server-side configured default database.
+Default: `null`.
+label:new[Introduced in bolt 4.0]
+*** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
-Default: `null`. (*v4.4+*)
-** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
+Default: `null`.
+label:new[Introduced in bolt 4.4]
+*** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
-(*v5.2+*)
-** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
+label:new[Introduced in bolt 5.2]
+*** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
-(*v5.2+*)
-
-Note that the `extra::Dictionary` field was added in version *3* and thus does not exist in *v1* and *v2*.
+label:new[Introduced in bolt 5.2]
 
 *Detail messages:*
 
@@ -1064,9 +1091,10 @@ The following fields are defined for inclusion in the `SUCCESS` metadata.
 ** `fields::List<String>`, the fields of the return result. e.g. [“name”, “age”, …]
 ** `t_first::Integer`, the time, specified in ms, which the first record in the result stream is available after.
 
-In *v4+*, for *Explicit Transaction* (`BEGIN`+`RUN`):
+For *Explicit Transaction* (`BEGIN`+`RUN`):
 
 ** `qid::Integer` specifies the server assigned statement ID to reference the server side result-set with commencing `BEGIN`+`RUN`+`PULL` and `BEGIN`+`RUN`+`DISCARD` messages.
+label:new[Introduced in bolt 4.0]
 
 .Example *v3+*
 ----
@@ -1107,6 +1135,7 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 [[messages-discard]]
 === Request message `DISCARD`
+label:new[Introduced in bolt 1]
 
 The `DISCARD` message requests that the remainder of the result stream should be thrown away.
 
@@ -1123,10 +1152,12 @@ extra::Dictionary{
 }
 ----
 
-** The `n` specifies how many records to throw away.
+** `extra` contains additional options.
+label:new[Introduced in bolt 4.0]
+*** The `n` specifies how many records to throw away.
 `n=-1` will throw away all records.
 `n` has no default and must be present.
-** The `qid` (query identification) specifies for which statement the operation should be carried out (*Explicit Transaction* only).
+*** The `qid` (query identification) specifies for which statement the operation should be carried out (*Explicit Transaction* only).
 `qid=-1` can be used to denote the last executed statement.
 Default: `-1`.
 
@@ -1167,29 +1198,41 @@ For any other states, receipt of a `DISCARD` request will be considered a protoc
 
 ==== Server response `SUCCESS`
 
-The following fields are defined for inclusion in the `SUCCESS` metadata (*v4.0+*):
+** `has_more::Boolean`, `true` if there are no more records to stream.
+If this field is not present, it should be considered to default to `false`.
+label:new[Introduced in bolt 4.0]
 
-** `has_more::Boolean`, true if there are no more records to stream.
-If this field is not present, it should be considered to default to false.
+Or in the case that `has_more` is `false`:
 
-Or in the case that `has_more` is false:
+** `bookmark::String`, the bookmark after committing this transaction (*Autocommit Transaction* only).
+** `t_last::Integer`, the time, specified in ms, which the last record in the result stream is consumed after.
+label:new[Introduced in bolt 3]
+** `result_consumed_after::Integer`, same as `t_last`.
+label:deprecated[Removed after bolt 2]
+** `type::String`, the type of the statement, e.g. `"r"` for read-only statement, `"w"` for write-only statement, `"rw"` for read-and-write, and `"s"` for schema only.
+label:new[Introduced in bolt 3]
+** `stats::Dictionary`, counter information, such as db-hits etc.
+label:new[Introduced in bolt 3]
+** `plan::Dictionary`, plan result.
+label:new[Introduced in bolt 3]
+** `profile::Dictionary`, profile result.
+label:new[Introduced in bolt 3]
+** `notifications::List<Dictionary>`, a list of all notifications generated during execution of this statement.
+May be omitted if no notifications exist.
+In *v3*, this field is `notifications::Dictionary`.
+label:new[Introduced in bolt 3]
+** `db::String`, the database name where the query was executed.
+label:new[Introduced in bolt 4.0]
 
-** `bookmark::String`, the bookmark after committing this transaction (*Auto-commit Transaction* only).
-** `db::String`, the database name where the query is executed.
-
-.Example 1
+.Example 1 *v4+*
 ----
 SUCCESS {"has_more": true}
 ----
 
-.Example 2
+.Example 2 *v4+*
 ----
 SUCCESS {"bookmark": "example-bookmark:1", "db": "example_database"}
 ----
-
-In version *3*, the following fields are defined for inclusion in the `SUCCESS` metadata:
-
-** `bookmark::String`, the bookmark after committing this transaction (Auto-commit Transaction* only).
 
 .Example *v3*
 ----
@@ -1197,12 +1240,6 @@ SUCCESS {"bookmark": "example-bookmark:1"}
 ----
 
 In version *1* and *2*, if a `DISCARD_ALL` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
-The server may attach metadata to the message to provide footer detail for the discarded results.
-
-The following fields are defined for inclusion in the metadata:
-
-** `bookmark` (e.g. `"bookmark:1234"`)
-** `result_consumed_after` (e.g. `123`)
 
 .Example *v1* and *v2*
 ----
@@ -1221,7 +1258,7 @@ This version of the protocol defines one such detail message, namely `RECORD` (d
 
 *Signature:* `3F`
 
-*Fields* (in *v4.0+*):
+*Fields*:
 ----
 extra::Dictionary{
   n::Integer,
@@ -1229,10 +1266,12 @@ extra::Dictionary{
 }
 ----
 
-** The `n` specifies how many records to fetch.
+** `extra` contains additional options.
+label:new[Introduced in bolt 4.0]
+*** The `n` specifies how many records to fetch.
 `n=-1` will fetch all records.
 `n` has no default and must be present.
-** The qid (query identification) specifies for which statement the operation should be carried out (*Explicit Transaction* only).
+*** The qid (query identification) specifies for which statement the operation should be carried out (*Explicit Transaction* only).
 `qid=-1` can be used to denote the last executed statement.
 Default: `-1`.
 
@@ -1275,31 +1314,35 @@ PULL_ALL
 
 The following fields are defined for inclusion in the `SUCCESS` metadata:
 
-** `has_more::Boolean`, true if there are more records to stream.
-If this field is not present it should be considered to default to false.
+** `has_more::Boolean`, `true` if there are more records to stream.
+If this field is not present it should be considered to default to `false`.
 
-Or in the case that `has_more` is false:
+Or in the case that `has_more` is `false`:
 
 ** `bookmark::String`, the bookmark after committing this transaction (*Autocommit Transaction* only).
 ** `t_last::Integer`, the time, specified in ms, which the last record in the result stream is consumed after.
+label:new[Introduced in bolt 3]
+** `result_consumed_after::Integer`, same as `t_last`.
+label:deprecated[Removed after bolt 2]
 ** `type::String`, the type of the statement, e.g. `"r"` for read-only statement, `"w"` for write-only statement, `"rw"` for read-and-write, and `"s"` for schema only.
+label:new[Introduced in bolt 3]
 ** `stats::Dictionary`, counter information, such as db-hits etc.
+label:new[Introduced in bolt 3]
 ** `plan::Dictionary`, plan result.
+label:new[Introduced in bolt 3]
 ** `profile::Dictionary`, profile result.
+label:new[Introduced in bolt 3]
 ** `notifications::List<Dictionary>`, a list of all notifications generated during execution of this statement.
 May be omitted if no notifications exist.
 In *v3*, this field is `notifications::Dictionary`.
-** `db::String`, the database name where the query was executed (*v4.0+*).
+label:new[Introduced in bolt 3]
+** `db::String`, the database name where the query was executed.
+label:new[Introduced in bolt 4.0]
 
 .Example
 ----
 SUCCESS {"bookmark": "example-bookmark:1", "t_last": 123}
 ----
-
-_In *v1* and *v2*, only two fields are defined for inclusion in the metadata:_
-
-** `bookmark` _(e.g. `"bookmark:1234"`)_
-** `result_consumed_after` _(e.g. `123`)_
 
 .Example *v1* and *v2*
 ----
@@ -1308,7 +1351,7 @@ SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123
 
 ==== Server response `IGNORED`
 
-For *v1* and *v2*, a  server that receives a `DISCARD_ALL` request while in `FAILED` state or `INTERRUPTED` state, should respond with an `IGNORED` message and discard the request without processing it.
+For *v1* and *v2*, a  server that receives a `PULL_ALL` request while in `FAILED` state or `INTERRUPTED` state, should respond with an `IGNORED` message and discard the request without processing it.
 No state change should occur.
 
 .Example (all versions)
@@ -1318,7 +1361,7 @@ IGNORED
 
 ==== Server response `FAILURE`
 
-For *v1* and *v2*, a `DISCARD_ALL` message request cannot be processed successfully, the server should respond with a `FAILURE` message and enter the `FAILED` state.
+For *v1* and *v2*, a `PULL_ALL` message request cannot be processed successfully, the server should respond with a `FAILURE` message and enter the `FAILED` state.
 The server may attach metadata to the message to provide more detail on the nature of the failure.
 
 .Example (all versions)
@@ -1341,6 +1384,7 @@ RECORD [1, 2, 3]
 
 [[messages-begin]]
 === Request massage `BEGIN`
+label:new[Introduced in bolt 1]
 
 The `BEGIN` message request the creation of a new *Explicit Transaction*.
 This message should then be followed by a `RUN` message.
@@ -1376,20 +1420,22 @@ For write access use `"w"` and for read access use `"r"`.
 Defaults to write access if no mode is sent. Default: `"w"`.
 ** The `db` specifies the database name for multi-database to select where the transaction takes place.
 `null` and `""` denote the server-side configured default database.
-Default: `null` (*v4.0+*).
+Default: `null`.
+label:new[Introduced in bolt 4.0]
 ** The `imp_user` key specifies the impersonated user which executes this transaction.
 `null` denotes no impersonation (execution takes place as the current user).
-Default: `null` (*v4.4*).
+Default: `null`.
+label:new[Introduced in bolt 4.4]
 ** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
-(*v5.2+*)
+label:new[Introduced in bolt 5.2]
 ** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
 Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
-(*v5.2+*)
+label:new[Introduced in bolt 5.2]
 
 *Detail messages:*
 
@@ -1558,8 +1604,9 @@ FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 
 [[messages-route]]
 === Request message `ROUTE`
+label:new[Introduced in bolt 4.3]
 
-The `ROUTE` instructs the server to return the current routing table and was added in *v4.3*.
+The `ROUTE` instructs the server to return the current routing table.
 In previous versions there was no explicit message for this and a procedure had to be invoked using Cypher through the `RUN` and `PULL` messages.
 
 This message can only be sent after successful authentication and outside of transactions.
@@ -1570,6 +1617,7 @@ This message can only be sent after successful authentication and outside of tra
 ----
 routing::Dictionary,
 bookmarks::List<String>,
+db:String,
 extra::Dictionary(
   db::String,
   imp_user::String,
@@ -1586,12 +1634,16 @@ db:String
 ** The routing field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
 Key-value entries in the routing context should correspond exactly to those in the original URI query string.
 ** The `bookmarks` is a list of strings containing some kind of bookmark identification e.g [`"neo4j-bookmark-transaction:1"`, `"neo4j-bookmark-transaction:2"`].
-In *v4.3*, the format is `bookmarks::List<String>`.
 ** The `db` specifies the database name for multi-database to select where the transaction takes place.
 `null` denotes the server-side configured default database.
-** The `imp_user` specifies the impersonated user for the purposes of resolving their home database.
+label:deprecated[Removed after bolt 4.3]
+** `extra` contains additional options.
+label:new[Introduced in bolt 4.4]
+*** `db` as above.
+Default: `null`.
+*** The `imp_user` specifies the impersonated user for the purposes of resolving their home database.
 `null` denotes no impersonation (execution takes place as the current user).
-Default: `null` (*v4.4+*).
+Default: `null`.
 
 *Detail messages:*
 
@@ -1625,7 +1677,8 @@ The following fields are defined for inclusion in the `SUCCESS` metadata:
 
 ** `rt::Dictionary(ttl::Integer, db::String, servers::List<Dictionary(addresses::List<String>, role::String)>)`, the current routing table.
 *** `ttl::Integer` specifies for how many seconds this routing table should be considered valid.
-*** `db::String` identifies the database for which this routing table applies (*v4.4+*).
+*** `db::String` identifies the database for which this routing table applies.
+label:new[Introduced in bolt 4.4]
 *** `servers` have three elements of the type `Dictionary(addresses::List<String>, role::String)`, where `role` is one of `"ROUTE"`, `"READ"`, `"WRITE"` for exactly one entry each.
 
 .Example *v4.4+*
