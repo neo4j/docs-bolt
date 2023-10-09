@@ -1,5 +1,3 @@
-:page-toclevels: 0
-
 = Connection hints
 
 label:new[Introduced in bolt 4.3]
