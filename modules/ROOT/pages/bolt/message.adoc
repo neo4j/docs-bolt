@@ -428,7 +428,7 @@ On versions earlier than *5.1*, the authentication token described on the `LOGON
 *Signature:* `01`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 extra::Dictionary(
   auth::Dictionary(
@@ -591,7 +591,7 @@ Clients wishing to retry initialization should establish a new connection.
 *Signature:* `01`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 user_agent::String,
 auth_token::Dictionary(
@@ -673,7 +673,7 @@ This message is new in version *5.1*. In previous versions, authentication was p
 *Signature:* `6A`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 auth::Dictionary(
   scheme::String,
@@ -778,7 +778,7 @@ The message may only be sent in the `READY` state.
 *Signature:* `54`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 api::Integer
 ----
@@ -1026,7 +1026,7 @@ Disabling categories or severities allows the server to skip analysis for those,
 *Signature:* `10`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 query::String,
 parameters::Dictionary,
@@ -1191,7 +1191,7 @@ _A receiving server should not abort the request but continue to process it with
 *Signature:* `2F`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 extra::Dictionary(
   n::Integer,
@@ -1314,7 +1314,7 @@ This version of the protocol defines one such detail message, namely `RECORD` (d
 *Signature:* `3F`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 extra::Dictionary(
   n::Integer,
@@ -1463,7 +1463,7 @@ Disabling categories or severities allows the server to skip analysis for those,
 *Signature:* `11`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 extra::Dictionary(
   bookmarks::List<String>,
@@ -1698,7 +1698,7 @@ This message can only be sent after successful authentication and outside of tra
 *Signature:* `66`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 routing::Dictionary,
 bookmarks::List<String>,
@@ -1711,7 +1711,7 @@ extra::Dictionary(
 
 Note that in *v4.4*, the `db` parameter is migrated into a dedicated dictionary named `extra` that also includes the `imp_user` and thus, in *v4.3* the fields are:
 
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 routing::Dictionary,
 bookmarks::List<String>,
@@ -1822,7 +1822,7 @@ Metadata keys are described in the section of this document relating to the mess
 *Signature:* `70`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 metadata::Dictionary
 ----
@@ -1868,7 +1868,7 @@ IGNORED
 *Signature:* `7F`
 
 .Fields:
-[source, bolt-spec, role=nocollapse]
+[source, bolt, role=nocollapse]
 ----
 metadata::Dictionary(
   code::String,
