@@ -176,6 +176,7 @@ Thus, the *Auto-commit Transaction* can only contain one `RUN` request message.
 In version *4* of the Bolt Protocol, the `DISCARD_ALL` and `PULL_ALL` messages are renamed to `DISCARD` and `PULL` and new fields are introduced.
 
 .Example with Bolt *v4*
+[source, bolt, role=nocollapse]
 ----
 ...
 C: HELLO ...
@@ -188,13 +189,13 @@ C: PULL ...
 S: RECORD ...
    ...
 S: RECORD ...
-S: SUCCESS ... has_more=true  // Server is still in STREAMING state
+S: SUCCESS {"has_more": true, ...}  // Server is still in STREAMING state
 
 C: PULL
 S: RECORD ...
    ...
 S: RECORD ...
-S: SUCCESS ... has_more=false  // Server is in READY state and this implies that the Auto-commit Transaction is closed.
+S: SUCCESS {"has_more": false, ...}  // Server is in READY state and this implies that the Auto-commit Transaction is closed.
 ----
 
 [NOTE]
@@ -212,6 +213,7 @@ The result stream (detail messages) must be fully consumed or discarded by a cli
 It can be gracefully discarded and set to the initial server state of `READY` with the request message `ROLLBACK`.
 
 .Example with Bolt *v4*
+[source, bolt, role=nocollapse]
 ----
 ...
 C: HELLO ...
@@ -221,28 +223,28 @@ C: BEGIN ...    // Open a new Explicit Transaction
 S: SUCCESS ...  // Server is in TX_READY state
 
 C: RUN ...
-S: SUCCESS ... qid=123 // Server is in TX_STREAMING state, one stream is open
+S: SUCCESS {"qid": 123, ...} // Server is in TX_STREAMING state, one stream is open
 
 C: RUN ...
-S: SUCCESS ... qid=456 // Server is in TX_STREAMING state, two streams are open
+S: SUCCESS {"qid": 456, ...} // Server is in TX_STREAMING state, two streams are open
 
-C: PULL ... qid=123
+C: PULL {"qid": 123, ...}
 S: RECORD ...
    ...
 S: RECORD ...
-S: SUCCESS ... has_more=true  // Server is still in TX_STREAMING state, two streams are still open
+S: SUCCESS {"has_more": true, ...}  // Server is still in TX_STREAMING state, two streams are still open
 
-C: PULL ... qid=123
+C: PULL {"qid": 123, ...}
 S: RECORD ...
    ...
 S: RECORD ...
 S: SUCCESS ... has_more=false  // Server is still in TX_STREAMING state, one stream is still open
 
-C: PULL ... qid=456
+C: PULL {"qid": 456, ...}
 S: RECORD ...
    ...
 S: RECORD ...
-S: SUCCESS ... has_more=false  // Server is in TX_READY state, all streams have been fully consumed
+S: SUCCESS {"has_more": false, ...}  // Server is in TX_READY state, all streams have been fully consumed
 
 C: COMMIT   // Close the Explicit Transaction
 S: SUCCESS  // Server is in READY state
@@ -416,16 +418,17 @@ On versions earlier than *5.1*, the authentication token described on the `LOGON
 | {"routing": null} or {}
 | the server should not carry out routing
 
-| {"routing: {}}
+| {"routing": {}}
 | the server should carry out routing
 
-| {"routing: {"address": "x.example.com:9001", "region": "example", ...}}
+| {"routing": {"address": "x.example.com:9001", "region": "example", ...}}
 | the server should carry out routing according to the given routing context
 |===
 
 *Signature:* `01`
 
-*Fields:*
+.Fields:
+[source, bolt-spec, role=nocollapse]
 ----
 extra::Dictionary(
   auth::Dictionary(
@@ -500,17 +503,19 @@ No detail messages should be returned.
 ** `FAILURE`
 
 ==== Synopsis
-
+[source, bolt, role=nocollapse]
 ----
 HELLO {extra}
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
-HELLO {"user_agent": "Example/4.1.0", "routing": {"address": "x.example.com:9001"}, "bolt_agent": {""}}
+HELLO {"user_agent": "Example/4.1.0", "routing": {"address": "x.example.com:9001"}, "bolt_agent": {"product": "neo4j-fortran-alice-doe/42.69.0", "platform": "Linux 5.15.0-58-generic; x86_64", "language": "Fortran/77", "language_details": "gfortran 9.3.0"}}
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}, "notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
@@ -538,11 +543,13 @@ Hints remain valid throughout the lifetime of a given connection and cannot be c
 As such, newly established connections may observe different hints and/or hint values as the server configuration is adjusted.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"server": "Neo4j/4.0.0", "hints": {"connection.recv_timeout_seconds": 120}}
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"server": "Neo4j/4.4.0", "patch_bolt": ["utc"], "hints": {"connection.recv_timeout_seconds": 120}}
 ----
@@ -553,6 +560,7 @@ A `FAILURE` message response indicates that the client is not permitted to excha
 Servers may choose to include metadata describing the nature of the failure but must immediately close the connection after the failure has been sent.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -582,6 +590,7 @@ Clients wishing to retry initialization should establish a new connection.
 *Signature:* `01`
 
 *Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
 user_agent::String,
 auth_token::Dictionary(
@@ -607,17 +616,19 @@ No detail messages should be returned.
 ** `FAILURE`
 
 ==== Synopsis
-
+[source, bolt, role=nocollapse]
 ----
 INIT "user_agent" {auth_token}
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
 INIT "Example/1.0.0" {"scheme": "none"}
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 INIT "Example/1.0.0" {"scheme": "basic", "principal": "neo4j", "credentials": "password"}
 ----
@@ -629,9 +640,10 @@ Servers can include metadata that describes details of the server environment an
 
 The following fields are defined for inclusion in the `SUCCESS` metadata.
 
-** `server (e.g. `"Neo4j/3.4.0"`)
+** `server::String` (server agent string, example `"Neo4j/3.4.0"`)
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"server": "Neo4j/3.4.0"}
 ----
@@ -643,6 +655,7 @@ A `FAILURE` message response indicates that the client is not permitted to excha
 Servers may choose to include metadata describing the nature of the failure but must immediately close the connection after the failure has been sent.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -658,6 +671,7 @@ This message is new in version *5.1*. In previous versions, authentication was p
 *Signature:* `6A`
 
 *Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
 auth::Dictionary(
   scheme::String,
@@ -675,12 +689,13 @@ Their names, types, and defaults depend on that choice.
 If authentication fails, the server responds with a `FAILURE` message and immediately closes the connection.
 
 ==== Synopsis
-
+[source, bolt, role=nocollapse]
 ----
-LOGON {scheme::String, ...)
+LOGON {auth}
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
 LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
 ----
@@ -709,11 +724,13 @@ No detail messages should be returned.
 ** `FAILURE`
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 LOGOFF
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 LOGOFF
 ----
@@ -723,6 +740,7 @@ LOGOFF
 If a `LOGOFF` message request has been successfully received, the server should respond with a `SUCCESS` message and enter the `AUTHENTICATION` state.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {}
 ----
@@ -734,8 +752,9 @@ The server may attach metadata to the message to provide more detail on the natu
 Clients receiving a `FAILURE` in response to `LOGOFF` should treat that connection as `DEFUNCT` and dispose of it.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
-FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': "Message 'LogoffMessage{}' cannot be handled by a session in the FAILED state."}
+FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Message 'LogoffMessage{}' cannot be handled by a session in the FAILED state."}
 ----
 
 [[messages-telemetry]]
@@ -756,7 +775,8 @@ The message may only be sent in the `READY` state.
 
 *Signature:* `54`
 
-*Fields*:
+*Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
 api::Integer
 ----
@@ -778,11 +798,13 @@ No detail messages should be returned.
 ** `FAILURE`
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 TELEMETRY api
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
 TELEMETRY 0
 ----
@@ -792,6 +814,7 @@ TELEMETRY 0
 If a `TELEMETRY` message request is successfully received, the server responds with a `SUCCESS` and remains in its current state.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {}
 ----
@@ -801,21 +824,24 @@ SUCCESS {}
 If a `TELEMETRY` message contains a value that is not a valid `api` value or is sent in the wrong state, the server responds with a `FAILURE` message and enters the `FAILED` state.
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
 C: TELEMETRY 2
-S: FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': 'Message of type TelemetryMessage cannot be handled by a session in the NEGOTIATION state.'}
+S: FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Message of type TelemetryMessage cannot be handled by a session in the NEGOTIATION state."}
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 C: TELEMETRY "oh no!"
-S: FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': 'Illegal value: Expected IntValue but got StringValue.'}
+S: FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Illegal value: Expected IntValue but got StringValue."}
 ----
 
 .Example 3
+[source, bolt, role=nocollapse]
 ----
 C: TELEMETRY 9001
-S: FAILURE {'code': 'Neo.ClientError.Request.Invalid', 'message': 'Unknown driver interface type 9001.'}
+S: FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Unknown driver interface type 9001."}
 ----
 
 
@@ -844,12 +870,13 @@ No detail messages should be returned.
 No summary messages should be returned.
 
 ==== Synopsis
-
+[source, bolt, role=nocollapse]
 ----
 GOODBYE
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 GOODBYE
 ----
@@ -882,12 +909,13 @@ The server must be in a `FAILED` state to be able to successfully process an `AC
 For any other states, receipt of an `ACK_FAILURE` request will be considered a protocol violation and will lead to connection closure.
 
 ==== Synopsis
-
+[source, bolt, role=nocollapse]
 ----
 ACK_FAILURE
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 ACK_FAILURE
 ----
@@ -899,6 +927,7 @@ If an `ACK_FAILURE` request has been successfully received, the server should re
 The server may attach metadata to the `SUCCESS` message.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {}
 ----
@@ -910,6 +939,7 @@ If an `ACK_FAILURE` request is received while not in the `FAILED` state, the ser
 The server may attach metadata to the message to provide more detail on the nature of the failure.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -945,11 +975,13 @@ No detail messages should be returned.
 ** `FAILURE`
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 RESET
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 RESET
 ----
@@ -959,6 +991,7 @@ RESET
 If a `RESET` message request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {}
 ----
@@ -970,6 +1003,7 @@ The server may attach metadata to the message to provide more detail on the natu
 Clients receiving a `FAILURE` in response to `RESET` should treat that connection as `DEFUNCT` and dispose of it.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -992,6 +1026,7 @@ Disabling categories or severities allows the server to skip analysis for those,
 *Signature:* `10`
 
 *Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
 query::String,
 parameters::Dictionary,
@@ -1000,7 +1035,7 @@ extra::Dictionary(
   tx_timeout::Integer,
   tx_metadata::Dictionary,
   mode::String,
-  db:String,
+  db::String,
   imp_user::String,
   notifications_minimum_severity::String,
   notifications_disabled_categories::List<String>
@@ -1058,26 +1093,31 @@ _If the server is in a `FAILED` or `INTERRUPTED` state, the request will be `IGN
 _For any other states, receipt of a `RUN` request will be considered a protocol violation and will lead to connection closure._
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 RUN "query" {parameters} {extra}
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
-RUN "RETURN $x AS x" {"x": 1} {bookmarks: [], "tx_timeout": 123, "tx_metadata": {"log": "example_message"}, mode: "r"}
+RUN "RETURN $x AS x" {"x": 1} {"bookmarks": [], "tx_timeout": 123, "tx_metadata": {"log": "example_message"}, "mode": "r"}
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 RUN "RETURN $x AS x" {"x": 1} {}
 ----
 
 .Example 3
+[source, bolt, role=nocollapse]
 ----
 RUN "CALL dbms.procedures()" {} {}
 ----
 
 .Example 3
+[source, bolt, role=nocollapse]
 ----
 RUN "RETURN 42" {} {"notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
@@ -1097,11 +1137,13 @@ For *Explicit Transaction* (`BEGIN`+`RUN`):
 label:new[Introduced in bolt 4.0]
 
 .Example *v3+*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"fields": ["x"], "t_first": 123}
 ----
 
 .Example *v4.0+*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"fields": ["x"], "t_first": 123, "qid": 7000}
 ----
@@ -1115,6 +1157,7 @@ _The following fields are defined for inclusion in the metadata:_
 ** _`result_available_after` (e.g. `123`)_
 
 .Example *v1* and *v2*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"fields": ["x"], "result_available_after": 123}
 ----
@@ -1122,6 +1165,7 @@ SUCCESS {"fields": ["x"], "result_available_after": 123}
 ==== Server response `IGNORED`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 IGNORED
 ----
@@ -1129,6 +1173,7 @@ IGNORED
 ==== Server response `FAILURE`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -1145,11 +1190,12 @@ _A receiving server should not abort the request but continue to process it with
 *Signature:* `2F`
 
 *Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
-extra::Dictionary{
+extra::Dictionary(
   n::Integer,
-  qid::Integer,
-}
+  qid::Integer
+)
 ----
 
 ** `extra` contains additional options.
@@ -1172,22 +1218,25 @@ No detail messages should be returned.
 ** `FAILURE`
 
 ==== Synopsis
-
+[source, bolt, role=nocollapse]
 ----
 DISCARD {extra}
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
 DISCARD {"n": -1, "qid": -1}
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 DISCARD {"n": 1000}
 ----
 
 .Example 3 *v1*, *v2* or *v3*
+[source, bolt, role=nocollapse]
 ----
 DISCARD_ALL
 ----
@@ -1225,16 +1274,19 @@ label:new[Introduced in bolt 3]
 label:new[Introduced in bolt 4.0]
 
 .Example 1 *v4+*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"has_more": true}
 ----
 
 .Example 2 *v4+*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"bookmark": "example-bookmark:1", "db": "example_database"}
 ----
 
 .Example *v3*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"bookmark": "example-bookmark:1"}
 ----
@@ -1242,6 +1294,7 @@ SUCCESS {"bookmark": "example-bookmark:1"}
 In version *1* and *2*, if a `DISCARD_ALL` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
 
 .Example *v1* and *v2*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123}
 ----
@@ -1258,12 +1311,13 @@ This version of the protocol defines one such detail message, namely `RECORD` (d
 
 *Signature:* `3F`
 
-*Fields*:
+*Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
-extra::Dictionary{
+extra::Dictionary(
   n::Integer,
-  qid::Integer,
-}
+  qid::Integer
+)
 ----
 
 ** `extra` contains additional options.
@@ -1286,26 +1340,31 @@ Zero or more `RECORD`.
 ** `FAILURE`
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 PULL {extra}
 ----
 
 .For *v1*, *v2*, and *v3*
+[source, bolt, role=nocollapse]
 ----
 PULL_ALL
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
 PULL {"n": -1, "qid": -1}
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 PULL {"n": 1000}
 ----
 
 .Example *v1*, *v2*, and *v3*
+[source, bolt, role=nocollapse]
 ----
 PULL_ALL
 ----
@@ -1340,11 +1399,13 @@ label:new[Introduced in bolt 3]
 label:new[Introduced in bolt 4.0]
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"bookmark": "example-bookmark:1", "t_last": 123}
 ----
 
 .Example *v1* and *v2*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123}
 ----
@@ -1355,6 +1416,7 @@ For *v1* and *v2*, a  server that receives a `PULL_ALL` request while in `FAILED
 No state change should occur.
 
 .Example (all versions)
+[source, bolt, role=nocollapse]
 ----
 IGNORED
 ----
@@ -1365,6 +1427,7 @@ For *v1* and *v2*, a `PULL_ALL` message request cannot be processed successfully
 The server may attach metadata to the message to provide more detail on the nature of the failure.
 
 .Example (all versions)
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -1378,6 +1441,7 @@ A record should only be considered valid if followed by a `SUCCESS` summary mess
 Until this summary has been received, the record’s validity should be considered tentative.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 RECORD [1, 2, 3]
 ----
@@ -1396,6 +1460,7 @@ Disabling categories or severities allows the server to skip analysis for those,
 *Signature:* `11`
 
 *Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
 extra::Dictionary(
   bookmarks::List<String>,
@@ -1448,21 +1513,25 @@ No detail messages.
 ** `FAILURE`
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 BEGIN {extra}
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
 BEGIN {"tx_timeout": 123, "mode": "r", "db": "example_database", "tx_metadata": {"log": "example_log_data"}, "imp_user" : "bob"}
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 BEGIN {"db": "example_database", "tx_metadata": {"log": "example_log_data"}, "bookmarks": ["example-bookmark:1", "example-bookmark2"]}
 ----
 
 .Example 3
+[source, bolt, role=nocollapse]
 ----
 BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
@@ -1470,6 +1539,7 @@ BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_cate
 ==== Server response `SUCCESS`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {}
 ----
@@ -1477,6 +1547,7 @@ SUCCESS {}
 ==== Server response `IGNORED`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 IGNORED
 ----
@@ -1484,6 +1555,7 @@ IGNORED
 ==== Server response `FAILURE`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -1512,11 +1584,13 @@ No detail messages.
 ** `FAILURE`
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 COMMIT
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 COMMIT
 ----
@@ -1528,6 +1602,7 @@ A `SUCCESS` message response indicates that the *Explicit Transaction* was compl
 ** `bookmark::String`, the bookmark after committing this transaction.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"bookmark": "example-bookmark:1"}
 ----
@@ -1535,6 +1610,7 @@ SUCCESS {"bookmark": "example-bookmark:1"}
 ==== Server response `IGNORED`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 IGNORED
 ----
@@ -1542,6 +1618,7 @@ IGNORED
 ==== Server response `FAILURE`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -1570,11 +1647,13 @@ No detail messages.
 ** `FAILURE`
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 ROLLBACK
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 ROLLBACK
 ----
@@ -1584,6 +1663,7 @@ ROLLBACK
 A `SUCCESS` message response indicates that the *Explicit Transaction* was rolled back.
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS
 ----
@@ -1591,6 +1671,7 @@ SUCCESS
 ==== Server response `IGNORED`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 IGNORED
 ----
@@ -1598,6 +1679,7 @@ IGNORED
 ==== Server response `FAILURE`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -1614,10 +1696,11 @@ This message can only be sent after successful authentication and outside of tra
 *Signature:* `66`
 
 *Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
 routing::Dictionary,
 bookmarks::List<String>,
-db:String,
+db::String,
 extra::Dictionary(
   db::String,
   imp_user::String,
@@ -1625,10 +1708,12 @@ extra::Dictionary(
 ----
 
 Note that in *v4.4*, the `db` parameter is migrated into a dedicated dictionary named `extra` that also includes the `imp_user` and thus, in *v4.3* the fields are:
+
+[source, bolt-spec, role=nocollapse]
 ----
 routing::Dictionary,
 bookmarks::List<String>,
-db:String
+db::String
 ----
 
 ** The routing field should contain routing context information and the address field that should contain the address that the client initially tries to connect with e.g. `"x.example.com:9001"`.
@@ -1656,18 +1741,22 @@ No detail messages should be returned.
 ** `FAILURE`
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 ROUTE {routing} [bookmarks] {extra}
 ----
 
-.Example 1
+
+.Example *v4.4+*
+[source, bolt, role=nocollapse]
 ----
-ROUTE {"address": "x.example.com:7687"} [] null
+ROUTE {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"} ["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"] {"db": "example_database", "imp_user": "bob"}
 ----
 
-.Example 2
+.Example *v4.3*
+[source, bolt, role=nocollapse]
 ----
-ROUTE {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"} ["neo4j-bookmark-transaction:1", "neo4j-bookmark-transaction:2"] {"db": example_database", "imp_user": "bob"}
+ROUTE {"address": "x.example.com:7687"} [] null
 ----
 
 ==== Server response `SUCCESS`
@@ -1682,6 +1771,7 @@ label:new[Introduced in bolt 4.4]
 *** `servers` have three elements of the type `Dictionary(addresses::List<String>, role::String)`, where `role` is one of `"ROUTE"`, `"READ"`, `"WRITE"` for exactly one entry each.
 
 .Example *v4.4+*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {
     "rt": {"ttl": 1000,
@@ -1693,6 +1783,7 @@ SUCCESS {
 ----
 
 .Example *v4.3*
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {
     "rt": {"ttl": 1000,
@@ -1705,6 +1796,7 @@ SUCCESS {
 ==== Server message `IGNORED`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 IGNORED
 ----
@@ -1712,6 +1804,7 @@ IGNORED
 ==== Server message `FAILURE`
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -1726,16 +1819,19 @@ Metadata keys are described in the section of this document relating to the mess
 *Signature:* `70`
 
 *Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
 metadata::Dictionary
 ----
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {metadata}
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 SUCCESS {"example": "see specific message for server response metadata"}
 ----
@@ -1752,11 +1848,13 @@ The `IGNORED` message indicates that the corresponding request has not been carr
 No fields.
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 IGNORED
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 IGNORED
 ----
@@ -1767,19 +1865,22 @@ IGNORED
 *Signature:* `7F`
 
 *Fields:*
+[source, bolt-spec, role=nocollapse]
 ----
 metadata::Dictionary(
   code::String,
-  message::String,
+  message::String
 )
 ----
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 FAILURE {metadata}
 ----
 
 .Example
+[source, bolt, role=nocollapse]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
@@ -1795,16 +1896,19 @@ A `RECORD` message carries a sequence of values corresponding to a single entry 
 These messages are currently only ever received in response to a `PULL` (`PULL_ALL` in *v1*, *v2*, and *v3*) message and will always be followed by a summary message.
 
 ==== Synopsis
+[source, bolt, role=nocollapse]
 ----
 RECORD [data]
 ----
 
 .Example 1
+[source, bolt, role=nocollapse]
 ----
 RECORD ["1", "2", "3"]
 ----
 
 .Example 2
+[source, bolt, role=nocollapse]
 ----
 RECORD [{"point": [1, 2]}, "example_data", 123]
 ----
