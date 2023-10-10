@@ -502,7 +502,8 @@ No detail messages should be returned.
 ** `SUCCESS`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 HELLO {extra}
@@ -589,7 +590,7 @@ Clients wishing to retry initialization should establish a new connection.
 
 *Signature:* `01`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 user_agent::String,
@@ -615,7 +616,8 @@ No detail messages should be returned.
 ** `SUCCESS`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 INIT "user_agent" {auth_token}
@@ -670,7 +672,7 @@ This message is new in version *5.1*. In previous versions, authentication was p
 
 *Signature:* `6A`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 auth::Dictionary(
@@ -688,7 +690,8 @@ Their names, types, and defaults depend on that choice.
 
 If authentication fails, the server responds with a `FAILURE` message and immediately closes the connection.
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 LOGON {auth}
@@ -710,9 +713,7 @@ This message is new in version *5.1*. No equivalent exists in previous versions.
 
 *Signature:* `6B`
 
-*Fields:*
-
-No fields
+*Fields:* No fields
 
 *Detail messages:*
 
@@ -723,7 +724,8 @@ No detail messages should be returned.
 ** `SUCCESS`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 LOGOFF
@@ -775,7 +777,7 @@ The message may only be sent in the `READY` state.
 
 *Signature:* `54`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 api::Integer
@@ -797,7 +799,8 @@ No detail messages should be returned.
 ** `SUCCESS`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 TELEMETRY api
@@ -857,9 +860,7 @@ This message interrupts the server current work if there is any.
 
 *Signature:* `02`
 
-*Fields:*
-
-No fields.
+*Fields:* No fields.
 
 *Detail messages:*
 
@@ -869,7 +870,8 @@ No detail messages should be returned.
 
 No summary messages should be returned.
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 GOODBYE
@@ -892,9 +894,7 @@ The request message `ACK_FAILURE` is only valid in version *1* and *2* and the r
 
 *Signature:* `0E`
 
-*Fields:*
-
-No fields.
+*Fields:* No fields.
 
 *Detail messages*:
 
@@ -908,7 +908,8 @@ No detail messages should be returned.
 The server must be in a `FAILED` state to be able to successfully process an `ACK_FAILURE` request.
 For any other states, receipt of an `ACK_FAILURE` request will be considered a protocol violation and will lead to connection closure.
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 ACK_FAILURE
@@ -961,9 +962,7 @@ The `INTERRUPTED` state is therefore the only state to automatically resolve wit
 
 *Signature:* `0F`
 
-*Fields:*
-
-No fields
+*Fields:* No fields
 
 *Detail messages:*
 
@@ -974,7 +973,8 @@ No detail messages should be returned.
 ** `SUCCESS`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 RESET
@@ -1025,7 +1025,7 @@ Disabling categories or severities allows the server to skip analysis for those,
 
 *Signature:* `10`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 query::String,
@@ -1092,7 +1092,8 @@ _The server must be in a `READY` or `READY_TX` (*v3+*) state to be able to succe
 _If the server is in a `FAILED` or `INTERRUPTED` state, the request will be `IGNORED`._
 _For any other states, receipt of a `RUN` request will be considered a protocol violation and will lead to connection closure._
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 RUN "query" {parameters} {extra}
@@ -1189,7 +1190,7 @@ _A receiving server should not abort the request but continue to process it with
 
 *Signature:* `2F`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 extra::Dictionary(
@@ -1217,7 +1218,8 @@ No detail messages should be returned.
 ** `IGNORED`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 DISCARD {extra}
@@ -1311,7 +1313,7 @@ This version of the protocol defines one such detail message, namely `RECORD` (d
 
 *Signature:* `3F`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 extra::Dictionary(
@@ -1339,7 +1341,8 @@ Zero or more `RECORD`.
 ** `IGNORED`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 PULL {extra}
@@ -1459,7 +1462,7 @@ Disabling categories or severities allows the server to skip analysis for those,
 
 *Signature:* `11`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 extra::Dictionary(
@@ -1512,7 +1515,8 @@ No detail messages.
 ** `IGNORED`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 BEGIN {extra}
@@ -1569,9 +1573,7 @@ The `COMMIT` message does not exist in *v1* and *v2*.
 
 *Signature:* `12`
 
-*Fields:*
-
-No fields.
+*Fields:* No fields.
 
 *Detail messages:*
 
@@ -1583,7 +1585,8 @@ No detail messages.
 ** `IGNORED`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 COMMIT
@@ -1632,9 +1635,7 @@ The `ROLLBACK` message does not exist in *v1* and *v2*.
 
 *Signature:* `13`
 
-*Fields:*
-
-No fields.
+*Fields:* No fields.
 
 *Detail messages:*
 
@@ -1646,7 +1647,8 @@ No detail messages.
 ** `IGNORED`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 ROLLBACK
@@ -1695,7 +1697,7 @@ This message can only be sent after successful authentication and outside of tra
 
 *Signature:* `66`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 routing::Dictionary,
@@ -1740,7 +1742,8 @@ No detail messages should be returned.
 ** `IGNORED`
 ** `FAILURE`
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 ROUTE {routing} [bookmarks] {extra}
@@ -1818,13 +1821,14 @@ Metadata keys are described in the section of this document relating to the mess
 
 *Signature:* `70`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 metadata::Dictionary
 ----
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 SUCCESS {metadata}
@@ -1843,11 +1847,10 @@ The `IGNORED` message indicates that the corresponding request has not been carr
 
 *Signature:* `7E`
 
-*Fields:*
+*Fields:* No fields.
 
-No fields.
-
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 IGNORED
@@ -1864,7 +1867,7 @@ IGNORED
 
 *Signature:* `7F`
 
-*Fields:*
+.Fields:
 [source, bolt-spec, role=nocollapse]
 ----
 metadata::Dictionary(
@@ -1873,7 +1876,8 @@ metadata::Dictionary(
 )
 ----
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 FAILURE {metadata}
@@ -1895,7 +1899,8 @@ A `RECORD` message carries a sequence of values corresponding to a single entry 
 
 These messages are currently only ever received in response to a `PULL` (`PULL_ALL` in *v1*, *v2*, and *v3*) message and will always be followed by a summary message.
 
-==== Synopsis
+==== Examples
+.Synopsis
 [source, bolt, role=nocollapse]
 ----
 RECORD [data]
