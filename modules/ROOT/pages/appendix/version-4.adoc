@@ -61,6 +61,12 @@ This section lists all Bolt message state transitions available in version 4.x.
 | `READY`
 
 | `READY`
+| `ROUTE`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `READY`
 | `RESET`
 | `<INTERRUPT>`
 | _n/a_
@@ -320,6 +326,12 @@ This section lists all Bolt message state transitions available in version 4.x.
 
 | `INTERRUPTED`
 | `ROLLBACK`
+|
+| `IGNORED`
+| `INTERRUPTED`
+
+| `INTERRUPTED`
+| `ROUTE`
 |
 | `IGNORED`
 | `INTERRUPTED`
