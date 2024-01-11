@@ -105,13 +105,13 @@ The range cannot span multiple major versions.
 
 .Example with versions 4.3 plus two previous minor versions, 4.2 and 4.1
 ----
-00 02 03 04
+01 02 03 04
 ----
 
 .Example where the client is aware of five Bolt versions; 3, 4.0, 4.1, 4.2 and 4.3, and the server responds with 4.1
 ----
 C: 60 60 B0 17
-C: 00 03 03 04 00 00 01 04 00 00 00 04 00 00 00 03
+C: 00 02 03 04 00 00 01 04 00 00 00 04 00 00 00 03
 S: 00 00 01 04
 ----
 
