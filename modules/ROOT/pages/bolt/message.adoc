@@ -411,18 +411,18 @@ In version *5.3*, `bolt_agent::Dictionary` was added to indicate the underlying 
 On versions earlier than *5.1*, the authentication token described on the `LOGON` message should be sent as part of the `HELLO` message instead.
 ====
 
-[cols="<30,<40",option="header"]
+[cols="<30,<40",options="header"]
 |===
 | `routing` values
 | Description
 
-| {"routing": null} or {}
+| `{"routing": null}` or `{}`
 | the server should not carry out routing
 
-| {"routing": {}}
+| `{"routing": {}}`
 | the server should carry out routing
 
-| {"routing": {"address": "x.example.com:9001", "region": "example", ...}}
+| `{"routing": {"address": "x.example.com:9001", "region": "example", ...}}`
 | the server should carry out routing according to the given routing context
 |===
 
