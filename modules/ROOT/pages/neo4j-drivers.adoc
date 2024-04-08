@@ -2,6 +2,8 @@
 
 = Neo4j Drivers
 
+== Official Drivers
+
 ** link:https://github.com/neo4j/neo4j-dotnet-driver[.NET Driver]
 
 ** link:https://github.com/neo4j/neo4j-go-driver[Go Driver]
@@ -14,6 +16,14 @@
 
 == Community Drivers
 
-** link:https://github.com/neo4jrb[Ruby Driver]
+** Ruby: link:https://github.com/neo4jrb[neo4j.rb]
 
-** link:https://github.com/neo4j-php/[PHP Driver]
+** PHP: link:https://github.com/neo4j-php/[neo4j-php]
+
+** Rust: link:https://github.com/neo4j-labs/neo4rs[neo4rs]
+
+** Perl: link:https://github.com/johannessen/neo4j-driver-perl[Neo4j::Driver]
+
+** Perl: link:https://github.com/majensen/perlbolt[Neo4j::Bolt]
+
+** Elixir: link:https://github.com/sagastume/boltx[Boltx]
