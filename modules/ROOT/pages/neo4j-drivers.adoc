@@ -22,10 +22,10 @@
 
 ** Perl: link:https://github.com/majensen/perlbolt[Neo4j::Bolt]
 
+** Perl: link:https://github.com/johannessen/neo4j-driver-perl[Neo4j::Driver]
+
 ** PHP: link:https://github.com/neo4j-php/[neo4j-php]
 
 ** Ruby: link:https://github.com/neo4jrb[neo4j.rb]
 
 ** Rust: link:https://github.com/neo4j-labs/neo4rs[neo4rs]
-
-** Perl: link:https://github.com/johannessen/neo4j-driver-perl[Neo4j::Driver]
