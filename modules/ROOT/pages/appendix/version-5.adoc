@@ -85,6 +85,12 @@ This section lists all Bolt message state transitions available in version 5.1 a
 | `READY`
 
 | `READY`
+| `ROUTE`
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `READY`
 | `RESET`
 | `<INTERRUPT>`
 | _n/a_
@@ -277,6 +283,12 @@ This section lists all Bolt message state transitions available in version 5.1 a
 |
 
 | `FAILED`
+| `LOGOFF`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
 | `RUN`
 |
 | `IGNORED`
@@ -290,6 +302,30 @@ This section lists all Bolt message state transitions available in version 5.1 a
 
 | `FAILED`
 | `DISCARD`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `BEGIN`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `COMMIT`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `ROLLBACK`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `ROUTE`
 |
 | `IGNORED`
 | `FAILED`
@@ -311,6 +347,12 @@ This section lists all Bolt message state transitions available in version 5.1 a
 |
 |
 |
+
+| `FAILED`
+| `LOGOFF`
+|
+| `IGNORED`
+| `FAILED`
 
 | `INTERRUPTED`
 | `RUN`
