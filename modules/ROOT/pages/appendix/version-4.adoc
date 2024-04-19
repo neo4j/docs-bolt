@@ -277,6 +277,30 @@ This section lists all Bolt message state transitions available in version 4.x.
 | `FAILED`
 
 | `FAILED`
+| `BEGIN`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `COMMIT`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `ROLLBACK`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
+| `ROUTE`
+|
+| `IGNORED`
+| `FAILED`
+
+| `FAILED`
 | `RESET`
 | `<INTERRUPT>`
 | _n/a_
