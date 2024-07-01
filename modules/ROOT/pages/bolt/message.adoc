@@ -1256,25 +1256,29 @@ label:new[Introduced in bolt 4.0]
 
 Or in the case that `has_more` is `false`:
 
-** `bookmark::String`, the bookmark after committing this transaction (*Autocommit Transaction* only).
-** `t_last::Integer`, the time, specified in ms, which the last record in the result stream is consumed after.
-label:new[Introduced in bolt 3]
-** `result_consumed_after::Integer`, same as `t_last`.
-label:deprecated[Removed after bolt 2]
-** `type::String`, the type of the statement, e.g. `"r"` for read-only statement, `"w"` for write-only statement, `"rw"` for read-and-write, and `"s"` for schema only.
-label:new[Introduced in bolt 3]
-** `stats::Dictionary`, counter information, such as db-hits etc.
-label:new[Introduced in bolt 3]
-** `plan::Dictionary`, plan result.
-label:new[Introduced in bolt 3]
-** `profile::Dictionary`, profile result.
-label:new[Introduced in bolt 3]
-** `notifications::List<Dictionary>`, a list of all notifications generated during execution of this statement.
+** `bookmark::String` -- the bookmark after committing this transaction (*Autocommit Transaction* only).
+** `db::String` -- the database name where the query was executed.
+label:new[Introduced in bolt 4.0]
+** `notifications::List<Dictionary>` -- a list of all notifications generated during execution of this statement.
 May be omitted if no notifications exist.
 In *v3*, this field is `notifications::Dictionary`.
 label:new[Introduced in bolt 3]
-** `db::String`, the database name where the query was executed.
-label:new[Introduced in bolt 4.0]
+** `plan::Dictionary` -- plan result.
+label:new[Introduced in bolt 3]
+** `profile::Dictionary` -- profile result.
+label:new[Introduced in bolt 3]
+** `result_consumed_after::Integer` -- same as `t_last`.
+label:deprecated[Removed after bolt 2]
+** `result_available_after::Integer` -- same as `t_first`.
+label:deprecated[Removed after bolt 2]
+** `stats::Dictionary` -- counter information, such as db-hits etc.
+label:new[Introduced in bolt 3]
+** `t_last::Integer` -- the time (in ms) after which the last record in the result stream is consumed.
+label:new[Introduced in bolt 3]
+** `t_first::Integer` -- the time (in ms) after which the first record in the result stream is available.
+label:new[Introduced in bolt 3]
+** `type::String` -- the type of the statement, e.g. `"r"` for read-only statement, `"w"` for write-only statement, `"rw"` for read-and-write, and `"s"` for schema only.
+label:new[Introduced in bolt 3]
 
 .Example 1 *v4+*
 [source, bolt]
@@ -1382,25 +1386,29 @@ If this field is not present it should be considered to default to `false`.
 
 Or in the case that `has_more` is `false`:
 
-** `bookmark::String`, the bookmark after committing this transaction (*Autocommit Transaction* only).
-** `t_last::Integer`, the time, specified in ms, which the last record in the result stream is consumed after.
-label:new[Introduced in bolt 3]
-** `result_consumed_after::Integer`, same as `t_last`.
-label:deprecated[Removed after bolt 2]
-** `type::String`, the type of the statement, e.g. `"r"` for read-only statement, `"w"` for write-only statement, `"rw"` for read-and-write, and `"s"` for schema only.
-label:new[Introduced in bolt 3]
-** `stats::Dictionary`, counter information, such as db-hits etc.
-label:new[Introduced in bolt 3]
-** `plan::Dictionary`, plan result.
-label:new[Introduced in bolt 3]
-** `profile::Dictionary`, profile result.
-label:new[Introduced in bolt 3]
-** `notifications::List<Dictionary>`, a list of all notifications generated during execution of this statement.
+** `bookmark::String` -- the bookmark after committing this transaction (*Autocommit Transaction* only).
+** `db::String` -- the database name where the query was executed.
+label:new[Introduced in bolt 4.0]
+** `notifications::List<Dictionary>` -- a list of all notifications generated during execution of this statement.
 May be omitted if no notifications exist.
 In *v3*, this field is `notifications::Dictionary`.
 label:new[Introduced in bolt 3]
-** `db::String`, the database name where the query was executed.
-label:new[Introduced in bolt 4.0]
+** `plan::Dictionary` -- plan result.
+label:new[Introduced in bolt 3]
+** `profile::Dictionary` -- profile result.
+label:new[Introduced in bolt 3]
+** `result_consumed_after::Integer` -- same as `t_last`.
+label:deprecated[Removed after bolt 2]
+** `result_available_after::Integer` -- same as `t_first`.
+label:deprecated[Removed after bolt 2]
+** `stats::Dictionary` -- counter information, such as db-hits etc.
+label:new[Introduced in bolt 3]
+** `t_last::Integer` -- the time (in ms) after which the last record in the result stream is consumed.
+label:new[Introduced in bolt 3]
+** `t_first::Integer` -- the time (in ms) after which the first record in the result stream is available.
+label:new[Introduced in bolt 3]
+** `type::String` -- the type of the statement, e.g. `"r"` for read-only statement, `"w"` for write-only statement, `"rw"` for read-and-write, and `"s"` for schema only.
+label:new[Introduced in bolt 3]
 
 .Example
 [source, bolt]
