@@ -1275,7 +1275,7 @@ label:deprecated[Removed after bolt 2]
 label:new[Introduced in bolt 3]
 ** `t_last::Integer` -- the time (in ms) after which the last record in the result stream is consumed.
 label:new[Introduced in bolt 3]
-** `t_first::Integer` -- the time (in ms) after which the first record in the result stream is available.
+** `t_first::Integer` -- the time (in ms) after which the DBMS was ready to stream the first record in the result.
 label:new[Introduced in bolt 3]
 ** `type::String` -- the type of the statement, e.g. `"r"` for read-only statement, `"w"` for write-only statement, `"rw"` for read-and-write, and `"s"` for schema only.
 label:new[Introduced in bolt 3]
