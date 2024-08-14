@@ -386,7 +386,7 @@ There are three different kinds of messages:
 |===
 
 [[messages-hello]]
-=== Request message - `HELLO`
+=== Request message `HELLO`
 label:new[Introduced in bolt 3]
 
 The `HELLO` message request the connection to be authorized for use with the remote database and replaces the `INIT` request message of version *1* and *2*.
@@ -432,10 +432,8 @@ On versions earlier than *5.1*, the authentication token described on the `LOGON
 [source, bolt]
 ----
 extra::Dictionary(
-  auth::Dictionary(
-    scheme::String,
-    ...
-  )
+  scheme::String,
+  ...
   user_agent::String,
   patch_bolt::List<String>,
   routing::Dictionary(address::String),
@@ -450,7 +448,8 @@ extra::Dictionary(
 )
 ----
 
-** `auth` contains the authentication information.
+** `scheme` is the authentication scheme, alongside any additional entries (`\...`) specific to the chosen scheme.
+Predefined schemes are: `"none"`, `"basic"`, `"bearer"`, `"kerberos"` (depending on the server's capabilities).
 See <<messages-logon, `LOGON` message>> for more information.
 label:deprecated[Removed after bolt 5.0]
 ** The `user_agent` should conform to `"Name/Version"` for example `"Example/4.1.0"` (see link:https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/User-Agent[] for more information).
