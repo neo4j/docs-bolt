@@ -521,6 +521,7 @@ HELLO {"user_agent": "Example/4.1.0", "routing": {"address": "x.example.com:9001
 HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}, "notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
 
+[[messages-hello-success]]
 ==== Server response `SUCCESS`
 
 A `SUCCESS` message response indicates that the client is permitted to exchange further messages.
@@ -555,6 +556,7 @@ SUCCESS {"server": "Neo4j/4.0.0", "hints": {"connection.recv_timeout_seconds": 1
 SUCCESS {"server": "Neo4j/4.4.0", "patch_bolt": ["utc"], "hints": {"connection.recv_timeout_seconds": 120}}
 ----
 
+[[messages-hello-failure]]
 ==== Server response `FAILURE`
 
 A `FAILURE` message response indicates that the client is not permitted to exchange further messages.
@@ -635,6 +637,7 @@ INIT "Example/1.0.0" {"scheme": "none"}
 INIT "Example/1.0.0" {"scheme": "basic", "principal": "neo4j", "credentials": "password"}
 ----
 
+[[messages-init-success]]
 ==== _Server response `SUCCESS`_
 
 A `SUCCESS` message response indicates that the client is permitted to exchange further messages.
@@ -650,6 +653,7 @@ The following fields are defined for inclusion in the `SUCCESS` metadata.
 SUCCESS {"server": "Neo4j/3.4.0"}
 ----
 
+[[messages-init-failure]]
 ==== _Server response `FAILURE`_
 
 A `FAILURE` message response indicates that the client is not permitted to exchange further messages.
@@ -737,6 +741,7 @@ LOGOFF
 LOGOFF
 ----
 
+[[messages-logoff-success]]
 ==== Server response `SUCCESS`
 
 If a `LOGOFF` message request has been successfully received, the server should respond with a `SUCCESS` message and enter the `AUTHENTICATION` state.
@@ -747,6 +752,7 @@ If a `LOGOFF` message request has been successfully received, the server should 
 SUCCESS {}
 ----
 
+[[messages-logoff-failure]]
 ==== Server response `FAILURE`
 
 If `LOGOFF` message is received while the server is not in the `READY` state, it should trigger a `FAILURE` followed by immediate closure of the connection.
@@ -812,6 +818,7 @@ TELEMETRY api
 TELEMETRY 0
 ----
 
+[[messages-telemetry-success]]
 ==== Server response `SUCCESS`
 
 If a `TELEMETRY` message request is successfully received, the server responds with a `SUCCESS` and remains in its current state.
@@ -822,6 +829,7 @@ If a `TELEMETRY` message request is successfully received, the server responds w
 SUCCESS {}
 ----
 
+[[messages-telemetry-failure]]
 ==== Server response `FAILURE`
 
 If a `TELEMETRY` message contains a value that is not a valid `api` value or is sent in the wrong state, the server responds with a `FAILURE` message and enters the `FAILED` state.
@@ -921,6 +929,7 @@ ACK_FAILURE
 ACK_FAILURE
 ----
 
+[[messages-ack-failure-success]]
 ==== _Server response `SUCCESS`_
 
 If an `ACK_FAILURE` request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
@@ -933,6 +942,7 @@ The server may attach metadata to the `SUCCESS` message.
 SUCCESS {}
 ----
 
+[[messages-ack-failure-failure]]
 ==== _Server response message `FAILURE`_
 
 If an `ACK_FAILURE` request is received while not in the `FAILED` state, the server should respond with a `FAILURE` message and immediately close the connection.
@@ -986,6 +996,7 @@ RESET
 RESET
 ----
 
+[[messages-reset-success]]
 ==== Server response `SUCCESS`
 
 If a `RESET` message request has been successfully received, the server should respond with a `SUCCESS` message and enter the `READY` state.
@@ -996,6 +1007,7 @@ If a `RESET` message request has been successfully received, the server should r
 SUCCESS {}
 ----
 
+[[messages-reset-failure]]
 ==== Server response `FAILURE`
 
 If `RESET` message is received before the server enters a `READY` state, it should trigger a `FAILURE` followed by immediate closure of the connection.
@@ -1123,6 +1135,7 @@ RUN "CALL dbms.procedures()" {} {}
 RUN "RETURN 42" {} {"notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
 
+[[messages-run-success]]
 ==== Server response `SUCCESS`
 
 A `SUCCESS` message response indicates that the client is permitted to exchange further messages.
@@ -1163,6 +1176,7 @@ _The following fields are defined for inclusion in the metadata:_
 SUCCESS {"fields": ["x"], "result_available_after": 123}
 ----
 
+[[messages-run-ignored]]
 ==== Server response `IGNORED`
 
 .Example
@@ -1171,6 +1185,7 @@ SUCCESS {"fields": ["x"], "result_available_after": 123}
 IGNORED
 ----
 
+[[messages-run-failure]]
 ==== Server response `FAILURE`
 
 .Example
@@ -1247,6 +1262,7 @@ In version *1* and *2*, the server must be in a `STREAMING` or `STREAMING_TX` (*
 If the server is in a `FAILED` state or `INTERRUPTED` state, the request will be `IGNORED`.
 For any other states, receipt of a `DISCARD` request will be considered a protocol violation and will lead to connection closure.
 
+[[messages-discard-success]]
 ==== Server response `SUCCESS`
 
 ** `has_more::Boolean`, `true` if there are no more records to stream.
@@ -1262,6 +1278,9 @@ label:new[Introduced in bolt 4.0]
 May be omitted if no notifications exist.
 In *v3*, this field is `notifications::Dictionary`.
 label:new[Introduced in bolt 3]
+label:deprecated[Removed after bolt 5.4]
+** `statuses::List<Dictionary>` -- a list of all gqlStatusObjects generated during execution of this statement.
+label:new[Introduced in bolt 5.6]
 ** `plan::Dictionary` -- plan result.
 label:new[Introduced in bolt 3]
 ** `profile::Dictionary` -- profile result.
@@ -1376,6 +1395,7 @@ PULL {"n": 1000}
 PULL_ALL
 ----
 
+[[messages-pull-success]]
 ==== Server response `SUCCESS`
 
 The following fields are defined for inclusion in the `SUCCESS` metadata:
@@ -1391,7 +1411,9 @@ label:new[Introduced in bolt 4.0]
 ** `notifications::List<Dictionary>` -- a list of all notifications generated during execution of this statement.
 May be omitted if no notifications exist.
 In *v3*, this field is `notifications::Dictionary`.
-label:new[Introduced in bolt 3]
+label:deprecated[Removed after bolt 5.4]
+** `statuses::List<Dictionary>` -- a list of all gqlStatusObjects generated during execution of this statement.
+label:new[Introduced in bolt 5.6]
 ** `plan::Dictionary` -- plan result.
 label:new[Introduced in bolt 3]
 ** `profile::Dictionary` -- profile result.
@@ -1421,6 +1443,7 @@ SUCCESS {"bookmark": "example-bookmark:1", "t_last": 123}
 SUCCESS {"bookmark": "example_bookmark_identifier", "result_consumed_after": 123}
 ----
 
+[[messages-pull-ignored]]
 ==== Server response `IGNORED`
 
 For *v1* and *v2*, a  server that receives a `PULL_ALL` request while in `FAILED` state or `INTERRUPTED` state, should respond with an `IGNORED` message and discard the request without processing it.
@@ -1432,6 +1455,7 @@ No state change should occur.
 IGNORED
 ----
 
+[[messages-pull-failure]]
 ==== Server response `FAILURE`
 
 For *v1* and *v2*, a `PULL_ALL` message request cannot be processed successfully, the server should respond with a `FAILURE` message and enter the `FAILED` state.
@@ -1443,6 +1467,7 @@ The server may attach metadata to the message to provide more detail on the natu
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
+[[messages-pull-record]]
 ==== Server response `RECORD` (in *v1* and *v2*)
 
 Zero or more `RECORD` messages may be returned in response to a `PULL_ALL` prior to the trailing summary message.
@@ -1548,6 +1573,7 @@ BEGIN {"db": "example_database", "tx_metadata": {"log": "example_log_data"}, "bo
 BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
 ----
 
+[[messages-begin-success]]
 ==== Server response `SUCCESS`
 
 .Example
@@ -1556,6 +1582,7 @@ BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_cate
 SUCCESS {}
 ----
 
+[[messages-begin-ignored]]
 ==== Server response `IGNORED`
 
 .Example
@@ -1564,6 +1591,7 @@ SUCCESS {}
 IGNORED
 ----
 
+[[messages-begin-failure]]
 ==== Server response `FAILURE`
 
 .Example
@@ -1606,6 +1634,7 @@ COMMIT
 COMMIT
 ----
 
+[[messages-commit-success]]
 ==== Server response `SUCCESS`
 
 A `SUCCESS` message response indicates that the *Explicit Transaction* was completed:
@@ -1618,6 +1647,7 @@ A `SUCCESS` message response indicates that the *Explicit Transaction* was compl
 SUCCESS {"bookmark": "example-bookmark:1"}
 ----
 
+[[messages-commit-ignored]]
 ==== Server response `IGNORED`
 
 .Example
@@ -1626,6 +1656,7 @@ SUCCESS {"bookmark": "example-bookmark:1"}
 IGNORED
 ----
 
+[[messages-commit-failure]]
 ==== Server response `FAILURE`
 
 .Example
@@ -1668,6 +1699,7 @@ ROLLBACK
 ROLLBACK
 ----
 
+[[messages-rollback-success]]
 ==== Server response `SUCCESS`
 
 A `SUCCESS` message response indicates that the *Explicit Transaction* was rolled back.
@@ -1678,6 +1710,7 @@ A `SUCCESS` message response indicates that the *Explicit Transaction* was rolle
 SUCCESS
 ----
 
+[[messages-rollback-ignored]]
 ==== Server response `IGNORED`
 
 .Example
@@ -1686,6 +1719,7 @@ SUCCESS
 IGNORED
 ----
 
+[[messages-rollback-failure]]
 ==== Server response `FAILURE`
 
 .Example
@@ -1770,6 +1804,7 @@ ROUTE {"address": "x.example.com:9001", "policy": "example_policy_routing_contex
 ROUTE {"address": "x.example.com:7687"} [] null
 ----
 
+[[messages-route-success]]
 ==== Server response `SUCCESS`
 
 A `SUCCESS` message response indicates that the client is permitted to exchange further messages.
@@ -1804,6 +1839,7 @@ SUCCESS {
 }
 ----
 
+[[messages-route-ignored]]
 ==== Server message `IGNORED`
 
 .Example
@@ -1812,6 +1848,7 @@ SUCCESS {
 IGNORED
 ----
 
+[[messages-route-failure]]
 ==== Server message `FAILURE`
 
 .Example
@@ -1931,6 +1968,22 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 
 The sections below list the changes of messages compared to the previous version.
 Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
+
+[[messages-summary-56]]
+=== Version 5.6
+
+** `SUCCESS` messages that contain a `notifications` field were changed to have a field `statuses` instead.
+*** <<messages-discard-success,`SUCCESS` on `PULL`>>
+*** <<messages-discard-success,`SUCCESS` on `DISCARD`>>
+
+[[messages-summary-55]]
+=== Version 5.5
+[WARNING]
+.Unsupported (and undocumented 😏) protocol version
+====
+Version 5.5 was only ever released in some drivers, but has a flawed design.
+No Neo4j server will negotiate this protocol version.
+====
 
 [[messages-summary-54]]
 === Version 5.4
