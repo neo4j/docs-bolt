@@ -12,7 +12,7 @@
 | Bolt `5.2`
 | Bolt `5.3`
 | Bolt `5.4`
-| Bolt `5.5`^1)^
+| Bolt `5.5`
 | Bolt `5.6`
 
 
@@ -72,6 +72,9 @@
 | `x`
 
 |===
+
+Bolt version 5.5 is flawed and should not be used.
+No Neo4j server will negotiate it.
 
 == Bolt 4.x
 
@@ -201,6 +204,3 @@
 |===
 
 `(x)` denotes that support could be removed in the next version of Neo4j.
-
-^1)^ Bolt version 5.5 is flawed and should not be used.
-No Neo4j server will negotiate it.
