@@ -298,6 +298,12 @@ There are three different kinds of messages:
 |
 | logs off current user, becomes ready for another `LOGON` message
 
+| <<messages-telemetry, `TELEMETRY`>>
+| `54`
+| Request
+| `api::Integer`
+| transmit usage telemetry (added in *v5.4*)
+
 | <<messages-goodbye, `GOODBYE`>>
 | `02`
 | Request
@@ -357,7 +363,7 @@ There are three different kinds of messages:
 | `66`
 | Request
 | `routing::Dictionary(address::String), bookmarks::List<String>, extra::Dictionary(db::String, imp_user::String)`
-| fetch the current routing table
+| fetch the current routing table (added in *v4.3*)
 
 | <<messages-success, `SUCCESS`>>
 | `70`

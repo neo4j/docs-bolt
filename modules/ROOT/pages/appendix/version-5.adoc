@@ -91,6 +91,20 @@ This section lists all Bolt message state transitions available in version 5.1 a
 | `FAILED`
 
 | `READY`
+| `TELEMETRY` +
+  (Bolt 5.4+)
+|
+| `SUCCESS {}`
+| `READY`
+
+| `READY`
+| `TELEMETRY` +
+  (Bolt 5.4+)
+|
+| `FAILURE {}`
+| `FAILED`
+
+| `READY`
 | `RESET`
 | `<INTERRUPT>`
 | _n/a_
