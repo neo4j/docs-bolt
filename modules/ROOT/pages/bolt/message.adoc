@@ -780,6 +780,12 @@ Clients receiving a `FAILURE` in response to `LOGOFF` should treat that connecti
 .Example
 [source, bolt]
 ----
+FAILURE {"neo4j_code":"Neo.ClientError.Request.Invalid","message":"Message 'LogoffMessage{}' cannot be handled by session in the READY state","gql_status":"08N06","description":"error: connection exception - protocol error. General network protocol error.","diagnostic_record":{"_classification":"CLIENT_ERROR"},"cause":{"message":"08N10: Message LogoffMessage{} cannot be handled by session in the 'READY' state.","gql_status":"08N10","description":"error: connection exception - invalid server state. Message LogoffMessage{} cannot be handled by session in the 'READY' state.","diagnostic_record":{"_classification":"CLIENT_ERROR"}}}
+----
+
+.Example (Previous 5.7)
+[source, bolt]
+----
 FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Message 'LogoffMessage{}' cannot be handled by a session in the FAILED state."}
 ----
 
@@ -856,21 +862,44 @@ If a `TELEMETRY` message contains a value that is not a valid `api` value or is 
 [source, bolt]
 ----
 C: TELEMETRY 2
+S: FAILURE {"neo4j_code":"Neo.ClientError.Request.Invalid","message":"Message of type TelemetryMessage cannot be handled by a session in the NEGOTIATION state.","gql_status":"50N42","description":"error: general processing exception - unexpected error. Unexpected error has occurred. See debug log for details."}
+----
+
+NOTE: This error still as unexpected (`50N42`) since it didn't get migrate yet to GQL standard.
+
+.Example 1 (previous 5.7)
+[source, bolt]
+----
+C: TELEMETRY 2
 S: FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Message of type TelemetryMessage cannot be handled by a session in the NEGOTIATION state."}
 ----
 
-.Example 2
+.Example 2 
 [source, bolt]
 ----
 C: TELEMETRY "oh no!"
-S: FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Illegal value: Expected IntValue but got StringValue."}
+S: FAILURE {"neo4j_code":"Neo.ClientError.Request.Invalid","message":"Unexpected type: Expected INT but got STRING","gql_status":"22G03","description":"error: data exception - invalid value type","cause":{"message":"22N01: Expected the value 128 to be of type INT, but was of type STRING.","gql_status":"22N01","description":"error: data exception - invalid type. Expected the value 128 to be of type INT, but was of type STRING.","diagnostic_record":{"_classification":"CLIENT_ERROR"}}}
+----
+
+.Example 2 (previous 5.7)
+[source, bolt]
+----
+C: TELEMETRY "oh no!"
+S: FAILURE {"code":"Neo.ClientError.Request.Invalid","message":"Unexpected type: Expected INT but got STRING"}
 ----
 
 .Example 3
 [source, bolt]
 ----
 C: TELEMETRY 9001
-S: FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Unknown driver interface type 9001."}
+S: FAILURE {"neo4j_code":"Neo.DatabaseError.General.UnknownError","message":"org.neo4j.packstream.error.reader.PackstreamReaderException: Unknown driver interface type 9001","gql_status":"50N00","description":"error: general processing exception - internal error. Internal exception raised DecoderException: org.neo4j.packstream.error.reader.PackstreamReaderException: Unknown driver interface type 9001","cause":{"message":"50N09: The server transitioned into a server state that is not valid in the current context: 'uncaught error'.","gql_status":"50N09","description":"error: general processing exception - invalid server state transition. The server transitioned into a server state that is not valid in the current context: 'uncaught error'.","diagnostic_record":{"_classification":"DATABASE_ERROR"}}}
+----
+
+.Example 3 (previous 5.7)
+[source, bolt]
+----
+C: TELEMETRY 9001
+S: FAILURE {"code":"Neo.DatabaseError.General.UnknownError","message":"org.neo4j.packstream.error.reader.PackstreamReaderException: Unknown driver interface type 9001"}
 ----
 
 
@@ -1985,18 +2014,17 @@ metadata::Dictionary
 ----
 
 The following fields are defined in the metadata:
-/// TODO: CONFIGURE LINKS
 
 * `message::String` - the human readable description of the failure.
 * `code::String` - the neo4j code identifying the failure. label:deprecated[Removed after bolt 5.6]
 * `neo4j_code::String` - the neo4j code identifying the failure. label:new[Introduced in bolt 5.7]
-* `gql_status::String` - the gql status which identifies the error. This should be used in favor of `neo4j_code`. See more about GQL Status here. label:new[Introduced in bolt 5.7]
+* `gql_status::String` - the gql status which identifies the error. This should be used in favor of `neo4j_code`. See more about GQL Status Code https://development.neo4j.dev/docs/status-codes/current/[here]. label:new[Introduced in bolt 5.7]
 * `description::String` - describes the failure represented by `gql_status`. label:new[Introduced in bolt 5.7]
 * `diagnostic_record::Dictionary` - contains fields for helping diagnostic the status. Omitted when content is default. label:new[Introduced in bolt 5.7]
 ** `OPERATION::String` - GQL standard field. **Default: `""`** 
 ** `OPERATION_CODE::String` - GQL standard field. **Default: `"0"`** 
 ** `CURRENT_SCHEMA::String` - GQL standard field. **Default: `"/"`**
-** `_classification::String?` - classifies the failure. See more details about classifications here.
+** `_classification::String?` - classifies the failure.
 * `cause:Dictionary( message::String, gql_status::String, description::String, diagnostic_record::Dictionary, cause::Dictionary? )?` - the inner cause of the error. This fields provides more specific details and context about the failure. label:new[Introduced in bolt 5.7]
 
 NOTE: The `diagnostic_record` field can contain extra and undocumented entries. 
