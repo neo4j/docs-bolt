@@ -380,7 +380,7 @@ There are three different kinds of messages:
 | <<messages-failure, `FAILURE`>>
 | `7F`
 | Summary
-| `metadata::Dictionary(code::String, message::String)`
+| `metadata::Dictionary`
 | request failed
 
 | <<messages-record, `RECORD`>>
@@ -571,6 +571,12 @@ Servers may choose to include metadata describing the nature of the failure but 
 .Example
 [source, bolt]
 ----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
+[source, bolt]
+----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
@@ -667,6 +673,12 @@ A `FAILURE` message response indicates that the client is not permitted to excha
 Servers may choose to include metadata describing the nature of the failure but must immediately close the connection after the failure has been sent.
 
 .Example
+[source, bolt]
+----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -958,6 +970,12 @@ The server may attach metadata to the message to provide more detail on the natu
 .Example
 [source, bolt]
 ----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
+[source, bolt]
+----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
@@ -1021,6 +1039,12 @@ The server may attach metadata to the message to provide more detail on the natu
 Clients receiving a `FAILURE` in response to `RESET` should treat that connection as `DEFUNCT` and dispose of it.
 
 .Example
+[source, bolt]
+----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1195,6 +1219,12 @@ IGNORED
 ==== Server response `FAILURE`
 
 .Example
+[source, bolt]
+----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1467,7 +1497,13 @@ IGNORED
 For *v1* and *v2*, a `PULL_ALL` message request cannot be processed successfully, the server should respond with a `FAILURE` message and enter the `FAILED` state.
 The server may attach metadata to the message to provide more detail on the nature of the failure.
 
-.Example (all versions)
+.Example
+[source, bolt]
+----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1603,6 +1639,12 @@ IGNORED
 .Example
 [source, bolt]
 ----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
+[source, bolt]
+----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
@@ -1668,6 +1710,12 @@ IGNORED
 .Example
 [source, bolt]
 ----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
+[source, bolt]
+----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
@@ -1729,6 +1777,12 @@ IGNORED
 ==== Server response `FAILURE`
 
 .Example
+[source, bolt]
+----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1860,6 +1914,12 @@ IGNORED
 .Example
 [source, bolt]
 ----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
+[source, bolt]
+----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
 ----
 
@@ -1921,11 +1981,26 @@ IGNORED
 .Fields:
 [source, bolt]
 ----
-metadata::Dictionary(
-  code::String,
-  message::String
-)
+metadata::Dictionary
 ----
+
+The following fields are defined in the metadata:
+/// TODO: CONFIGURE LINKS
+
+* `message::String` - the human readable description of the failure.
+* `code::String` - the neo4j code identifying the failure. label:deprecated[Removed after bolt 5.6]
+* `neo4j_code::String` - the neo4j code identifying the failure. label:new[Introduced in bolt 5.7]
+* `gql_status::String` - the gql status which identifies the error. This should be used in favor of `neo4j_code`. See more about GQL Status here. label:new[Introduced in bolt 5.7]
+* `description::String` - describes the failure represented by `gql_status`. label:new[Introduced in bolt 5.7]
+* `diagnostic_record::Dictionary` - contains fields for helping diagnostic the status. Omitted when content is default. label:new[Introduced in bolt 5.7]
+** `OPERATION::String` - GQL standard field. **Default: `""`** 
+** `OPERATION_CODE::String` - GQL standard field. **Default: `"0"`** 
+** `CURRENT_SCHEMA::String` - GQL standard field. **Default: `"/"`**
+** `_classification::String?` - classifies the failure. See more details about classifications here.
+* `cause:Dictionary( message::String, gql_status::String, description::String, diagnostic_record::Dictionary, cause::Dictionary? )?` - the inner cause of the error. This fields provides more specific details and context about the failure. label:new[Introduced in bolt 5.7]
+
+NOTE: The `diagnostic_record` field can contain extra and undocumented entries. 
+Those information can be important for diagnosing failures.
 
 ==== Examples
 .Synopsis
@@ -1935,6 +2010,12 @@ FAILURE {metadata}
 ----
 
 .Example
+[source, bolt]
+----
+FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code":"Example.Failure.Code", "diagnostic_record": { "_classification": "CLIENT_ERROR" }}
+----
+
+.Example (Previous 5.7)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
