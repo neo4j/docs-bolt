@@ -710,6 +710,12 @@ Their names, types, and defaults depend on that choice.
 *** The scheme `basic` requires a username `principal::String` and a password `credentials::String`.
 *** The scheme `bearer` merely requires a token `credentials::String`.
 
+The following fields are defined for inclusion in the `SUCCESS` metadata.
+
+** `advertised_address::String?` - the configured advertised address of the database server. 
+label:new[Introduced in bolt 5.8]
+** `credentials_expired::Boolean` - the sent credentials are expired, the user must update it.
+
 If authentication fails, the server responds with a `FAILURE` message and immediately closes the connection.
 
 ==== Examples
@@ -1204,6 +1210,12 @@ The following fields are defined for inclusion in the `SUCCESS` metadata.
 ** `fields::List<String>`, the fields of the return result. e.g. [“name”, “age”, …]
 ** `t_first::Integer`, the time, specified in ms, which the first record in the result stream is available after.
 
+For *Implicit Transaction* (`RUN`):
+
+** `db::String?` - user's resolved home database that the transaction will run into. 
+The field is only present if the client did not explicitly provide a database to start the transaction for.
+label:new[Introduced in bolt 5.8]
+
 For *Explicit Transaction* (`BEGIN`+`RUN`):
 
 ** `qid::Integer` specifies the server assigned statement ID to reference the server side result-set with commencing `BEGIN`+`RUN`+`PULL` and `BEGIN`+`RUN`+`DISCARD` messages.
@@ -1647,10 +1659,22 @@ BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_cate
 [[messages-begin-success]]
 ==== Server response `SUCCESS`
 
+The following fields are defined for inclusion in the `SUCCESS` metadata:
+
+** `db::String?` - user's resolved home database that the transaction will run into. 
+The field is only present if the client did not explicitly provide a database to start the transaction for.
+label:new[Introduced in bolt 5.8]
+
 .Example
 [source, bolt]
 ----
 SUCCESS {}
+----
+
+.Example with Home Database Resolution
+[source, bolt]
+----
+SUCCESS { "db": "my_home_db"}
 ----
 
 [[messages-begin-ignored]]
@@ -2083,6 +2107,13 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 
 The sections below list the changes of messages compared to the previous version.
 Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
+
+[[messages-summary-58]]
+=== Version 5.8
+
+** Introduce connection hint `ssr.enabled`
+** Introduce `advertised_address` as response metadata of `LOGON`
+** `SUCCESS` message of begin transaction messages (`BEGIN` or `RUN`) contains resolved home database as `db`. 
 
 [[messages-summary-57]]
 === Version 5.7
