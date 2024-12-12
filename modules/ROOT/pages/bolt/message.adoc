@@ -2056,6 +2056,12 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 The sections below list the changes of messages compared to the previous version.
 Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
 
+[[messages-summary-57]]
+=== Version 5.7
+
+** `FAILURE` message was changed to have `gql_status`, `description`, `diagnostic_record` and `cause`.
+`code` was renamed to `neo4j_code`.
+
 [[messages-summary-56]]
 === Version 5.6
 
