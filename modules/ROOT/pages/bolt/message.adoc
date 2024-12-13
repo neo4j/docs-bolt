@@ -574,7 +574,7 @@ Servers may choose to include metadata describing the nature of the failure but 
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -678,7 +678,7 @@ Servers may choose to include metadata describing the nature of the failure but 
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -789,7 +789,7 @@ Clients receiving a `FAILURE` in response to `LOGOFF` should treat that connecti
 FAILURE {"neo4j_code": "Neo.ClientError.Request.Invalid","message": "Message 'LogoffMessage{}' cannot be handled by session in the READY state","gql_status": "08N06","description": "error: connection exception - protocol error. General network protocol error.","diagnostic_record":{"_classification": "CLIENT_ERROR"},"cause":{"message": "08N10: Message LogoffMessage{} cannot be handled by session in the 'READY' state.","gql_status": "08N10","description": "error: connection exception - invalid server state. Message LogoffMessage{} cannot be handled by session in the 'READY' state.","diagnostic_record":{"_classification": "CLIENT_ERROR"}}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Neo.ClientError.Request.Invalid", "message": "Message 'LogoffMessage{}' cannot be handled by a session in the FAILED state."}
@@ -873,7 +873,7 @@ S: FAILURE {"neo4j_code": "Neo.ClientError.Request.Invalid","message": "Message 
 
 NOTE: This error still as unexpected (`50N42`) since it didn't get migrate yet to GQL standard.
 
-.Example 1 (previous 5.7)
+.Example 1 (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 C: TELEMETRY 2
@@ -887,7 +887,7 @@ C: TELEMETRY "oh no!"
 S: FAILURE {"neo4j_code": "Neo.ClientError.Request.Invalid","message": "Unexpected type: Expected INT but got STRING","gql_status": "22G03","description": "error: data exception - invalid value type","cause":{"message": "22N01: Expected the value 128 to be of type INT, but was of type STRING.","gql_status": "22N01","description": "error: data exception - invalid type. Expected the value 128 to be of type INT, but was of type STRING.","diagnostic_record":{"_classification": "CLIENT_ERROR"}}}
 ----
 
-.Example 2 (previous 5.7)
+.Example 2 (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 C: TELEMETRY "oh no!"
@@ -901,7 +901,7 @@ C: TELEMETRY 9001
 S: FAILURE {"neo4j_code": "Neo.DatabaseError.General.UnknownError","message": "org.neo4j.packstream.error.reader.PackstreamReaderException: Unknown driver interface type 9001","gql_status": "50N00","description": "error: general processing exception - internal error. Internal exception raised DecoderException: org.neo4j.packstream.error.reader.PackstreamReaderException: Unknown driver interface type 9001","cause":{"message": "50N09: The server transitioned into a server state that is not valid in the current context: 'uncaught error'.","gql_status": "50N09","description": "error: general processing exception - invalid server state transition. The server transitioned into a server state that is not valid in the current context: 'uncaught error'.","diagnostic_record":{"_classification": "DATABASE_ERROR"}}}
 ----
 
-.Example 3 (previous 5.7)
+.Example 3 (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 C: TELEMETRY 9001
@@ -1008,7 +1008,7 @@ The server may attach metadata to the message to provide more detail on the natu
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1079,7 +1079,7 @@ Clients receiving a `FAILURE` in response to `RESET` should treat that connectio
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1265,7 +1265,7 @@ IGNORED
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1544,7 +1544,7 @@ The server may attach metadata to the message to provide more detail on the natu
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1695,7 +1695,7 @@ IGNORED
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1766,7 +1766,7 @@ IGNORED
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1835,7 +1835,7 @@ IGNORED
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -1970,7 +1970,7 @@ IGNORED
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
@@ -2076,7 +2076,7 @@ FAILURE {metadata}
 FAILURE {"gql_status": "01N00", "message": "old message you have failed something", "description": "default condition - default subcondition. Message", "neo4j_code": "Example.Failure.Code", "diagnostic_record": {"_classification": "CLIENT_ERROR"}}
 ----
 
-.Example (Previous 5.7)
+.Example (Bolt 5.6 and earlier)
 [source, bolt]
 ----
 FAILURE {"code": "Example.Failure.Code", "message": "example failure"}
