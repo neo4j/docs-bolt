@@ -871,8 +871,6 @@ C: TELEMETRY 2
 S: FAILURE {"neo4j_code": "Neo.ClientError.Request.Invalid","message": "Message of type TelemetryMessage cannot be handled by a session in the NEGOTIATION state.","gql_status": "50N42","description": "error: general processing exception - unexpected error. Unexpected error has occurred. See debug log for details."}
 ----
 
-NOTE: This error still as unexpected (`50N42`) since it didn't get migrate yet to GQL standard.
-
 .Example 1 (Bolt 5.6 and earlier)
 [source, bolt]
 ----
