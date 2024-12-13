@@ -1212,7 +1212,7 @@ The following fields are defined for inclusion in the `SUCCESS` metadata.
 
 For *Implicit Transaction* (`RUN`):
 
-** `db::String?` - user's resolved home database that the transaction will run into. 
+** `db::String?` - resolved user's home database that the transaction will run into. 
 The field is only present if the client did not explicitly provide a database to start the transaction for.
 label:new[Introduced in bolt 5.8]
 
@@ -1661,7 +1661,7 @@ BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_cate
 
 The following fields are defined for inclusion in the `SUCCESS` metadata:
 
-** `db::String?` - user's resolved home database that the transaction will run into. 
+** `db::String?` - resolved user's home database that the transaction will run into. 
 The field is only present if the client did not explicitly provide a database to start the transaction for.
 label:new[Introduced in bolt 5.8]
 

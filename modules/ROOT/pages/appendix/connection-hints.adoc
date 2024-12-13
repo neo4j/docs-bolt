@@ -13,7 +13,7 @@ label:new[Introduced in bolt 5.8]
 
 Indicates if the database cluster is configured with Server Side Routing (SSR) enabled, so transactions can be routed between members of the cluster if the current member is able to process it. 
 
-SSR should be considered disabled in the absence of this hint.
+Considered SSR disabled in the absence of this hint.
 
 .Example
 [source, Bolt]
