@@ -714,7 +714,7 @@ The following fields are defined for inclusion in the `SUCCESS` metadata.
 
 ** `advertised_address::String?` - the configured advertised address of the database server. 
 label:new[Introduced in bolt 5.8]
-** `credentials_expired::Boolean` - the sent credentials are expired, the user must update it.
+** `credentials_expired::Boolean` - the sent credentials are expired, the user must update them.
 
 If authentication fails, the server responds with a `FAILURE` message and immediately closes the connection.
 
@@ -2042,12 +2042,12 @@ The following fields are defined in the metadata:
 label:deprecated[Removed after bolt 5.6]
 * `neo4j_code::String` - the neo4j code identifying the failure.
 label:new[Introduced in bolt 5.7]
-* `gql_status::String` - the gql status which identifies the error. This should be used in favor of `neo4j_code`.
+* `gql_status::String` - the GQL status which identifies the error. This should be used in favor of `neo4j_code`.
 See more about GQL Status Code https://development.neo4j.dev/docs/status-codes/current/[here].
 label:new[Introduced in bolt 5.7]
 * `description::String` - describes the failure represented by `gql_status`.
 label:new[Introduced in bolt 5.7]
-* `diagnostic_record::Dictionary` - contains fields for helping diagnostic the status. Omitted when content is default.
+* `diagnostic_record::Dictionary` - contains fields for helping diagnosing the status. Omitted when content is default.
 label:new[Introduced in bolt 5.7]
 ** `OPERATION::String` - GQL standard field.
 Default: `""`
