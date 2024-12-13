@@ -710,11 +710,14 @@ Their names, types, and defaults depend on that choice.
 *** The scheme `basic` requires a username `principal::String` and a password `credentials::String`.
 *** The scheme `bearer` merely requires a token `credentials::String`.
 
-The following fields are defined for inclusion in the `SUCCESS` metadata.
+*Detail messages:*
 
-** `advertised_address::String?` - the configured advertised address of the database server. 
-label:new[Introduced in bolt 5.8]
-** `credentials_expired::Boolean` - the sent credentials are expired, the user must update them.
+No detail messages should be returned.
+
+*Valid summary messages:*
+
+** `SUCCESS`
+** `FAILURE`
 
 If authentication fails, the server responds with a `FAILURE` message and immediately closes the connection.
 
@@ -729,6 +732,29 @@ LOGON {auth}
 [source, bolt]
 ----
 LOGON {"scheme": "basic", "principal": "user", "credentials": "password"}
+----
+
+[[messages-logon-success]]
+==== Server response `SUCCESS`
+
+A `SUCCESS` message response indicates that the client has been successfully authenticated.
+
+The following fields are defined for inclusion in the `SUCCESS` metadata.
+
+** `advertised_address::String?` - the configured advertised address of the database server.
+label:new[Introduced in bolt 5.8]
+** `credentials_expired::Boolean` - the sent credentials are expired, the user must update them.
+
+.Example *v5.1+*
+[source, bolt]
+----
+SUCCESS {}
+----
+
+.Example *v5.8+*
+[source, bolt]
+----
+SUCCESS {"advertised_address": "graphz.example.com:7687"}
 ----
 
 [[messages-logoff]]
