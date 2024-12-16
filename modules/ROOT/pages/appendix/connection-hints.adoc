@@ -7,6 +7,22 @@ Drivers may choose to interpret or ignore these hints at their own discretion.
 The following set of hints are currently defined.
 
 
+[[hint-ssr-enabled]]
+== ssr.enabled::Boolean
+label:new[Introduced in bolt 5.8]
+
+Indicates if the database cluster is configured with Server Side Routing (SSR) enabled, so transactions can be routed between members of the cluster if the current member isn't able to process it. 
+
+Consider SSR disabled in the absence of this hint.
+
+.Example
+[source, Bolt]
+----
+C: HELLO {"user_agent": "neo4j-javascript/5.26.0", "bolt_agent": {"product": "neo4j-javascript/5.26.0", "platform": "darwin 24.1.0; arm64", "language_details": "Node/18.19.0 (v8 10.2.154.26-node.28)"}}
+S: SUCCESS {"server": "Neo4j/5.26.0", "connection_id": "example-connection-id:1", "hints": {"ssr.enabled": true}}
+----
+
+
 [[hint-telemetry-enabled]]
 == telemetry.enabled::Boolean
 label:new[Introduced in bolt 5.4]
