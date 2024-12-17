@@ -98,8 +98,7 @@
 
 |===
 
-Bolt version 5.5 is flawed and should not be used.
-No Neo4j server will negotiate it.
+Bolt version 5.5 is not used, and no Neo4j server will ever negotiate it.
 
 == Bolt 4.x
 
