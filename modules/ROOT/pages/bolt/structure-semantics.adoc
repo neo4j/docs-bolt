@@ -209,7 +209,7 @@ The first node in `nodes` is always the first node in the path and is not refere
 The 1st, 3rd, ... entry in `indices` refers to an entry in `rels` (1-indexed), for example, a `3` would refer to the 3rd element of `rels`.
 The number can also be negative which should be treated like the positive equivalent, except for denoting the relationship in the inverse direction.
 The number is never `0`.
-The 2nd, 4th, ... entry in `indices` refers to an entry in `nodes` (0-indexed), for example, a `3` would refer the 4th element of `nodes`.
+The 2nd, 4th, ... entry in `indices` refers to an entry in `nodes` (0-indexed), for example, a `3` would refer to the 4th element of `nodes`.
 The number is always `≥ 0`.
 
 .Example (simplified notation for `<Node>` and `<UnboundRelationship>`)
