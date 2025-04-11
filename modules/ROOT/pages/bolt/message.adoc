@@ -473,12 +473,12 @@ Setting `routing` to `null` indicates that the server should not carry out any r
 Default: `null`.
 label:new[Introduced in bolt 4.1]
 ** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
-Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
+Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use its configured default.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
 ** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
-Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
+Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available categories.
 Sending `null` will make the server use its configured default.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
@@ -1158,12 +1158,12 @@ label:new[Introduced in bolt 4.0]
 Default: `null`.
 label:new[Introduced in bolt 4.4]
 *** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
-Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
+Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
 *** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
-Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
+Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available categories.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
@@ -1225,7 +1225,7 @@ The following fields are defined for inclusion in the `SUCCESS` metadata.
 
 For *Implicit Transaction* (`RUN`):
 
-** `db::String?` - resolved user's home database that the transaction will run into. 
+** `db::String?` - resolved user's home database that the transaction will run into.
 The field is only present if the client did not explicitly provide a database to start the transaction for.
 label:new[Introduced in bolt 5.8]
 
@@ -1624,12 +1624,12 @@ label:new[Introduced in bolt 4.0]
 Default: `null`.
 label:new[Introduced in bolt 4.4]
 ** The `notifications_minimum_severity` specifies the minimum severity a notification needs to have to be returned.
-Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
+Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for acceptable entries, with the special value `"OFF"` added to the protocol, which disables all notifications.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
 ** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
-Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#notification-categories[Cypher documentation] for available categories.
+Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available categories.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
@@ -1674,7 +1674,7 @@ BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_cate
 
 The following fields are defined for inclusion in the `SUCCESS` metadata:
 
-** `db::String?` - resolved user's home database that the transaction will run into. 
+** `db::String?` - resolved user's home database that the transaction will run into.
 The field is only present if the client did not explicitly provide a database to start the transaction for.
 label:new[Introduced in bolt 5.8]
 
@@ -2058,7 +2058,7 @@ label:deprecated[Removed after bolt 5.6]
 * `neo4j_code::String` - the neo4j code identifying the failure.
 label:new[Introduced in bolt 5.7]
 * `gql_status::String` - the GQL status which identifies the error. This should be used in favor of `neo4j_code`.
-See more about GQL Status Code https://development.neo4j.dev/docs/status-codes/current/[here].
+See more about link:https://neo4j.com/docs/status-codes/current/notifications/#gqlstatus-notification-object[GQL-status notification object].
 label:new[Introduced in bolt 5.7]
 * `description::String` - describes the failure represented by `gql_status`.
 label:new[Introduced in bolt 5.7]
@@ -2135,7 +2135,7 @@ Please also check for changes in xref:./structure-semantics.adoc#structure-summa
 
 ** Introduce connection hint `ssr.enabled`
 ** Introduce `advertised_address` as response metadata of `LOGON`
-** `SUCCESS` message of begin transaction messages (`BEGIN` or `RUN`) contains resolved home database as `db`. 
+** `SUCCESS` message of begin transaction messages (`BEGIN` or `RUN`) contains resolved home database as `db`.
 
 [[messages-summary-57]]
 === Version 5.7
