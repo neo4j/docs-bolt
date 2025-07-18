@@ -2,6 +2,22 @@
 
 = Bolt Protocol and Neo4j compatibility
 
+:fn-calver: footnote:calver[This includes calver releases such as `2025.01`. \
+At some point, the server might drop support for older Bolt versions, but there's no plan or guarantee for when or if that will happen. \
+As soon as a decision is made, it will be documented here.]
+
+== Bolt 6.x
+
+[cols="^,^",options="header"]
+|===
+| Neo4j version
+| Bolt `6.0`
+
+| `2025.07`+
+| `x`
+
+|===
+
 == Bolt 5.x
 
 [cols="^,^,^,^,^,^,^,^,^,^",options="header"]
@@ -85,7 +101,7 @@
 |
 |
 
-| `5.26`+
+| `5.26`+{fn-calver}
 | `x`
 | `x`
 | `x`
@@ -98,6 +114,7 @@
 
 |===
 
+[NOTE]
 Bolt version 5.5 is not used, and no Neo4j server will ever negotiate it.
 
 == Bolt 4.x
@@ -148,7 +165,7 @@ Bolt version 5.5 is not used, and no Neo4j server will ever negotiate it.
 | `(x)`
 | `x`
 
-| `5.0`+
+| `5.0`+{fn-calver}
 | `(x)`
 | `(x)`
 | `(x)`

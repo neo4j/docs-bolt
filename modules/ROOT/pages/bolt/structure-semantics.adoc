@@ -67,6 +67,10 @@ The table below lists the PackStream specified structures and their code and tag
 | `Y`
 | `59`
 
+| <<structure-vector, `Vector`>>
+| `V`
+| `56`
+
 3+| *Legacy Structures*
 
 | <<structure-legacy-datetime, `Legacy DateTime`>>
@@ -83,7 +87,7 @@ The table below lists the PackStream specified structures and their code and tag
 
 A snapshot of a node within a graph database.
 
-_The `element_id` field was added with version *5.0* and does not exist in earlier versions._
+The `element_id` field was added with version *5.0* and does not exist in earlier versions. label:new[Introduced in bolt 5.0]
 
 *tag byte:* `4E`
 
@@ -116,7 +120,7 @@ B4 4E
 
 A snapshot of a relationship within a graph database.
 
-_The fields `element_id`, `start_node_element_id`, and `end_node_element_id` were added with version *5.0* and do not exist in earlier versions._
+The fields `element_id`, `start_node_element_id`, and `end_node_element_id` were added with version *5.0* and do not exist in earlier versions. label:new[Introduced in bolt 5.0]
 
 *tag byte:* `52`
 
@@ -158,7 +162,7 @@ B8 52
 A relationship without start or end node ID.
 It is used internally for Path serialization.
 
-_The `element_id` field was added with version *5.0* and does not exist in earlier versions._
+The `element_id` field was added with version *5.0* and does not exist in earlier versions. label:new[Introduced in bolt 5.0]
 
 *tag byte:* `72`
 
@@ -275,6 +279,7 @@ Where the `nanoseconds` are nanoseconds since midnight.
 
 [[structure-datetime]]
 === `DateTime`
+label:new[Introduced in bolt 5.0]
 
 An instant capturing the date, the time, and the time zone.
 The time zone information is specified with a zone offset.
@@ -321,6 +326,7 @@ The deserialization of such a `DateTime` structure expectedly happens in reverse
 
 [[structure-datetimezoneid]]
 === `DateTimeZoneId`
+label:new[Introduced in bolt 5.0]
 
 An instant capturing the date, the time, and the time zone.
 The time zone information is specified with a zone identifier.
@@ -458,10 +464,35 @@ Point3D::Structure(
 
 Where the `srid` is a _Spatial Reference System Identifier_.
 
+[[structure-vector]]
+=== `Vector`
+label:new[Introduced in bolt 6.0]
+
+An ordered collection of homogeneous types, representing a vector in a multidimensional space.
+
+*tag byte:* `56`
+
+*Number of fields:* 2
+----
+Vector::Structure(
+    type_marker::Bytes,
+    data::Bytes,
+)
+----
+
+* `type_marker` is specifying the inner type of the vector:
+** `C8` for `8-bit signed integer`
+** `C9` for `16-bit signed integer` (in big-endian order)
+** `CA` for `32-bit signed integer` (in big-endian order)
+** `C6` for `32-bit floating point value` (IEEE-754 single precision representation)
+** `C1` for `64-bit floating point value` (IEEE-754 double precision representation)
+* `data` is a sequence of values of the specified type, encoded as specified in the description of `type_marker`.
+
 == Legacy Structures
 
 [[structure-legacy-datetime]]
 === `Legacy DateTime`
+label:deprecated[Removed after bolt 4.4]
 
 An instant capturing the date, the time, and the time zone.
 The time zone information is specified with a zone offset.
@@ -509,6 +540,7 @@ The deserialization of such a `DateTime` structure expectedly happens in reverse
 
 [[structure-legacy-datetimezoneid]]
 === `Legacy DateTimeZoneId`
+label:deprecated[Removed after bolt 4.4]
 
 An instant capturing the date, the time, and the time zone.
 The time zone information is specified with a zone identifier.
@@ -589,7 +621,11 @@ Since `DateTimeZoneId` does not include the timezone offset, the resolution of t
 The sections below list the changes of structure semantics in versions where they changed.
 Please also check for changes in xref:./message.adoc#messages-summary[Bolt Messages].
 
-[[structure-summary-5]]
+[[structure-summary-60]]
+=== Version 6.0
+** The <<structure-vector, `Vector`>> structure was added.
+
+[[structure-summary-50]]
 === Version 5.0
 
 ** The `element_id` field was added to <<structure-node>>.
