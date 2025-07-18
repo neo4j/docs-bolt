@@ -544,6 +544,8 @@ label:new[Introduced in bolt 4.3]
 label:deprecated[Removed after bolt 4.4]
 ** `hints::Dictionary` (set of optional configuration hints to be considered by the driver)
 label:new[Introduced in bolt 4.3]
+** `protocol_version::String` (the protocol version negotiated between the client and the server, example `"5.7"`)
+label:new[Introduced in bolt 5.7]
 
 The `hints` dictionary may contain a set of optional configuration hints which may be interpreted or ignored by drivers at their own discretion in order to augment operations where applicable.
 A full listing of the available hints may be found in xref:appendix/connection-hints.adoc[Appendix -- Connection hints].
@@ -2140,6 +2142,7 @@ Please also check for changes in xref:./structure-semantics.adoc#structure-summa
 [[messages-summary-57]]
 === Version 5.7
 
+** <<messages-hello-success,`SUCCESS` message of `HELLO`>> has a new field `protocol_version`.
 ** `FAILURE` message was changed to have `gql_status`, `description`, `diagnostic_record` and `cause`.
 `code` was renamed to `neo4j_code`.
 
