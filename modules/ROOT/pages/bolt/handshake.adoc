@@ -28,7 +28,8 @@ This means that the most significant part of the value is written to the network
 Bolt communication is intended to take place over a TCP connection.
 The default port is `TCP 7687` but any port can be used.
 
-There is no formal shutdown procedure for a Bolt connection. Either peer may close the connection at TCP level at any time.
+There is no formal shutdown procedure for a Bolt connection.
+Either peer may close the connection at TCP level at any time.
 Both client and server should be prepared for that to occur and should handle it appropriately.
 
 [[handshake]]
@@ -91,6 +92,106 @@ S: 00 00 00 00
 ----
 
 
+[[bolt-version57]]
+== Bolt version 5.7
+With bolt version 5.7, a new scheme for handshaking is introduced: **Manifest v1**.
+
+[[varint]]
+=== VarInt
+VarInts are transmitted in groups of 7 bits with their least significant bits first.
+The most significant bit within each byte is used as a continuation bit effectively indicating that more data is to follow.
+As such, it is not to be considered part of the decoded value.
+
+[cols="1,1,1",options="header"]
+[%autowidth]
+|===
+| Hex Encoded
+| Binary Decoded
+| Decimal Decoded
+
+| `01`
+| `0000 0001`
+| `1`
+
+| `7F`
+| `0111 1111`
+| `127`
+
+| `FF 82 71`
+| `0111 1111`
+| `127`
+|===
+
+Let's take apart the last example:
+
+----
+# Encoded in hexadecimal
+FF 82 71
+# Encoded in binary
+1111 1111  1000 0010  0111 0001
+# These are the continuation bits telling us how many bytes to read
+1... ....  1... ....  0... ....
+# The actual value (in 7-bit groups in little-endian order)
+ 111 1111   000 0010   111 0001
+# Convert to big-endian (if target machine is big-endian)
+ 111 0001   000 0010   111 1111
+# Concatenate bits for the final binary representation
+ 111 0001   000 0010   111 1111
+ ~~~~~~~~   ^^^^^^^^   ========
+0001 1100  0100 0001  0111 1111
+   ~~~~~~~~~~^^^^^^^^^^========
+----
+
+
+[[bolt-version57-manifest]]
+=== Handshake Manifest v1
+The client might substitute one of the 4 32-bit version requests with the special version `00 00 01 FF` where the first two bytes are reserved, the next byte is manifest version (here v1), and the last byte `FF` indicates that this is a manifest style handshake request.
+
+If the server accepts the request, it will respond with `00 00 01 FF`, followed by
+
+* A <<varint>> `N` (max unsigned 64-bit integer)
+* An `N` long list of supported bolt versions in <<bolt-version43, bolt version 4.3 style>> (4 bytes each).
+* A <<varint>> `CAPABILTIES` (max unsigned 64-bit integer), which is a reserved bitmask for vendor-specific protocol amendments.
+
+The client now gets to choose any of the offered versions and replies with
+
+* The chose version in <<bolt-version40, bolt version 4.0 style>> (4 bytes, may not contain a range).
+* A <<varint>> `CAPABILITIES`, which selects a subset (or all) of the offered capabilities.
+
+[NOTE]
+Since no server response it expected after the client's final part of the handshake, the client might choose to pipeline this part with the first Bolt message(s).
+
+[NOTE]
+Since no server response it expected after the client's final part of the handshake, the client might choose to pipeline this part with the first Bolt message(s).
+
+.Example
+----
+C: 60 60 B0 17                                         # (1)
+C: 00 00 01 FF  00 00 04 04  00 00 00 03  00 00 00 02  # (2)
+S: 00 00 01 FF                                         # (3)
+S: 02                                                  # (4)
+S: 00 02 08 05                                         # (4a)
+S: 00 04 04 04                                         # (4b)
+S: 09                                                  # (5)
+C: 00 00 07 05                                         # (6)
+C: 08                                                  # (7)
+----
+
+1. Bolt identification
+2. Client requests (in order of preference)
+  * Manifest v1
+  * Highest available of Bolt versions 4.4 - 4.0
+  * Bolt version 3
+  * Bolt version 2
+3. Server chooses manifest v1
+4. Server announces that 2 supported version(-ranges) are available:
+.. Bolt versions 5.8 - 5.6
+.. Bolt versions 4.4 - 4.0
+5. Server offers capability bits 1 and 4 (bitmask `0000 1001`)
+6. Client chooses Bolt version 5.7
+7. Client chooses capability bit 4 (bitmask `0000 1000`)
+
+
 [[bolt-version43]]
 == Bolt version 4.3
 
@@ -126,7 +227,9 @@ The example makes use of the fact that Bolt 4.1 and 4.2 are equivalent and only 
 == Bolt version 4.0
 
 With Bolt version 4.0 the version scheme supports major and minor versioning number.
-The first 16 bits are reserved. 8 bits represents the minor version. 8 bits represents the major version.
+The first 16 bits are reserved.
+8 bits represents the minor version.
+8 bits represents the major version.
 
 .Example with version 4.1
 ----
