@@ -468,7 +468,7 @@ Where the `srid` is a _Spatial Reference System Identifier_.
 === `Vector`
 label:new[Introduced in bolt 6.0]
 
-An ordered collection of homogeneous types, representing a vector in a multidimensional space.
+An ordered collection of homogeneous types.
 
 *tag byte:* `56`
 
@@ -480,7 +480,7 @@ Vector::Structure(
 )
 ----
 
-* `type_marker` is specifying the inner type of the vector:
+* `type_marker` specifies the inner type of the vector:
 ** `C8` for `8-bit signed integer`
 ** `C9` for `16-bit signed integer` (in big-endian order)
 ** `CA` for `32-bit signed integer` (in big-endian order)
