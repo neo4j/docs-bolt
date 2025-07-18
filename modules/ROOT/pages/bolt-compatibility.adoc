@@ -13,7 +13,7 @@ As soon as a decision is made, it will be documented here.]
 | Neo4j version
 | Bolt `6.0`
 
-| `2025.07`+{fn-calver}
+| `2025.08`+{fn-calver}
 | `x`
 
 |===
