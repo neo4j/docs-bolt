@@ -2,9 +2,9 @@
 
 = Bolt Protocol and Neo4j compatibility
 
-:fn-calver: footnote:calver[This includes (newer) calver releases newer such as `2026.01`. \
+:fn-calver: pass:c,q[footnote:calver[`+` includes all newer versions until further notice -- this includes calver releases such as `2026.01`. \
 At some point, the server might drop support for older Bolt versions, but there's no plan or guarantee for when or if that will happen. \
-As soon as a decision is made, it will be documented here.]
+As soon as a decision is made, it will be documented here.]]
 
 == Bolt 6.x
 
