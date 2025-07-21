@@ -2130,7 +2130,7 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 The sections below list the changes of messages compared to the previous version.
 Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
 
-[[messages-summary-60]]
+[[messages-summary-6]]
 === Version 6.0
 
 ** No changes from version 5.8
@@ -2186,7 +2186,7 @@ No Neo4j server will negotiate this protocol version.
 ** `LOGON` message has been added and accepts authentication.
 ** `LOGOFF` message has been added.
 
-[[messages-summary-50]]
+[[messages-summary-5]]
 === Version 5.0
 
 ** No changes from version 4.4
