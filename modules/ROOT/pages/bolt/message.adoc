@@ -544,7 +544,8 @@ label:new[Introduced in bolt 4.3]
 label:deprecated[Removed after bolt 4.4]
 ** `hints::Dictionary` (set of optional configuration hints to be considered by the driver)
 label:new[Introduced in bolt 4.3]
-** `protocol_version::String` (the protocol version negotiated between the client and the server, example `"5.7"`)
+** `protocol_version::String` (the protocol version negotiated between the client and the server, example `"5.7"`).
+This field is only present if xref:bolt/handshake.adoc#bolt-version57-manifest[handshake manifest v1] or new was used when establishing the connection.
 label:new[Introduced in bolt 5.7]
 
 The `hints` dictionary may contain a set of optional configuration hints which may be interpreted or ignored by drivers at their own discretion in order to augment operations where applicable.
