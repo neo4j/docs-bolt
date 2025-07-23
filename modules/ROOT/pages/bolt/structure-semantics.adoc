@@ -621,11 +621,11 @@ Since `DateTimeZoneId` does not include the timezone offset, the resolution of t
 The sections below list the changes of structure semantics in versions where they changed.
 Please also check for changes in xref:./message.adoc#messages-summary[Bolt Messages].
 
-[[structure-summary-60]]
+[[structure-summary-6]]
 === Version 6.0
 ** The <<structure-vector, `Vector`>> structure was added.
 
-[[structure-summary-50]]
+[[structure-summary-5]]
 === Version 5.0
 
 ** The `element_id` field was added to <<structure-node>>.
