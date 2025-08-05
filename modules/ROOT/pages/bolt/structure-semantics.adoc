@@ -485,8 +485,8 @@ Vector::Structure(
 ** `C9` for `16-bit signed integer` (in big-endian order)
 ** `CA` for `32-bit signed integer` (in big-endian order)
 ** `CB` for `64-bit signed integer` (in big-endian order)
-** `C6` for `32-bit floating point value` (IEEE-754 single precision representation)
-** `C1` for `64-bit floating point value` (IEEE-754 double precision representation)
+** `C6` for `32-bit floating point value` (IEEE-754 single precision representation in big-endian order)
+** `C1` for `64-bit floating point value` (IEEE-754 double precision representation in big-endian order)
 * `data` is a sequence of values encoded as specified in `type_marker`.
 
 == Legacy Structures
