@@ -286,8 +286,8 @@ There are three different kinds of messages:
 | initialize connection (replaces <<messages-init, `INIT`>> of *v1* & *v2*)
 (`routing::Dictionary(address::String)` added in *v4.1*)
 (`notifications_minimum_severity::String` added in *v5.2*)
-(notifications_disabled_categories::List<String> added in *v5.2*, removed after *v5.4*)
-(notifications_disabled_classifications::List<String> added in *v5.6*)
+(`notifications_disabled_categories::List<String>` added in *v5.2*, removed after *v5.4*)
+(`notifications_disabled_classifications::List<String>` added in *v5.6*)
 (`bolt_agent::Dictionary` added in *v5.3*)
 
 | <<messages-logon, `LOGON`>>
@@ -333,8 +333,8 @@ There are three different kinds of messages:
 | execute a query (`extra::Dictionary` added in *v3*)
 (`db:String` added in *v4.0*)
 (`notifications_minimum_severity::String` added in *v5.2*)
-(notifications_disabled_categories::List<String> added in *v5.2*, removed after *v5.4*)
-(notifications_disabled_classifications::List<String> added in *v5.6*)
+(`notifications_disabled_categories::List<String>` added in *v5.2*, removed after *v5.4*)
+(`notifications_disabled_classifications::List<String>` added in *v5.6*)
 
 | <<messages-discard, `DISCARD`>>
 | `2F`
@@ -357,8 +357,8 @@ There are three different kinds of messages:
 | begin a new transaction (added in *v3*)
 (`db::String, imp_user::String` added in *v4.0*)
 (`notifications_minimum_severity::String` added in *v5.2*)
-(notifications_disabled_categories::List<String> added in *v5.2*, removed after *v5.4*)
-(notifications_disabled_classifications::List<String> added in *v5.6*)
+(`notifications_disabled_categories::List<String>` added in *v5.2*, removed after *v5.4*)
+(`notifications_disabled_classifications::List<String>` added in *v5.6*)
 
 | <<messages-commit, `COMMIT`>>
 | `12`
