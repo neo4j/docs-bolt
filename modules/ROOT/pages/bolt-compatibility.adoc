@@ -2,7 +2,7 @@
 
 = Bolt Protocol and Neo4j compatibility
 
-:fn-version-plus: pass:c,q[footnote:calver[" - current" includes all newer versions until further notice. \
+:fn-version-plus: pass:c,q[footnote:calver[" - current" includes all newer versions until further notice (inclduing newer major versions). \
 At some point, the server might drop support for older Bolt versions, but there's no plan or guarantee for when or if that will happen. \
 As soon as a decision is made, it will be documented here.]]
 
@@ -158,14 +158,7 @@ Bolt version 5.5 is not used, and no Neo4j server will ever negotiate it.
 | `x`
 |
 
-| `4.4`
-| `(x)`
-| `(x)`
-| `(x)`
-| `(x)`
-| `x`
-
-| `5.0` - current{fn-version-plus}
+| `4.4` - current{fn-version-plus}
 | `(x)`
 | `(x)`
 | `(x)`
