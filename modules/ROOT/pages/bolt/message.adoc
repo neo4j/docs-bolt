@@ -282,9 +282,13 @@ There are three different kinds of messages:
 | <<messages-hello, `HELLO`>>
 | `01`
 | Request
-| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String), notifications_minimum_severity::String, notifications_disabled_categories::List<String>, bolt_agent::Dictionary(product::String, platform::String, language::String, language_details::String))`
-| initialize connection (replaces <<messages-init, `INIT`>> of *v1* & *v2*)(`routing::Dictionary(address::String)` added in *v4.1*)
-(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in *v5.2*)(`bolt_agent::Dictionary` added in *v5.3*)
+| `extra::Dictionary(user_agent::String, routing::Dictionary(address::String), notifications_minimum_severity::String, notifications_disabled_categories::List<String>, notifications_disabled_classifications::List<String>, bolt_agent::Dictionary(product::String, platform::String, language::String, language_details::String))`
+| initialize connection (replaces <<messages-init, `INIT`>> of *v1* & *v2*)
+(`routing::Dictionary(address::String)` added in *v4.1*)
+(`notifications_minimum_severity::String` added in *v5.2*)
+(`notifications_disabled_categories::List<String>` added in *v5.2*, removed after *v5.4*)
+(`notifications_disabled_classifications::List<String>` added in *v5.6*)
+(`bolt_agent::Dictionary` added in *v5.3*)
 
 | <<messages-logon, `LOGON`>>
 | `6A`
@@ -325,27 +329,36 @@ There are three different kinds of messages:
 | <<messages-run, `RUN`>>
 | `10`
 | Request
-| `query::String, parameters::Dictionary, extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db:String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
-| execute a query (`extra::Dictionary` added in *v3*)(`db:String` added in *v4.0*)
-(`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in *v5.2*)
+| `query::String, parameters::Dictionary, extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db:String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>, notifications_disabled_classifications::List<String>)`
+| execute a query (`extra::Dictionary` added in *v3*)
+(`db:String` added in *v4.0*)
+(`notifications_minimum_severity::String` added in *v5.2*)
+(`notifications_disabled_categories::List<String>` added in *v5.2*, removed after *v5.4*)
+(`notifications_disabled_classifications::List<String>` added in *v5.6*)
 
 | <<messages-discard, `DISCARD`>>
 | `2F`
 | Request
 | `extra::Dictionary(n::Integer, qid::Integer)`
-| discard records (replaces `DISCARD_ALL` of *v1*, *v2* & *v3*)(fields added in *v4.0*)
+| discard records (replaces `DISCARD_ALL` of *v1*, *v2* & *v3*)
+(fields added in *v4.0*)
 
 | <<messages-pull, `PULL`>>
 | `3F`
 | Request
 | `extra::Dictionary(n::Integer, qid::Integer)`
-| fetch records (replaces `PULL_ALL` of *v1*, *v2* & *v3*)(fields added in *v4.0*)
+| fetch records (replaces `PULL_ALL` of *v1*, *v2* & *v3*)
+(fields added in *v4.0*)
 
 | <<messages-begin, `BEGIN`>>
 | `11`
 | Request
-| `extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db::String, imp_user::String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>)`
-| begin a new transaction (added in *v3*)(`db::String, imp_user::String` added in *v4.0*) (`notifications_minimum_severity::String, notifications_disabled_categories::List<String>` added in *v5.2*)
+| `extra::Dictionary(bookmarks::List<String>, tx_timeout::Integer, tx_metadata::Dictionary, mode::String, db::String, imp_user::String, notifications_minimum_severity::String, notifications_disabled_categories::List<String>, notifications_disabled_classifications::List<String>)`
+| begin a new transaction (added in *v3*)
+(`db::String, imp_user::String` added in *v4.0*)
+(`notifications_minimum_severity::String` added in *v5.2*)
+(`notifications_disabled_categories::List<String>` added in *v5.2*, removed after *v5.4*)
+(`notifications_disabled_classifications::List<String>` added in *v5.6*)
 
 | <<messages-commit, `COMMIT`>>
 | `12`
@@ -412,6 +425,8 @@ Disabling categories or severities allows the server to skip analysis for those,
 
 In version *5.3*, `bolt_agent::Dictionary` was added to indicate the underlying driver and its version as opposed to the application using the driver in `user_agent.
 
+In version *5.6* `notifications_disabled_categories` was renamed to `notifications_disabled_classifications`.
+
 [NOTE]
 ====
 On versions earlier than *5.1*, the authentication token described on the `LOGON` message should be sent as part of the `HELLO` message instead.
@@ -445,6 +460,7 @@ extra::Dictionary(
   routing::Dictionary(address::String),
   notifications_minimum_severity::String,
   notifications_disabled_categories::List<String>,
+  notifications_disabled_classifications::List<String>,
   bolt_agent::Dictionary(
     product::String,
     platform::String,
@@ -477,11 +493,15 @@ Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notif
 Sending `null` will make the server use its configured default.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
-** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
-Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available categories.
+** The `notifications_disabled_classifications` is a list of notification classifications/categories that will not be returned.
+Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available classifications/categories.
 Sending `null` will make the server use its configured default.
 Default: `null`.
+label:new[Introduced in bolt 5.6]
+** `notifications_disabled_categories` is the legacy name for the same field as `notifications_disabled_classifications`.
+See above.
 label:new[Introduced in bolt 5.2]
+label:deprecated[Removed after bolt 5.4]
 ** `bolt_agent::Dictionary`, as opposed to `user_agent`, is meant to identify the driver rather than the application using it.
 Drivers should not allow applications to change this value.
 When populating the fields, drivers should be careful not to include anything that could be used to identify a single machine or user.
@@ -524,7 +544,7 @@ HELLO {"user_agent": "Example/4.1.0", "routing": {"address": "x.example.com:9001
 .Example 2
 [source, bolt]
 ----
-HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}, "notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
+HELLO {"user_agent": "Example/4.2.0", "patch_bolt": ["utc"], "routing": {"address": "x.example.com:9001", "policy": "example_policy_routing_context", "region": "example_region_routing_context"}, "notifications_minimum_severity": "WARNING", "notifications_disabled_classifications": ["HINT", "GENERIC"]}
 ----
 
 [[messages-hello-success]]
@@ -1116,6 +1136,8 @@ The transaction type is implied by the message sequence:
 In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
 Disabling categories or severities allows the server to skip analysis for those, which can speed up query execution.
 
+In version *5.6* `notifications_disabled_categories` was renamed to `notifications_disabled_classifications`.
+
 *Signature:* `10`
 
 .Fields:
@@ -1131,7 +1153,8 @@ extra::Dictionary(
   db::String,
   imp_user::String,
   notifications_minimum_severity::String,
-  notifications_disabled_categories::List<String>
+  notifications_disabled_categories::List<String>,
+  notifications_disabled_classifications::List<String>,
 )
 ----
 
@@ -1165,11 +1188,16 @@ Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notif
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
-*** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
-Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available categories.
+
+*** The `notifications_disabled_classifications` is a list of notification classifications/categories that will not be returned.
+Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available classifications/categories.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
+label:new[Introduced in bolt 5.6]
+*** `notifications_disabled_categories` is the legacy name for the same field as `notifications_disabled_classifications`.
+See above.
 label:new[Introduced in bolt 5.2]
+label:deprecated[Removed after bolt 5.4]
 
 *Detail messages:*
 
@@ -1213,7 +1241,7 @@ RUN "CALL dbms.procedures()" {} {}
 .Example 3
 [source, bolt]
 ----
-RUN "RETURN 42" {} {"notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
+RUN "RETURN 42" {} {"notifications_minimum_severity": "WARNING", "notifications_disabled_classifications": ["HINT", "GENERIC"]}
 ----
 
 [[messages-run-success]]
@@ -1592,6 +1620,8 @@ The *Explicit Transaction* is closed with either the `COMMIT` message or `ROLLBA
 In version *5.2*, `notifications_minimum_severity::String` and `notifications_disabled_categories::List<String>` were added to be able to control the notification config.
 Disabling categories or severities allows the server to skip analysis for those, which can speed up query execution.
 
+In version *5.6* `notifications_disabled_categories` was renamed to `notifications_disabled_classifications`.
+
 *Signature:* `11`
 
 .Fields:
@@ -1605,7 +1635,8 @@ extra::Dictionary(
   db::String,
   imp_user::String,
   notifications_minimum_severity::String,
-  notifications_disabled_categories::List<String>
+  notifications_disabled_categories::List<String>,
+  notifications_disabled_classifications::List<String>,
 )
 ----
 
@@ -1631,11 +1662,15 @@ Please see the link:https://neo4j.com/docs/status-codes/current/notifications/#n
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
 label:new[Introduced in bolt 5.2]
-** The `notifications_disabled_categories` is a list of notification categories that will not be returned.
-Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available categories.
+** The `notifications_disabled_classifications` is a list of notification classifications/categories that will not be returned.
+Please see link:https://neo4j.com/docs/status-codes/current/notifications/#notification-grouping-and-filtering[Status Codes -> Server notification grouping and filtering] for available classifications/categories.
 Sending `null` will make the server use whatever was specified in the `HELLO` message of the current connection.
 Default: `null`.
+label:new[Introduced in bolt 5.6]
+** `notifications_disabled_categories` is the legacy name for the same field as `notifications_disabled_classifications`.
+See above.
 label:new[Introduced in bolt 5.2]
+label:deprecated[Removed after bolt 5.4]
 
 *Detail messages:*
 
@@ -1669,7 +1704,7 @@ BEGIN {"db": "example_database", "tx_metadata": {"log": "example_log_data"}, "bo
 .Example 3
 [source, bolt]
 ----
-BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_categories": ["HINT", "GENERIC"]}
+BEGIN {"notifications_minimum_severity": "WARNING", "notifications_disabled_classifications": ["HINT", "GENERIC"]}
 ----
 
 [[messages-begin-success]]
@@ -2153,6 +2188,10 @@ Please also check for changes in xref:./structure-semantics.adoc#structure-summa
 ** `SUCCESS` messages that contain a `notifications` field were changed to have a field `statuses` instead.
 *** <<messages-discard-success,`SUCCESS` on `PULL`>>
 *** <<messages-discard-success,`SUCCESS` on `DISCARD`>>
+** The request field `notifications_disabled_categories` was renamed to `notifications_disabled_classifications` in messages:
+*** <<messages-hello, `HELLO`>>
+*** <<messages-begin, `BEGIN`>>
+*** <<messages-run, `RUN`>>
 
 [[messages-summary-55]]
 === Version 5.5
