@@ -2168,6 +2168,11 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 The sections below list the changes of messages compared to the previous version.
 Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
 
+[[messages-summary-6]]
+=== Version 6.0
+
+** No changes from version 5.8
+
 [[messages-summary-58]]
 === Version 5.8
 
@@ -2196,7 +2201,7 @@ Please also check for changes in xref:./structure-semantics.adoc#structure-summa
 [[messages-summary-55]]
 === Version 5.5
 [WARNING]
-.Unsupported (and undocumented 😏) protocol version
+.Unsupported (and undocumented 😏️) protocol version
 ====
 Version 5.5 was only ever released in some drivers, but has a flawed design.
 No Neo4j server will negotiate this protocol version.
@@ -2225,7 +2230,7 @@ No Neo4j server will negotiate this protocol version.
 ** `LOGOFF` message has been added.
 
 [[messages-summary-5]]
-=== Version 5
+=== Version 5.0
 
 ** No changes from version 4.4
 
