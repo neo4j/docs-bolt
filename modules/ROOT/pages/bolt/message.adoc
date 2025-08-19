@@ -2053,6 +2053,11 @@ metadata::Dictionary
 The following fields are defined in the metadata:
 
 * `message::String` - the human readable description of the failure.
+label:deprecated[Removed after bolt 5.8]
+* `message::String` - the human readable description of the failure.
+This message is intended for debugging or display purposes.
+Format and content are not guaranteed to remain stable.
+label:new[Introduced in bolt 6.0]
 * `code::String` - the neo4j code identifying the failure.
 label:deprecated[Removed after bolt 5.6]
 * `neo4j_code::String` - the neo4j code identifying the failure.
