@@ -2136,7 +2136,7 @@ Please also check for changes in xref:./structure-semantics.adoc#structure-summa
 [[messages-summary-6]]
 === Version 6.0
 
-** `FAILURE` message field `message` has no guarantee that the format or the message associated to a specific failure will stay stable. 
+** `FAILURE` message -- Field `message` has no guarantee that the format or the message associated to a specific failure will stay stable. 
 
 [[messages-summary-58]]
 === Version 5.8
