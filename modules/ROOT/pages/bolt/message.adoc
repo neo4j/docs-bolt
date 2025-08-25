@@ -2055,7 +2055,7 @@ The following fields are defined in the metadata:
 * `message::String` - The description of the failure, for debugging or display purposes. 
 Since Bolt 6.0, there is no guarantee that the format or the message associated to a specific failure will stay stable. 
 Changes to error messages are not classified as breaking changes. For a stable marker of an error, use `gql_status`.
-label:new[Changed in bolt 6.0]
+label:changed[Changed in bolt 6.0]
 * `code::String` - the neo4j code identifying the failure.
 label:deprecated[Removed after bolt 5.6]
 * `neo4j_code::String` - the neo4j code identifying the failure.
