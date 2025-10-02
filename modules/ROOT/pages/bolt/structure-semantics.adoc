@@ -67,6 +67,14 @@ The table below lists the PackStream specified structures and their code and tag
 | `Y`
 | `59`
 
+| <<structure-vector, `Vector`>>
+| `V`
+| `56`
+
+| <<structure-unsupported-type, `UnsupportedType`>>
+| `?`
+| `3F`
+
 3+| *Legacy Structures*
 
 | <<structure-legacy-datetime, `Legacy DateTime`>>
@@ -83,7 +91,7 @@ The table below lists the PackStream specified structures and their code and tag
 
 A snapshot of a node within a graph database.
 
-_The `element_id` field was added with version *5.0* and does not exist in earlier versions._
+The `element_id` field was added with version *5.0* and does not exist in earlier versions. label:new[Introduced in bolt 5.0]
 
 *tag byte:* `4E`
 
@@ -116,7 +124,7 @@ B4 4E
 
 A snapshot of a relationship within a graph database.
 
-_The fields `element_id`, `start_node_element_id`, and `end_node_element_id` were added with version *5.0* and do not exist in earlier versions._
+The fields `element_id`, `start_node_element_id`, and `end_node_element_id` were added with version *5.0* and do not exist in earlier versions. label:new[Introduced in bolt 5.0]
 
 *tag byte:* `52`
 
@@ -158,7 +166,7 @@ B8 52
 A relationship without start or end node ID.
 It is used internally for Path serialization.
 
-_The `element_id` field was added with version *5.0* and does not exist in earlier versions._
+The `element_id` field was added with version *5.0* and does not exist in earlier versions. label:new[Introduced in bolt 5.0]
 
 *tag byte:* `72`
 
@@ -239,6 +247,7 @@ Date::Structure(
 
 Where the `days` are days since https://en.wikipedia.org/wiki/Epoch_(computing)[Unix epoch]. `0` for example represents 1970-01-01 while `1` represents 1970-01-02.
 
+
 [[structure-time]]
 === `Time`
 
@@ -273,8 +282,10 @@ LocalTime::Structure(
 
 Where the `nanoseconds` are nanoseconds since midnight.
 
+
 [[structure-datetime]]
 === `DateTime`
+label:new[Introduced in bolt 5.0]
 
 An instant capturing the date, the time, and the time zone.
 The time zone information is specified with a zone offset.
@@ -319,8 +330,11 @@ The deserialization of such a `DateTime` structure expectedly happens in reverse
 - instantiate the idiomatic equivalent of `DateTime` based on that Unix timestamp (`4500` seconds and `42` nanoseconds), giving `1970-01-01T01:15:00.000000042Z`
 - localize the resulting UTC `DateTime` to the timezone of the specified offset, giving `1970-01-01T02:15:00.000000042+0100`
 
+
 [[structure-datetimezoneid]]
 === `DateTimeZoneId`
+
+label:new[Introduced in bolt 5.0]
 
 An instant capturing the date, the time, and the time zone.
 The time zone information is specified with a zone identifier.
@@ -421,6 +435,7 @@ Duration::Structure(
 )
 ----
 
+
 [[structure-point2d]]
 === `Point2D`
 
@@ -438,6 +453,7 @@ Point2D::Structure(
 ----
 
 Where the `srid` is a _Spatial Reference System Identifier_.
+
 
 [[structure-point3d]]
 === `Point3D`
@@ -458,10 +474,65 @@ Point3D::Structure(
 
 Where the `srid` is a _Spatial Reference System Identifier_.
 
+
+[[structure-vector]]
+=== `Vector`
+label:new[Introduced in bolt 6.0]
+
+An ordered collection of homogeneous types.
+
+*tag byte:* `56`
+
+*Number of fields:* 2
+----
+Vector::Structure(
+    type_marker::Bytes,
+    data::Bytes,
+)
+----
+
+* `type_marker` specifies the inner type of the vector:
+** `C8` for `8-bit signed integer`
+** `C9` for `16-bit signed integer` (in big-endian order)
+** `CA` for `32-bit signed integer` (in big-endian order)
+** `CB` for `64-bit signed integer` (in big-endian order)
+** `C6` for `32-bit floating point value` (IEEE-754 single precision representation in big-endian order)
+** `C1` for `64-bit floating point value` (IEEE-754 double precision representation in big-endian order)
+* `data` is a sequence of values encoded as specified in `type_marker` (the marker is not repeated in `data`).
+
+
+[[structure-unsupported-type]]
+=== `UnsupportedType`
+label:new[Introduced in bolt 6.0]
+
+A placeholder value for the server to represent a value of a type not supported by the currently negotiated protocol version.
+
+*tag byte:* `3F`
+
+*Number of fields:* 4
+----
+UnsupportedType::Structure(
+    name::String,
+    minimum_protocol_major::Integer,
+    minimum_protocol_minor::Integer,
+    extra::Dictionary {
+        message::String,
+    },
+)
+----
+
+* `name` is the name of the type that could not be transmitted (e.g, `"QuantumFloat"`).
+* `minimum_protocol_major` is the minimum major protocol version required to transmit this type (e.g., `42` if 42.21 is required protocol version).
+* `minimum_protocol_minor` is the minimum minor protocol version required to transmit this type (e.g., `21` if 42.21 is required protocol version).
+* `extra` contains additional information
+** `message` is an optional, human-readable message that may contain additional information, e.g., a migration path or required configuration options.
+
+
 == Legacy Structures
 
 [[structure-legacy-datetime]]
 === `Legacy DateTime`
+label:deprecated[Removed after bolt 4.4]
 
 An instant capturing the date, the time, and the time zone.
 The time zone information is specified with a zone offset.
@@ -509,6 +580,7 @@ The deserialization of such a `DateTime` structure expectedly happens in reverse
 
 [[structure-legacy-datetimezoneid]]
 === `Legacy DateTimeZoneId`
+label:deprecated[Removed after bolt 4.4]
 
 An instant capturing the date, the time, and the time zone.
 The time zone information is specified with a zone identifier.
@@ -588,6 +660,11 @@ Since `DateTimeZoneId` does not include the timezone offset, the resolution of t
 
 The sections below list the changes of structure semantics in versions where they changed.
 Please also check for changes in xref:./message.adoc#messages-summary[Bolt Messages].
+
+[[structure-summary-6]]
+=== Version 6.0
+** The <<structure-vector, `Vector`>> structure was added.
+** The <<structure-unsupported-type, `UnsupportedType`>> structure was added.
 
 [[structure-summary-5]]
 === Version 5.0
