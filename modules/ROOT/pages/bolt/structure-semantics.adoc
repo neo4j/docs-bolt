@@ -477,7 +477,7 @@ Where the `srid` is a _Spatial Reference System Identifier_.
 
 [[structure-vector]]
 === `Vector`
-label:new[Introduce d in bolt 6.0]
+label:new[Introduced in bolt 6.0]
 
 An ordered collection of homogeneous types.
 
