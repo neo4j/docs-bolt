@@ -42,7 +42,7 @@ asciidoc:
     page-terms-to-mark: Cypher
     page-pagination: true
     page-no-canonical: true
-    page-origin-private: true # change to false to display 'Raise an issue' links
+    page-origin-private: false
     page-hide-toc: false
     page-mixpanel: 4bfb2414ab973c741b6f067bf06d5575
     # legacy attributes - do not change these
