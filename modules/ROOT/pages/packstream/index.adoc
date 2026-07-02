@@ -38,6 +38,9 @@ The core data types are described in the table below.
 | <<data-type-string, `String`>>
 | unicode text, *UTF-8*
 
+| <<data-type-uuid, `UUID`>>
+| 128-bit identifier
+
 | <<data-type-list, `List`>>
 | ordered collection of values
 
@@ -492,6 +495,57 @@ N.B. While the unsigned 32-bit integer following `D3` could hold a bigger number
 | `String("Größenmaßstäbe")`
 | `D0 12 47 72 C3 B6 C3 9F 65 6E 6D 61 C3 9F 73 74 C3 A4 62 65`
 |===
+
+[[data-type-uuid]]
+=== `UUID`
+label:new[Introduced in bolt 6.1]
+
+A UUID (Universally Unique Identifier,
+https://www.rfc-editor.org/rfc/rfc9562.html[RFC 9562]) is a
+128-bit value used to
+ uniquely identify information. UUIDs are commonly represented as a
+ hyphenated hexadecimal string such as `550e8400-e29b-41d4-a716-446655440000`,
+which encodes the 16 bytes in big-endian order across five groups separated
+by hyphens.
+
+A UUID type is represented with marker byte `E0` followed by the 16 bytes that
+represent the UUID as defined in RFC 9562.
+
+For example the UUID `550e8400-e29b-41d4-a716-446655440000` is represented
+as follows:
+
+```
+E0 55 0E 84 00 E2 9B 41 D4 A7 16 44 66 55 44 00 00
+```
+
+==== Unsupported Bolt Versions
+Clients that negotiate a protocol version which does not support the UUID type will instead
+recieve a backwards compatible placeholder. The placeholder value depends on which version
+has been negotiated.
+
+===== 5.8 and earlier
+Clients that have negotiated version 5.8 or earlier will instead recieve a Dictionary type as a placeholder with
+the following content:
+
+
+----
+{"originalType": "UUID", "reason": "UNKNOWN_TYPE"}
+----
+
+
+===== 6.0
+Clients that have negotiated version 6.0 will receive a
+xref:bolt/structure-semantics.adoc#structure-unsupported-type[`Unsupported Type`] with the following values:
+
+----
+{
+    name: "UUID",
+    minimum_protocol_major: 6,
+    minimum_protocol_minor: 1,
+    extra: {}
+)
+----
+
 
 [[data-type-list]]
 === `List`
