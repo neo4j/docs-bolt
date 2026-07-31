@@ -5,3 +5,7 @@ version: '1.0'
 start_page: ROOT:index.adoc
 nav:
 - modules/ROOT/content-nav.adoc
+asciidoc:
+  attributes:
+    page-tabs: drivers-apis@
+    page-tabs-index: 60
