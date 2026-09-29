@@ -911,8 +911,8 @@ The *tag byte* is used to identify the type or class of the structure and may ho
 PackStream itself does not define semantics for different structures.
 Instead, refer to the xref:bolt/structure-semantics.adoc[] for the Bolt version in question.
 
-[[packstream-summary]]
-== Summary of changes per version
+[[changelog]]
+== Changelog
 
 [[packsteam-summary-2]]
 === Version 1.1
