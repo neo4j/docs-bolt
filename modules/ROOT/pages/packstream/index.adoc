@@ -914,7 +914,7 @@ Instead, refer to the xref:bolt/structure-semantics.adoc[] for the Bolt version 
 [[changelog]]
 == Changelog
 
-[[packsteam-summary-2]]
+[[packsteam-summary-1-1]]
 === Version 1.1
 
 ** Introduction of `UUID` type.
