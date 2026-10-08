@@ -2171,6 +2171,12 @@ RECORD [{"point": [1, 2]}, "example_data", 123]
 The sections below list the changes of messages compared to the previous version.
 Please also check for changes in xref:./structure-semantics.adoc#structure-summary[Structure Semantics].
 
+[[messages-summary-61]]
+=== Version 6.1
+
+** Update to PackStream `1.1` (introducing `UUID` type)
+
+
 [[messages-summary-6]]
 === Version 6.0
 

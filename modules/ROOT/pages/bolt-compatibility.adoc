@@ -8,12 +8,19 @@ As soon as a decision is made, it will be documented here.]]
 
 == Bolt 6.x
 
-[cols="^,^",options="header"]
+[cols="^,^,^",options="header"]
 |===
 | Neo4j version
 | Bolt `6.0`
+| Bolt `6.1`
 
-| `2025.10` - current{fn-version-plus}
+
+| `2025.10` - `2026.08`
+| `x`
+|
+
+| `2026.09` - current{fn-version-plus}
+| `x`
 | `x`
 
 |===
